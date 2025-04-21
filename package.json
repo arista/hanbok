@@ -1,0 +1,28 @@
+{
+  "name": "hanbok",
+  "version": "0.0.0",
+  "description": "Opinionated platform for developing and deploying web apps in AWS",
+  "license": "MIT",
+  "author": "Nathan Abramson",
+  "private": false,
+  "main": "dist/lib/lib.es.js",
+  "module": "dist/lib/lib.es.js",
+  "types": "dist/lib/lib.d.ts",
+  "type": "module",
+  "bin": {
+    "hanbok": "./bin/cli.js"
+  },
+  "sideEffects": false,
+  "files": [
+  ],
+  "scripts": {
+  },
+  "dependencies": {
+  },
+  "peerDependencies": {
+  },
+  "peerDependenciesMeta": {
+  },
+  "devDependencies": {
+  }
+}
