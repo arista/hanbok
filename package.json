@@ -31,15 +31,14 @@
     "tsc": "npx tsc -b",
     "tsc-watch": "npx tsc -b -w",
     "esbuild": "node ./esbuild.config.js",
-    "esbuild-watch": "node ./esbuild.config.js --watch"
+    "esbuild-watch": "node ./esbuild.config.js --watch",
+    "prettier": "npx prettier --write **/*.{ts,tsx,css,scss,html,json,js}"
   },
   "dependencies": {
     "oclif": "^4.17.44"
   },
-  "peerDependencies": {
-  },
-  "peerDependenciesMeta": {
-  },
+  "peerDependencies": {},
+  "peerDependenciesMeta": {},
   "devDependencies": {
     "@oclif/core": "^4.2.10",
     "@oclif/plugin-autocomplete": "^3.2.27",
