@@ -8,21 +8,43 @@
   "main": "dist/lib/lib.es.js",
   "module": "dist/lib/lib.es.js",
   "types": "dist/lib/lib.d.ts",
-  "type": "module",
-  "bin": {
-    "hanbok": "./bin/cli.js"
-  },
   "sideEffects": false,
   "files": [
+    "dist"
   ],
+  "oclif": {
+    "bin": "cli.js",
+    "commands": {
+      "strategy": "explicit",
+      "target": "./dist/cli/cli.es.js",
+      "identifier": "COMMANDS"
+    },
+    "plugins": [
+      "@oclif/plugin-help",
+      "@oclif/plugin-not-found",
+      "@oclif/plugin-autocomplete"
+    ],
+    "topicSeparator": " "
+  },
+  "type": "module",
   "scripts": {
   },
   "dependencies": {
+    "oclif": "^4.17.44"
   },
   "peerDependencies": {
   },
   "peerDependenciesMeta": {
   },
   "devDependencies": {
+    "@oclif/core": "^4.2.10",
+    "@oclif/plugin-autocomplete": "^3.2.27",
+    "@oclif/plugin-help": "^6.2.27",
+    "@oclif/plugin-not-found": "^3.2.49",
+    "@types/node": "^22.14.1",
+    "concurrently": "^9.1.2",
+    "esbuild": "^0.25.2",
+    "prettier": "^3.5.3",
+    "typescript": "~5.8.3"
   }
 }

@@ -1,0 +1,23 @@
+// The base tsconfig.json, defining path aliases and linting features.
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+    },
+
+    // linting features
+    "strict": true,
+    "exactOptionalPropertyTypes": false,
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitOverride": true,
+    "noImplicitReturns": true,
+    "noPropertyAccessFromIndexSignature": true,
+    "noUncheckedIndexedAccess": true,
+    "noUncheckedSideEffectImports": true,
+    "resolveJsonModule": true,
+    "allowJs": true,
+    "checkJs": true,
+    "isolatedModules": true
+  },
+  "files": []
+}

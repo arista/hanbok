@@ -1,3 +1,6 @@
 #!/usr/bin/env node
 
-console.log(`Welcome to hanbok!`)
+await (async () => {
+  const { execute } = await import('@oclif/core')
+  await execute({ dir: import.meta.url })
+})()
