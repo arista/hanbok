@@ -28,6 +28,10 @@
   },
   "type": "module",
   "scripts": {
+    "tsc": "npx tsc -b",
+    "tsc-watch": "npx tsc -b -w",
+    "esbuild": "node ./esbuild.config.js",
+    "esbuild-watch": "node ./esbuild.config.js --watch"
   },
   "dependencies": {
     "oclif": "^4.17.44"

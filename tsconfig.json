@@ -1,9 +1,28 @@
 // The base tsconfig.json, defining path aliases and linting features.
+// tsc is only used for type-checking, and for generating .d.ts files
 {
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
     },
+
+    "tsBuildInfoFile": "./build/tmp/tsconfig.app.tsbuildinfo",
+
+    // Uncomment to speed up typecheck, at the expense of typechecking
+    // the .d.ts files in libraries
+    "skipLibCheck": true,
+
+    // Module resolution and code generation
+    "moduleResolution": "bundler",
+    "module": "esnext",
+    "target": "esnext",
+    "jsx": "preserve",
+
+    // Generate only .d.ts files
+    "outDir": "./build/tsc",
+    "declaration": true,
+    "emitDeclarationOnly": true,
+    "declarationDir": "./build/tsc",
 
     // linting features
     "strict": true,
@@ -19,5 +38,9 @@
     "checkJs": true,
     "isolatedModules": true
   },
-  "files": []
+
+  // The root types file needs to be included explicitly if it's a
+  // "barrel file" (only exports other imported types), otherwise it
+  // would get skipped for .d.ts generation
+  "include": ["./src/lib-types.ts", "./src/**/*", "./test/**/*"]
 }
