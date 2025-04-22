@@ -9,6 +9,7 @@ const generateMetafile = false;
 
 const builds = [
   { entry: "src/cli/cli.ts", out: "dist/cli/cli.es.js", format: "esm" },
+  { entry: "src/lib/lib.ts", out: "dist/lib/lib.es.js", format: "esm" },
 ];
 
 await Promise.all(

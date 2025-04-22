@@ -12,6 +12,10 @@
   "files": [
     "dist"
   ],
+  "bin": {
+    "hanbok": "bin/hanbok",
+    "hb": "bin/hb"
+  },
   "oclif": {
     "bin": "hanbok",
     "commands": {
@@ -35,9 +39,9 @@
     "prettier": "npx prettier --write **/*.{ts,tsx,css,scss,html,json,js}"
   },
   "dependencies": {
-    "oclif": "^4.17.44"
+    "oclif": "^4.17.46",
+    "pkg-dir": "^8.0.0"
   },
-  "peerDependencies": {},
   "peerDependenciesMeta": {},
   "devDependencies": {
     "@oclif/core": "^4.2.10",

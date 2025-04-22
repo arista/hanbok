@@ -3,7 +3,9 @@
 {
   "compilerOptions": {
     "baseUrl": ".",
-    "paths": {},
+    "paths": {
+      "@lib/*": ["./src/lib/*"],
+    },
 
     "tsBuildInfoFile": "./build/tmp/tsconfig.app.tsbuildinfo",
 
