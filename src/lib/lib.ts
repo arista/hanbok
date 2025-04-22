@@ -1,1 +1,1 @@
-export {defineConfig} from "@lib/devenv/ProjectConfig"
+export { defineConfig } from "@lib/devenv/ProjectConfig";

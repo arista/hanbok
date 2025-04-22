@@ -1,20 +1,23 @@
-export type ProjectConfig = SuiteProjectConfig | AppProjectConfig
+export type ProjectConfig = SuiteProjectConfig | AppProjectConfig;
 
 export type SuiteProjectConfig = {
-  type: "Suite"
-  name: string
-}
+  type: "Suite";
+  name: string;
+};
 
 export type AppProjectConfig = {
-  type: "App"
-  name: string
-  features?: Features
-}
+  type: "App";
+  name: string;
+  features?: Features;
+};
 
 export type Features = {
-  lib?: boolean | null | undefined
-}
+  lib?: boolean | null | undefined;
+};
 
-export function defineConfig(c:ProjectConfig):ProjectConfig {
-  return c
+// This is just a convenient way for the config file to invoke type
+// checking, by doing something like "export default
+// defineConfig({...})"
+export function defineConfig(c: ProjectConfig): ProjectConfig {
+  return c;
 }
