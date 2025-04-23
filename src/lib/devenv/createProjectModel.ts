@@ -1,4 +1,4 @@
-import { ProjectModel } from "./ProjectModel";
+import * as PM from "./ProjectModel";
 import * as FsUtils from "@lib/utils/FsUtils";
 import process from "node:process";
 import { packageDirectorySync } from "pkg-dir";
@@ -13,13 +13,17 @@ export async function createProjectModel({
   curdir,
 }: {
   curdir?: string;
-}): Promise<ProjectModel> {
+}): Promise<PM.ProjectModel> {
   const projectRoot = getProjectRoot(curdir);
   // FIXME - filename is null, or specified by the config
   const config = await readHanbokConfig(projectRoot, null);
+  const lib = getLibConfig(config, projectRoot);
   return {
     projectRoot,
     config,
+    features: {
+      lib,
+    },
   };
 }
 
@@ -72,4 +76,31 @@ async function readHanbokConfig(
   const config = await import(pathToFileURL(outfile).href);
   // FIXME - do we want to typecheck it with zod?
   return config.default;
+}
+
+function getLibConfig(
+  projectConfig: PC.ProjectConfig,
+  projectRoot: string,
+): PM.LibConfig | null {
+  switch (projectConfig.type) {
+    case "App": {
+      const configLib = projectConfig.features?.lib;
+      if (configLib !== true) {
+        return null;
+      }
+      const libFile = path.join(projectRoot, "src", "lib.ts");
+      const libTypesFile = path.join(projectRoot, "src", "lib-types.ts");
+      if (!FsUtils.isFile(libFile)) {
+        return null;
+      }
+      return {
+        libFile,
+        libTypesFile: FsUtils.isFile(libTypesFile) ? libTypesFile : null,
+      };
+    }
+    case "Suite": {
+      // FIXME - implement this
+      return null;
+    }
+  }
 }

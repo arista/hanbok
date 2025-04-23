@@ -8,10 +8,10 @@ export type SuiteProjectConfig = {
 export type AppProjectConfig = {
   type: "App";
   name: string;
-  features?: Features;
+  features?: AppFeatures;
 };
 
-export type Features = {
+export type AppFeatures = {
   lib?: boolean | null | undefined;
 };
 

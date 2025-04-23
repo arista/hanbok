@@ -5,11 +5,11 @@ import { ProjectConfig } from "./ProjectConfig";
 export type ProjectModel = {
   projectRoot: string;
   config: ProjectConfig;
-  features?: Features;
+  features: Features;
 };
 
 export type Features = {
-  lib: LibConfig;
+  lib: LibConfig | null;
 };
 
 export type LibConfig = {
