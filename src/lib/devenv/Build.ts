@@ -1,5 +1,7 @@
 import type * as PM from "@lib/devenv/ProjectModel"
 import {createProjectModel} from "@lib/devenv/createProjectModel"
+import {rollup} from "rollup"
+import dts from "rollup-plugin-dts"
 import ts from "typescript"
 import fs from "node:fs"
 import path from "node:path"
@@ -12,6 +14,7 @@ export class Build {
     const model = await createProjectModel({})
     await this.runTsc(model)
     await this.runEsbuild(model)
+    await this.runRollup(model)
 
     return model
   }
@@ -27,6 +30,15 @@ export class Build {
       ts.sys,
       model.projectRoot
     )
+    if (config.errors.length > 0) {
+      const host = ts.createCompilerHost(config.options)
+      const formatted = ts.formatDiagnosticsWithColorAndContext(
+        config.errors,
+        host
+      )
+      console.error("TSConfig parse errors:\n" + formatted)
+      throw new Error("Failed to parse tsconfig")
+    }
     const program = ts.createProgram(config.fileNames, config.options)
 
     // Run tsc, capture errors
@@ -54,6 +66,7 @@ export class Build {
   }
 
   generateTsconfigPaths(): Record<string, Array<string>> {
+    // FIXME - implement this
     return {}
   }
 
@@ -72,6 +85,7 @@ export class Build {
     const {projectRoot} = model
     const libTypesFile = model.features.lib?.libTypesFile
     const generateTypes = libTypesFile != null
+    const generateTest = model.features.test != null
 
     // Additional options and files to add depending on whether we're
     // generating .d.ts files or not
@@ -86,22 +100,21 @@ export class Build {
           noEmit: true,
         }
 
-    const compilerOptions: ts.CompilerOptions = {
+    const compilerOptions = {
+      // Bring in the settings also required by esbuild
+      ...this.generateEsbuildTsconfigRaw().compilerOptions,
+
       baseUrl: ".",
 
       // Module resolution and code generation
-      moduleResolution: ts.ModuleResolutionKind.Bundler,
-      module: ts.ModuleKind.ESNext,
+      moduleResolution: "bundler",
+      module: "esnext",
       esModuleInterop: true,
-      jsx: ts.JsxEmit.Preserve,
-      target: ts.ScriptTarget.ESNext,
-      paths: this.generateTsconfigPaths(),
 
-      // For type-generation, or no generation
+      // For type-generation, if requested
       ...generateOptions,
 
       // linting features
-      strict: true,
       exactOptionalPropertyTypes: false,
       noFallthroughCasesInSwitch: true,
       noImplicitOverride: true,
@@ -115,11 +128,17 @@ export class Build {
       isolatedModules: true,
     }
 
-    // Sometimes the "lib-types.ts" file needs to be included
-    // explicitly, otherwise tsc might not generate its .d.ts file if
-    // it only contains types
-    const generateInclude = generateTypes ? [libTypesFile] : []
-    const include = [...generateInclude, "./src/**/*", "./test/**/*"]
+    const include: Array<string> = []
+    if (generateTypes) {
+      // Sometimes the "lib-types.ts" file needs to be included
+      // explicitly, otherwise tsc might not generate its .d.ts file
+      // if it only contains types
+      include.push(libTypesFile)
+    }
+    include.push("src/**/*")
+    if (generateTest) {
+      include.push("test/**/*")
+    }
 
     return {
       compilerOptions,
@@ -132,6 +151,7 @@ export class Build {
   async runEsbuild(model: PM.ProjectModel) {
     const {projectRoot} = model
     const libFile = model.features.lib?.libFile
+    const testFile = model.features.test?.testFile
 
     // generate the metafile that tracks what was bundled and why
     // FIXME - make this configurable
@@ -142,6 +162,13 @@ export class Build {
       builds.push({
         entry: libFile,
         out: path.join(projectRoot, "dist", "lib", "lib.es.js"),
+        format: "esm",
+      })
+    }
+    if (testFile != null) {
+      builds.push({
+        entry: testFile,
+        out: path.join(projectRoot, "dist", "test", "test.es.js"),
         format: "esm",
       })
     }
@@ -205,6 +232,47 @@ export class Build {
       })
     )
   }
+
+  // Run rollup to generate the lib.d.ts types declaration file
+  // generated from lib-types.d.ts, typically distributed alongside
+  // lib.es.js
+  async runRollup(model: PM.ProjectModel) {
+    const {projectRoot} = model
+    const libTypesFile = model.features.lib?.libTypesFile
+    const generateTypes = libTypesFile != null
+    const generateTest = model.features.test != null
+
+    if (generateTypes) {
+      // If we're using the test/ directory, then tsc will put the
+      // results in "build/tsc/{src,test}".  Otherwise it just puts
+      // them under "build/tsc/".  It's a quirk of tsc, which
+      // basically looks for a common root of its input files and uses
+      // that to decide where to put the output files
+      const input = generateTest
+        ? "build/tsc/src/lib-types.d.ts"
+        : "build/tsc/lib-types.d.ts"
+
+      const bundle = await rollup({
+        input,
+        plugins: [
+          dts({
+            respectExternal: true,
+            compilerOptions: {
+              baseUrl: "./build/tsc",
+              paths: this.generateTsconfigPaths(),
+            },
+          }),
+        ],
+      })
+
+      await bundle.write({
+        file: "dist/lib/lib.d.ts",
+        format: "es",
+      })
+
+      await bundle.close()
+    }
+  }
 }
 
 type EsbuildTarget = {
@@ -215,7 +283,9 @@ type EsbuildTarget = {
 }
 
 type TsconfigJson = {
-  compilerOptions: ts.CompilerOptions
+  // The "raw" form of tsconfig doesn't have an actual type
+  // declaration
+  compilerOptions: any
   include?: string[]
   exclude?: string[]
 }

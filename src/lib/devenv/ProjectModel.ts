@@ -10,9 +10,14 @@ export type ProjectModel = {
 
 export type Features = {
   lib: LibConfig | null
+  test: TestConfig | null
 }
 
 export type LibConfig = {
   libFile: string
   libTypesFile: string | null
+}
+
+export type TestConfig = {
+  testFile: string
 }

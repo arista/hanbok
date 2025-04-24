@@ -13,6 +13,7 @@ export type AppProjectConfig = {
 
 export type AppFeatures = {
   lib?: boolean | null | undefined
+  test?: boolean | null | undefined
 }
 
 // This is just a convenient way for the config file to invoke type

@@ -44,7 +44,8 @@
   },
   "dependencies": {
     "oclif": "^4.17.46",
-    "pkg-dir": "^8.0.0"
+    "pkg-dir": "^8.0.0",
+    "rollup": "^4.40.0"
   },
   "peerDependenciesMeta": {},
   "devDependencies": {

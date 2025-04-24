@@ -18,11 +18,13 @@ export async function createProjectModel({
   // FIXME - filename is null, or specified by the config
   const config = await readHanbokConfig(projectRoot, null)
   const lib = getLibConfig(config, projectRoot)
+  const test = getTestConfig(config, projectRoot)
   return {
     projectRoot,
     config,
     features: {
       lib,
+      test,
     },
   }
 }
@@ -91,11 +93,42 @@ function getLibConfig(
       const libFile = path.join(projectRoot, "src", "lib.ts")
       const libTypesFile = path.join(projectRoot, "src", "lib-types.ts")
       if (!FsUtils.isFile(libFile)) {
+        console.log(
+          `Warning: projectConfig.features.lib is set, but there is no "src/lib.ts" file`
+        )
         return null
       }
       return {
         libFile,
         libTypesFile: FsUtils.isFile(libTypesFile) ? libTypesFile : null,
+      }
+    }
+    case "Suite": {
+      // FIXME - implement this
+      return null
+    }
+  }
+}
+
+function getTestConfig(
+  projectConfig: PC.ProjectConfig,
+  projectRoot: string
+): PM.TestConfig | null {
+  switch (projectConfig.type) {
+    case "App": {
+      const configTest = projectConfig.features?.test
+      if (configTest !== true) {
+        return null
+      }
+      const testFile = path.join(projectRoot, "test", "test.ts")
+      if (!FsUtils.isFile(testFile)) {
+        console.log(
+          `Warning: projectConfig.features.test is set, but there is no "test/test.ts" file`
+        )
+        return null
+      }
+      return {
+        testFile,
       }
     }
     case "Suite": {
