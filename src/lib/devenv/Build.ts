@@ -6,39 +6,42 @@ import ts from "typescript"
 import fs from "node:fs"
 import path from "node:path"
 import * as esbuild from "esbuild"
+import * as ProcUtils from "@lib/utils/ProcUtils"
 
 export class Build {
-  constructor(props: {}) {}
+  constructor(public props: {watch: boolean}) {}
+
+  get watch() {
+    return this.props.watch
+  }
 
   async run() {
     const model = await createProjectModel({})
+    if (this.watch) {
+      await this.runWatch(model)
+    } else {
+      await this.runOnce(model)
+    }
+  }
+
+  async runOnce(model: PM.ProjectModel) {
     await this.runTsc(model)
     await this.runEsbuild(model)
     await this.runRollup(model)
+  }
 
-    return model
+  async runWatch(model: PM.ProjectModel) {
+    await ProcUtils.runAllWatchers([
+      {name: "tsc", fn: async () => await this.runTscWatch(model)},
+    ])
   }
 
   // Run the typescript compiler to do type-checking, and to generate
   // .d.ts files that will later be used by rollup to generate the
   // final lib.d.ts
-  async runTsc(model: PM.ProjectModel): Promise<ts.EmitResult> {
+  async runTsc(model: PM.ProjectModel) {
     // Prepare to run tsc
-    const tsconfig = this.generateTsconfig(model)
-    const config = ts.parseJsonConfigFileContent(
-      tsconfig,
-      ts.sys,
-      model.projectRoot
-    )
-    if (config.errors.length > 0) {
-      const host = ts.createCompilerHost(config.options)
-      const formatted = ts.formatDiagnosticsWithColorAndContext(
-        config.errors,
-        host
-      )
-      console.error("TSConfig parse errors:\n" + formatted)
-      throw new Error("Failed to parse tsconfig")
-    }
+    const config = this.generateParsedTsconfig(model)
     const program = ts.createProgram(config.fileNames, config.options)
 
     // Run tsc, capture errors
@@ -61,8 +64,35 @@ export class Build {
     if (hasErrors) {
       throw new Error("TypeScript compilation failed with errors.")
     }
+  }
 
-    return emitResult
+  // Same as runTsc, but in watch mode
+  async runTscWatch(model: PM.ProjectModel) {
+    // Prepare to run tsc
+    const config = this.generateParsedTsconfig(model)
+    const host = ts.createWatchCompilerHost(
+      config.fileNames,
+      config.options,
+      ts.sys,
+      ts.createEmitAndSemanticDiagnosticsBuilderProgram,
+      (diagnostic) => {
+        console.error(
+          ts.formatDiagnosticsWithColorAndContext(
+            [diagnostic],
+            ts.createCompilerHost({})
+          )
+        )
+      },
+      () => {
+        console.log("[tsc] Build complete")
+      }
+    )
+    const program = ts.createWatchProgram(host)
+
+    return async () => {
+      // No formal shutdown API, but cleanup can be forced
+      console.log("[tsc] Cleaning up...")
+    }
   }
 
   generateTsconfigPaths(): Record<string, Array<string>> {
@@ -105,6 +135,12 @@ export class Build {
       ...this.generateEsbuildTsconfigRaw().compilerOptions,
 
       baseUrl: ".",
+      tsBuildInfoFile: path.join(
+        projectRoot,
+        "build",
+        "tmp",
+        "tsconfig.app.tsbuildinfo"
+      ),
 
       // Module resolution and code generation
       moduleResolution: "bundler",
@@ -144,6 +180,25 @@ export class Build {
       compilerOptions,
       include,
     }
+  }
+
+  generateParsedTsconfig(model: PM.ProjectModel) {
+    const tsconfig = this.generateTsconfig(model)
+    const config = ts.parseJsonConfigFileContent(
+      tsconfig,
+      ts.sys,
+      model.projectRoot
+    )
+    if (config.errors.length > 0) {
+      const host = ts.createCompilerHost(config.options)
+      const formatted = ts.formatDiagnosticsWithColorAndContext(
+        config.errors,
+        host
+      )
+      console.error("TSConfig parse errors:\n" + formatted)
+      throw new Error("Failed to parse tsconfig")
+    }
+    return config
   }
 
   // Run esbuild to generate all of the bundles (except for the ones
