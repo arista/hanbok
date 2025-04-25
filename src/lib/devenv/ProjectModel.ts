@@ -12,6 +12,7 @@ export type Features = {
   lib: LibConfig | null
   test: TestConfig | null
   services: ServicesConfig | null
+  webapps: WebappsConfig | null
 }
 
 export type LibConfig = {
@@ -38,3 +39,10 @@ export type PrismaConfig = {
 }
 
 export const PRISMA_SCHEMA_INJECTION_POINT = "__HANBOK_PRISMA_HEADER__"
+
+export type WebappsConfig = Record<string, WebappConfig>
+
+export type WebappConfig = {
+  name: string
+  path: string
+}

@@ -20,6 +20,7 @@ export async function createProjectModel({
   const lib = getLibConfig(config, projectRoot)
   const test = getTestConfig(config, projectRoot)
   const services = getServicesConfig(config, projectRoot)
+  const webapps = getWebappsConfig(config, projectRoot)
   return {
     projectRoot,
     config,
@@ -27,6 +28,7 @@ export async function createProjectModel({
       lib,
       test,
       services,
+      webapps,
     },
   }
 }
@@ -182,6 +184,37 @@ function getServicesConfig(
           prisma = {schemaFile, builtSchemaFile, injectSchemaHeader}
         }
         ret[name] = {name, path: servicePath, prisma}
+      }
+      return ret
+    }
+    case "Suite": {
+      // FIXME - implement this
+      return null
+    }
+  }
+}
+
+function getWebappsConfig(
+  projectConfig: PC.ProjectConfig,
+  projectRoot: string
+): PM.WebappsConfig | null {
+  switch (projectConfig.type) {
+    case "App": {
+      const webappsPath = path.join(projectRoot, "src", "webapps")
+      if (!FsUtils.isDirectory(webappsPath)) {
+        return null
+      }
+      const webappNames = fs.readdirSync(webappsPath).filter((f) => {
+        const ff = path.join(webappsPath, f)
+        return FsUtils.isDirectory(ff)
+      })
+      if (webappNames.length === 0) {
+        return null
+      }
+      const ret: PM.WebappsConfig = {}
+      for (const name of webappNames) {
+        const webappPath = path.join(webappsPath, name)
+        ret[name] = {name, path: webappPath}
       }
       return ret
     }

@@ -1,3 +1,4 @@
+import * as vite from "vite"
 import * as PM from "@lib/devenv/ProjectModel"
 import {createProjectModel} from "@lib/devenv/createProjectModel"
 import {rollup} from "rollup"
@@ -31,6 +32,7 @@ export class Build {
     await this.runTsc(model)
     await this.runEsbuild(model)
     await this.runRollup(model)
+    await this.runVite(model)
   }
 
   async runWatch(model: PM.ProjectModel) {
@@ -39,6 +41,7 @@ export class Build {
       {name: "tsc", fn: async () => await this.runTscWatch(model)},
       {name: "esbuild", fn: async () => await this.runEsbuild(model)},
       {name: "rollup-types", fn: async () => await this.runRollupWatch(model)},
+      {name: "vite", fn: async () => await this.runVite(model)},
     ])
   }
 
@@ -469,6 +472,29 @@ export class Build {
     return async () => {
       console.log("[rollup-types] Cleaning up...")
       await watcher.close()
+    }
+  }
+
+  // Run vite to bundle the webapps
+  async runVite(model: PM.ProjectModel) {
+    const {projectRoot, features} = model
+    const {webapps} = features
+    if (webapps != null) {
+      for (const webapp of Object.values(webapps)) {
+        const outDir = path.resolve(projectRoot, "dist", "webapps", webapp.name)
+        const viteConfig = vite.defineConfig({
+          // Where index.html is located
+          root: webapp.path,
+          build: {
+            outDir,
+            emptyOutDir: true,
+            manifest: true,
+            watch: this.watch ? {} : null,
+          },
+          logLevel: "info",
+        })
+        await vite.build(viteConfig)
+      }
     }
   }
 }
