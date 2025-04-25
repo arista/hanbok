@@ -1,4 +1,4 @@
-import type * as PM from "@lib/devenv/ProjectModel"
+import * as PM from "@lib/devenv/ProjectModel"
 import {createProjectModel} from "@lib/devenv/createProjectModel"
 import {rollup} from "rollup"
 import dts from "rollup-plugin-dts"
@@ -7,6 +7,7 @@ import fs from "node:fs"
 import path from "node:path"
 import * as esbuild from "esbuild"
 import * as ProcUtils from "@lib/utils/ProcUtils"
+import {spawn} from "node:child_process"
 import chokidar from "chokidar"
 
 export class Build {
@@ -26,6 +27,7 @@ export class Build {
   }
 
   async runOnce(model: PM.ProjectModel) {
+    await this.runPrisma(model)
     await this.runTsc(model)
     await this.runEsbuild(model)
     await this.runRollup(model)
@@ -37,6 +39,74 @@ export class Build {
       {name: "esbuild", fn: async () => await this.runEsbuild(model)},
       {name: "rollup-types", fn: async () => await this.runRollupWatch(model)},
     ])
+  }
+
+  // Runs prisma for each of the schemas
+  async runPrisma(model: PM.ProjectModel) {
+    const {projectRoot} = model
+    const services = model.features.services
+    if (services != null) {
+      for (const service of Object.values(services)) {
+        const serviceName = service.name
+        if (service.prisma != null) {
+          const {schemaFile, builtSchemaFile, injectSchemaHeader} =
+            service.prisma
+
+          // Copy or generate the schema file with injected header
+          const builtSchemaDir = path.dirname(builtSchemaFile)
+          fs.mkdirSync(builtSchemaDir, {recursive: true})
+          const contents = fs.readFileSync(schemaFile).toString()
+          if (injectSchemaHeader) {
+            const prismaDest = path.join(
+              projectRoot,
+              "node_modules",
+              "prisma-app-client",
+              serviceName
+            )
+            const injectLines = [
+              `generator client {`,
+              `  provider = "prisma-client-js"`,
+              `  // Include "rhel-openssl-3.0.x" for Amazon Linux 2023`,
+              `  binaryTargets = ["native", "rhel-openssl-3.0.x"]`,
+              `  output = "${prismaDest}"`,
+              `}`,
+              ``,
+              `datasource db {`,
+              `  provider = "mysql"`,
+              `  url      = env("DATABASE_URL_${serviceName}")`,
+              `}`,
+              ``,
+            ]
+            const injectStr = injectLines.join("\n")
+            const newContents = contents.replace(
+              PM.PRISMA_SCHEMA_INJECTION_POINT,
+              injectStr
+            )
+            fs.writeFileSync(builtSchemaFile, newContents)
+          } else {
+            fs.writeFileSync(builtSchemaFile, contents)
+          }
+
+          // Run prisma
+          await new Promise<void>((resolve, reject) => {
+            const proc = spawn(
+              "npx",
+              ["prisma", "generate", `--schema=${builtSchemaFile}`],
+              {
+                cwd: projectRoot,
+                stdio: "inherit",
+                shell: true,
+              }
+            )
+
+            proc.on("exit", (code) => {
+              if (code === 0) resolve()
+              else reject(new Error(`prisma generate exited with code ${code}`))
+            })
+          })
+        }
+      }
+    }
   }
 
   // Run the typescript compiler to do type-checking, and to generate

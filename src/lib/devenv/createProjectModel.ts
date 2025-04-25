@@ -19,12 +19,14 @@ export async function createProjectModel({
   const config = await readHanbokConfig(projectRoot, null)
   const lib = getLibConfig(config, projectRoot)
   const test = getTestConfig(config, projectRoot)
+  const services = getServicesConfig(config, projectRoot)
   return {
     projectRoot,
     config,
     features: {
       lib,
       test,
+      services,
     },
   }
 }
@@ -130,6 +132,58 @@ function getTestConfig(
       return {
         testFile,
       }
+    }
+    case "Suite": {
+      // FIXME - implement this
+      return null
+    }
+  }
+}
+
+function getServicesConfig(
+  projectConfig: PC.ProjectConfig,
+  projectRoot: string
+): PM.ServicesConfig | null {
+  switch (projectConfig.type) {
+    case "App": {
+      const servicesPath = path.join(projectRoot, "src", "services")
+      if (!FsUtils.isDirectory(servicesPath)) {
+        return null
+      }
+      const serviceNames = fs.readdirSync(servicesPath).filter((f) => {
+        const ff = path.join(servicesPath, f)
+        return FsUtils.isDirectory(ff)
+      })
+      if (serviceNames.length === 0) {
+        return null
+      }
+      const ret: PM.ServicesConfig = {}
+      for (const name of serviceNames) {
+        const servicePath = path.join(servicesPath, name)
+        let prisma: PM.PrismaConfig | null = null
+        const schemaFile = path.join(servicePath, "prisma", "schema.prisma")
+        if (FsUtils.isFile(schemaFile)) {
+          const schemaFileContents = fs.readFileSync(schemaFile).toString()
+          // See if the prisma file includes the marker that causes it
+          // to require injecting the header
+          const injectSchemaHeader = schemaFileContents.includes(
+            PM.PRISMA_SCHEMA_INJECTION_POINT
+          )
+          // Where the schema file ends up built after injection
+          // (whether injection is used or not)
+          const builtSchemaFile = path.join(
+            projectRoot,
+            "build",
+            "services",
+            name,
+            "prisma",
+            "schema.prisma"
+          )
+          prisma = {schemaFile, builtSchemaFile, injectSchemaHeader}
+        }
+        ret[name] = {name, path: servicePath, prisma}
+      }
+      return ret
     }
     case "Suite": {
       // FIXME - implement this
