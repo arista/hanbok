@@ -35,6 +35,7 @@ export class Build {
 
   async runWatch(model: PM.ProjectModel) {
     await ProcUtils.runAllWatchers([
+      {name: "prisma", fn: async () => await this.runPrismaWatch(model)},
       {name: "tsc", fn: async () => await this.runTscWatch(model)},
       {name: "esbuild", fn: async () => await this.runEsbuild(model)},
       {name: "rollup-types", fn: async () => await this.runRollupWatch(model)},
@@ -106,6 +107,36 @@ export class Build {
           })
         }
       }
+    }
+  }
+
+  // Run prisma in watch mode
+  async runPrismaWatch(model: PM.ProjectModel) {
+    const {projectRoot} = model
+    const watchPath = path.join(projectRoot, `src/services`)
+    const watcher = chokidar.watch(watchPath, {
+      persistent: true,
+      ignoreInitial: true,
+      ignored: (path, stats) => {
+        return (stats?.isFile() && !path.endsWith("/schema.prisma")) ?? false
+      },
+    })
+
+    const rebuild = async () => {
+      console.log("[prisma] Regenerating prisma client")
+      try {
+        await this.runPrisma(model)
+      } catch (err) {
+        console.error("[prisma] Failed:", err)
+      }
+    }
+
+    watcher.on("change", rebuild)
+    watcher.on("ready", rebuild)
+
+    return async () => {
+      console.log("[prisma] Cleaning up...")
+      await watcher.close()
     }
   }
 
