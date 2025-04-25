@@ -33,6 +33,7 @@ export class Build {
   async runWatch(model: PM.ProjectModel) {
     await ProcUtils.runAllWatchers([
       {name: "tsc", fn: async () => await this.runTscWatch(model)},
+      {name: "esbuild", fn: async () => await this.runEsbuild(model)},
     ])
   }
 
@@ -270,6 +271,7 @@ export class Build {
           metafile: generateMetafile,
         })
         // Do an initial build
+        console.log(`[esbuild] Running initial build`)
         const result = await context.rebuild()
         if (generateMetafile) {
           fs.writeFileSync(
@@ -277,12 +279,17 @@ export class Build {
             JSON.stringify(result.metafile, null, 2)
           )
         }
-        const isWatchMode = false
-        if (isWatchMode) {
-          // Watch for code changes
+        console.log(`[esbuild] Initial build complete`)
+        if (this.watch) {
           await context.watch()
+
+          return async () => {
+            console.log("[esbuild] Cleaning up...")
+            await context.dispose()
+          }
         } else {
-          context.dispose()
+          await context.dispose()
+          return null
         }
       })
     )
