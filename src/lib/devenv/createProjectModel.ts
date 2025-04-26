@@ -269,7 +269,22 @@ function getWebappsConfig(
       const ret: PM.WebappsConfig = {}
       for (const name of webappNames) {
         const webappPath = path.join(webappsPath, name)
-        ret[name] = {name, path: webappPath}
+        const builtWebappRoot = path.resolve(
+          projectRoot,
+          "dist",
+          "webapps",
+          name
+        )
+        // In the dev server, each webapp appears under `/{webapp name}`
+        const devServerBase = `/${name}/`
+        const devServerRoute = `/${name}`
+        ret[name] = {
+          name,
+          path: webappPath,
+          builtWebappRoot,
+          devServerBase,
+          devServerRoute,
+        }
       }
       return ret
     }

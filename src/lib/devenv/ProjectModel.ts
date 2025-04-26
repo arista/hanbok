@@ -63,4 +63,7 @@ export type WebappsConfig = Record<string, WebappConfig>
 export type WebappConfig = {
   name: string
   path: string
+  builtWebappRoot: string
+  devServerRoute: string
+  devServerBase: string
 }

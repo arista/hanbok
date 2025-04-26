@@ -10,16 +10,17 @@ import * as esbuild from "esbuild"
 import * as ProcUtils from "@lib/utils/ProcUtils"
 import {spawn} from "node:child_process"
 import chokidar from "chokidar"
+import react from "@vitejs/plugin-react"
 
 export class Build {
-  constructor(public props: {watch: boolean}) {}
+  constructor(public props: {watch: boolean; model?: PM.ProjectModel}) {}
 
   get watch() {
     return this.props.watch
   }
 
   async run() {
-    const model = await createProjectModel({})
+    const model = this.props.model ?? (await createProjectModel({}))
     if (this.watch) {
       await this.runWatch(model)
     } else {
@@ -481,16 +482,28 @@ export class Build {
     const {webapps} = features
     if (webapps != null) {
       for (const webapp of Object.values(webapps)) {
-        const outDir = path.resolve(projectRoot, "dist", "webapps", webapp.name)
+        const outDir = webapp.builtWebappRoot
+
+        // In the local dev server, each app is mounted at "/{webapp
+        // name}".  FIXME - also set up for production mode
+        const base = webapp.devServerBase
+
+        // Create the vite config
         const viteConfig = vite.defineConfig({
           // Where index.html is located
           root: webapp.path,
+          base,
           build: {
             outDir,
             emptyOutDir: true,
             manifest: true,
             watch: this.watch ? {} : null,
           },
+          plugins: [
+            // Among other things, this makes sure "React" is defined
+            // everywhere
+            react()
+          ],
           logLevel: "info",
         })
         await vite.build(viteConfig)
