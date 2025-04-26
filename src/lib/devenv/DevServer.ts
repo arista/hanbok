@@ -4,6 +4,7 @@ import http from "http"
 import path from "path"
 import {parse} from "url"
 import * as PM from "@lib/devenv/ProjectModel"
+import react from "@vitejs/plugin-react"
 
 export class DevServer {
   constructor(public props: {model: PM.ProjectModel}) {}
@@ -37,7 +38,13 @@ export class DevServer {
         const {name, builtWebappRoot, devServerRoute} = webapp
         const route = devServerRoute
         const vite = await createViteServer({
-          root: builtWebappRoot,
+          root: webapp.path,
+          base: webapp.devServerBase,
+          plugins: [
+            // Among other things, this makes sure "React" is defined
+            // everywhere
+            react()
+          ],
           server: {
             middlewareMode: true,
 

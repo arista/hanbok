@@ -42,7 +42,10 @@ export class Build {
       {name: "tsc", fn: async () => await this.runTscWatch(model)},
       {name: "esbuild", fn: async () => await this.runEsbuild(model)},
       {name: "rollup-types", fn: async () => await this.runRollupWatch(model)},
-      {name: "vite", fn: async () => await this.runVite(model)},
+
+      // In dev mode, we don't bother building vite since the vite dev
+      // server has its own special build process
+//      {name: "vite", fn: async () => await this.runVite(model)},
     ])
   }
 
