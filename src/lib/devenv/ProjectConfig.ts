@@ -8,7 +8,26 @@ export type SuiteProjectConfig = {
 export type AppProjectConfig = {
   type: "App"
   name: string
+  devenv: DevEnv
   features?: AppFeatures
+}
+
+export type DevEnv = {
+  devServer?: DevServer | null | undefined
+  apiServer?: ApiServer | null | undefined
+  previewServer?: PreviewServer | null | undefined
+}
+
+export type DevServer = {
+  port: number
+}
+
+export type ApiServer = {
+  port: number
+}
+
+export type PreviewServer = {
+  port: number
 }
 
 export type AppFeatures = {

@@ -17,19 +17,74 @@ export async function createProjectModel({
   const projectRoot = getProjectRoot(curdir)
   // FIXME - filename is null, or specified by the config
   const config = await readHanbokConfig(projectRoot, null)
+  const devenv = await getDevEnv(config)
   const lib = getLibConfig(config, projectRoot)
   const test = getTestConfig(config, projectRoot)
   const services = getServicesConfig(config, projectRoot)
   const webapps = getWebappsConfig(config, projectRoot)
   return {
     projectRoot,
-    config,
+    devenv,
     features: {
       lib,
       test,
       services,
       webapps,
     },
+  }
+}
+
+function getDevEnv(config: PC.ProjectConfig): PM.DevEnv {
+  switch (config.type) {
+    case "App":
+      return {
+        devServer: getDevServer(config.devenv.devServer),
+        apiServer: getApiServer(config.devenv.apiServer),
+        previewServer: getPreviewServer(config.devenv.previewServer),
+      }
+    case "Suite": {
+      return {
+        devServer: null,
+        apiServer: null,
+        previewServer: null,
+      }
+    }
+  }
+}
+
+function getDevServer(
+  config: PC.DevServer | null | undefined
+): PM.DevServer | null {
+  if (config == null) {
+    return null
+  } else {
+    return {
+      port: config.port,
+    }
+  }
+}
+
+function getApiServer(
+  config: PC.ApiServer | null | undefined
+): PM.ApiServer | null {
+  if (config == null) {
+    return null
+  } else {
+    return {
+      port: config.port,
+    }
+  }
+}
+
+function getPreviewServer(
+  config: PC.PreviewServer | null | undefined
+): PM.PreviewServer | null {
+  if (config == null) {
+    return null
+  } else {
+    return {
+      port: config.port,
+    }
   }
 }
 

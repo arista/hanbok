@@ -4,8 +4,26 @@ import {ProjectConfig} from "./ProjectConfig"
 
 export type ProjectModel = {
   projectRoot: string
-  config: ProjectConfig
+  devenv: DevEnv
   features: Features
+}
+
+export type DevEnv = {
+  devServer: DevServer | null
+  apiServer: ApiServer | null
+  previewServer: PreviewServer | null
+}
+
+export type DevServer = {
+  port: number
+}
+
+export type ApiServer = {
+  port: number
+}
+
+export type PreviewServer = {
+  port: number
 }
 
 export type Features = {
