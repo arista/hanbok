@@ -278,7 +278,7 @@ function getWebappsConfig(
         // In the dev server, each webapp appears under `/{webapp name}`
         const devServerBase = `/${name}/`
         const devServerRoute = `/${name}`
-        const viteProjectRoot = path.join(webappPath, "ui", "app")
+        const viteProjectRoot = path.join(webappPath, "ui")
         ret[name] = {
           name,
           path: webappPath,
