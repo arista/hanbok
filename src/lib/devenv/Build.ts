@@ -11,6 +11,7 @@ import * as ProcUtils from "@lib/utils/ProcUtils"
 import {spawn} from "node:child_process"
 import chokidar from "chokidar"
 import react from "@vitejs/plugin-react"
+import tailwindcss from "@tailwindcss/vite"
 
 export class Build {
   constructor(public props: {watch: boolean; model?: PM.ProjectModel}) {}
@@ -487,29 +488,25 @@ export class Build {
       for (const webapp of Object.values(webapps)) {
         const outDir = webapp.builtWebappRoot
 
-        // In the local dev server, each app is mounted at "/{webapp
-        // name}".  FIXME - also set up for production mode
-        const base = webapp.devServerBase
-
         // Create the vite config
+        // NOTE - if you make changes here, also check on the vite
+        // configuration in DevServer
         const viteConfig = vite.defineConfig({
-          // NOTE - if you make changes here, also check on the vite
-          // configuration in DevServer
-
           // Where index.html is located
           root: webapp.viteProjectRoot,
-          base,
+          base: webapp.devServerBase,
+          plugins: [
+            // Among other things, this makes sure "React" is defined
+            // everywhere
+            react(),
+            tailwindcss(),
+          ],
           build: {
             outDir,
             emptyOutDir: true,
             manifest: true,
             watch: this.watch ? {} : null,
           },
-          plugins: [
-            // Among other things, this makes sure "React" is defined
-            // everywhere
-            react(),
-          ],
           logLevel: "info",
         })
         await vite.build(viteConfig)

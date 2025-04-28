@@ -43,6 +43,7 @@
     "prettier": "npx prettier --write **/*.{ts,tsx,css,scss,html,json,js}"
   },
   "dependencies": {
+    "@tailwindcss/vite": "^4.1.4",
     "@vitejs/plugin-react": "^4.4.1",
     "chokidar": "^4.0.3",
     "connect": "^3.7.0",

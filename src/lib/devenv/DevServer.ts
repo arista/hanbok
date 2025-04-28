@@ -5,6 +5,7 @@ import path from "path"
 import {parse} from "url"
 import * as PM from "@lib/devenv/ProjectModel"
 import react from "@vitejs/plugin-react"
+import tailwindcss from "@tailwindcss/vite"
 
 export class DevServer {
   constructor(public props: {model: PM.ProjectModel}) {}
@@ -49,6 +50,7 @@ export class DevServer {
             // Among other things, this makes sure "React" is defined
             // everywhere
             react(),
+            tailwindcss(),
           ],
           server: {
             middlewareMode: true,
