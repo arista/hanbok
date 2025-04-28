@@ -27,6 +27,8 @@ export class DevServer {
     } else {
       const app = connect()
       const port = this.model.devenv.devServer.port
+      const apiPort = this.model.devenv.apiServer?.port
+      const projectRoot = this.model.projectRoot
 
       // Prepare the server
       const server = http.createServer(app)
@@ -37,13 +39,16 @@ export class DevServer {
       for (const webapp of webapps) {
         const {name, builtWebappRoot, devServerRoute} = webapp
         const route = devServerRoute
+
+        // NOTE - if you make changes here, also check on the vite
+        // configuration in Build
         const vite = await createViteServer({
-          root: webapp.path,
+          root: webapp.viteProjectRoot,
           base: webapp.devServerBase,
           plugins: [
             // Among other things, this makes sure "React" is defined
             // everywhere
-            react()
+            react(),
           ],
           server: {
             middlewareMode: true,
@@ -53,6 +58,22 @@ export class DevServer {
             hmr: {
               server,
             },
+            fs: {
+              // Even though vite's project root is set to
+              // src/webapps/{webapp name}/ui/app (since that's where we
+              // want to locate index.html), we still want to be able to
+              // access other resources in the project.
+              allow: [projectRoot],
+            },
+            proxy:
+              apiPort == null
+                ? {}
+                : {
+                    "/api": {
+                      target: `http://localhost:${apiPort}`,
+                      changeOrigin: true,
+                    },
+                  },
           },
         })
         viteServers.push(vite)

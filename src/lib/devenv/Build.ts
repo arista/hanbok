@@ -45,7 +45,7 @@ export class Build {
 
       // In dev mode, we don't bother building vite since the vite dev
       // server has its own special build process
-//      {name: "vite", fn: async () => await this.runVite(model)},
+      //      {name: "vite", fn: async () => await this.runVite(model)},
     ])
   }
 
@@ -493,8 +493,11 @@ export class Build {
 
         // Create the vite config
         const viteConfig = vite.defineConfig({
+          // NOTE - if you make changes here, also check on the vite
+          // configuration in DevServer
+
           // Where index.html is located
-          root: webapp.path,
+          root: webapp.viteProjectRoot,
           base,
           build: {
             outDir,
@@ -505,7 +508,7 @@ export class Build {
           plugins: [
             // Among other things, this makes sure "React" is defined
             // everywhere
-            react()
+            react(),
           ],
           logLevel: "info",
         })

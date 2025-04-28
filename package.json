@@ -50,6 +50,7 @@
     "pkg-dir": "^8.0.0",
     "prisma": "^6.6.0",
     "rollup": "^4.40.0",
+    "serve-static": "^2.2.0",
     "vite": "^6.3.3"
   },
   "peerDependenciesMeta": {},
@@ -60,6 +61,7 @@
     "@oclif/plugin-not-found": "^3.2.49",
     "@types/connect": "^3.4.38",
     "@types/node": "^22.14.1",
+    "@types/serve-static": "^1.15.7",
     "concurrently": "^9.1.2",
     "esbuild": "^0.25.2",
     "prettier": "^3.5.3",
