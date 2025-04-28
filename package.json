@@ -47,6 +47,7 @@
     "@vitejs/plugin-react": "^4.4.1",
     "chokidar": "^4.0.3",
     "connect": "^3.7.0",
+    "globby": "^14.1.0",
     "oclif": "^4.17.46",
     "pkg-dir": "^8.0.0",
     "prisma": "^6.6.0",
