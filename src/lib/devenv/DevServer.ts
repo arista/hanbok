@@ -4,8 +4,7 @@ import http from "http"
 import path from "path"
 import {parse} from "url"
 import * as PM from "@lib/devenv/ProjectModel"
-import react from "@vitejs/plugin-react"
-import tailwindcss from "@tailwindcss/vite"
+import {viteCommonConfig} from "./viteCommonConfig"
 
 export class DevServer {
   constructor(public props: {model: PM.ProjectModel}) {}
@@ -41,17 +40,8 @@ export class DevServer {
         const {name, builtWebappRoot, devServerRoute} = webapp
         const route = devServerRoute
 
-        // NOTE - if you make changes here, also check on the vite
-        // configuration in Build
         const vite = await createViteServer({
-          root: webapp.viteProjectRoot,
-          base: webapp.devServerBase,
-          plugins: [
-            // Among other things, this makes sure "React" is defined
-            // everywhere
-            react(),
-            tailwindcss(),
-          ],
+          ...viteCommonConfig(webapp),
           server: {
             middlewareMode: true,
 

@@ -10,8 +10,6 @@ import * as esbuild from "esbuild"
 import * as ProcUtils from "@lib/utils/ProcUtils"
 import {spawn} from "node:child_process"
 import chokidar from "chokidar"
-import react from "@vitejs/plugin-react"
-import tailwindcss from "@tailwindcss/vite"
 
 export class Build {
   constructor(public props: {watch: boolean; model?: PM.ProjectModel}) {}
@@ -492,15 +490,7 @@ export class Build {
         // NOTE - if you make changes here, also check on the vite
         // configuration in DevServer
         const viteConfig = vite.defineConfig({
-          // Where index.html is located
-          root: webapp.viteProjectRoot,
-          base: webapp.devServerBase,
-          plugins: [
-            // Among other things, this makes sure "React" is defined
-            // everywhere
-            react(),
-            tailwindcss(),
-          ],
+          ...viteCommonConfig(webapp),
           build: {
             outDir,
             emptyOutDir: true,
