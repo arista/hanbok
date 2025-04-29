@@ -91,7 +91,7 @@ function getPreviewServer(
 // Return the root of the project, from the specified directory, or
 // the current working directory if not specified
 function getProjectRoot(curdir: string | undefined): string {
-  const dir = curdir ?? process.cwd()
+  const dir = curdir ?? process.env["HANBOK_CWD"] ?? process.cwd()
   const ret = packageDirectorySync({cwd: dir})
   if (ret == null) {
     throw new Error(
@@ -128,7 +128,7 @@ async function readHanbokConfig(
     bundle: true,
     format: "esm",
     platform: "node",
-    packages: "bundle",
+    packages: "external",
     sourcemap: false,
     external: [],
   })

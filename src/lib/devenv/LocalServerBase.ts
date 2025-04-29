@@ -3,6 +3,8 @@
 
 import {HttpServer} from "./HttpServer"
 import type {IRouter} from "./IRouter"
+import {ProjectModel} from "./ProjectModel"
+import {createProjectModel} from "./createProjectModel"
 
 export type Props = {
   port: number
@@ -12,6 +14,13 @@ export type Props = {
 export class LocalServerBase<C extends Props> {
   constructor(public props: C) {}
 
+  _projectModel: Promise<ProjectModel> | null = null
+  get projectModel(): Promise<ProjectModel> {
+    return (this._projectModel ||= (async () => {
+      return await createProjectModel({})
+    })())
+  }
+
   get port() {
     return this.props.port
   }
@@ -20,11 +29,12 @@ export class LocalServerBase<C extends Props> {
     return this.props.addRoutes
   }
 
-  _httpServer: HttpServer | null = null
-  get httpServer(): HttpServer {
+  _httpServer: Promise<HttpServer> | null = null
+  get httpServer(): Promise<HttpServer> {
     const {port, addRoutes} = this
-    return (this._httpServer ||= (() => {
+    return (this._httpServer ||= (async () => {
       return new HttpServer({
+        //        model: await this.projectModel,
         port,
         addRoutes,
       })
@@ -43,9 +53,10 @@ export class LocalServerBase<C extends Props> {
     }
   }
 
-  _httpShutdown:(()=>Promise<void>) | null = null
+  _httpShutdown: (() => Promise<void>) | null = null
   async startHttpServer() {
-    this._httpShutdown = await this.httpServer.run()
+    const httpServer = await this.httpServer
+    this._httpShutdown = await httpServer.run()
   }
 
   async onShutdownSignal(signal: string) {

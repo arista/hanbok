@@ -15,7 +15,7 @@ export class FindMyWayRouter implements IRouter {
     defaultRoute: (req, res) => {
       res.statusCode = 404
       res.end("Not Found")
-    }
+    },
   })
 
   get(path: string, handler: IRouterRequestHandler): void {
