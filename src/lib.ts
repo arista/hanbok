@@ -1,1 +1,2 @@
 export {defineConfig} from "@lib/devenv/ProjectConfig"
+export {LocalServerBase} from "@lib/devenv/LocalServerBase"
