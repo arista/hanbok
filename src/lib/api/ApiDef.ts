@@ -20,6 +20,38 @@ export type ApiDefNested = {
   api: ApiDef
 }
 
-export function defineApi<T extends ApiDef>(apiDef:T): ApiDef {
+export function defineApi<T extends ApiDef>(apiDef: T): T {
   return apiDef
 }
+
+// This generates a type from an ApiDef equivalent to:
+//
+// interface {
+//   routeName(req: RequestType) => Promise<ResponseType>
+//   nestedRouteName: interface {...}
+// }
+//
+// The request type is just the params, query, and body types all
+// combined into a single structure
+
+export type ApiInterface<T extends ApiDef> = {
+  [K in keyof T]: T[K] extends ApiDefRoute
+    ? (req: RequestType<T[K]>) => Promise<ResponseType<T[K]>>
+    : T[K] extends ApiDefNested
+      ? NestedApiType<T[K]>
+      : never
+}
+
+export type RequestType<T extends ApiDefRoute> = ZodTypeOrEmptyObject<
+  T["params"]
+> &
+  ZodTypeOrEmptyObject<T["query"]> &
+  ZodTypeOrEmptyObject<T["body"]>
+
+export type ResponseType<T extends ApiDefRoute> = ZodTypeOrEmptyObject<
+  T["response"]
+>
+
+type NestedApiType<T extends ApiDefNested> = ApiInterface<T["api"]>
+
+type ZodTypeOrEmptyObject<T> = T extends z.ZodTypeAny ? z.infer<T> : {}
