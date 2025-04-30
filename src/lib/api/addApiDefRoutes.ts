@@ -28,7 +28,7 @@ export function addApiDefRoutes({
     apiDef: ApiDef,
     handlerPath: Array<string>
   ) {
-    for (const name in Object.keys(apiDef)) {
+    for (const name of Object.keys(apiDef)) {
       const entry = apiDef[name]
       if (entry != null) {
         if (Object.hasOwnProperty("prefix")) {
@@ -73,6 +73,7 @@ export function addApiDefRoutes({
       }
     }
 
+    // Register with the router
     switch (apiDef.method) {
       case "GET":
         router.get(path, handler)
