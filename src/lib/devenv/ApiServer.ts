@@ -49,9 +49,9 @@ export class ApiServer {
     this._httpShutdown = await httpServer.run()
 
     for (const webappApiServer of webappApiServers) {
-      const {prefix} = webappApiServer
+      const {name, prefix} = webappApiServer
       console.log(
-        `Webapp dev api server listening at http://localhost:${port}${prefix}`
+        `Webapp "${name}" dev api server listening at http://localhost:${port}${prefix}`
       )
     }
   }
