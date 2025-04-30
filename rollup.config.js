@@ -22,6 +22,9 @@ export default [
       file: "dist/lib/lib.d.ts",
       format: "es",
     },
+    // Don't pull in all the types from libraries that hanbok
+    // consumers will need to include anyway
+    external: ["zod"],
     plugins: [
       dts({
         respectExternal: true,
