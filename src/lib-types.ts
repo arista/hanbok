@@ -12,3 +12,10 @@ export type {
   RequestType,
   ResponseType,
 } from "@lib/api/ApiDef"
+export type {IDevApiServer} from "@lib/api/IDevApiServer"
+export type {
+  IRouter,
+  IRouterRequestHandler,
+  IRouterRequest,
+  IRouterResponse,
+} from "@lib/devenv/IRouter"

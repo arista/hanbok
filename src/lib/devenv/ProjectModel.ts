@@ -67,4 +67,10 @@ export type WebappConfig = {
   builtWebappRoot: string
   devServerRoute: string
   devServerBase: string
+  devApiServer: DevApiServer | null
+}
+
+export type DevApiServer = {
+  sourcePath: string
+  builtPath: string
 }

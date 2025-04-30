@@ -319,6 +319,7 @@ export class Build {
     const {projectRoot} = model
     const libFile = model.features.lib?.libFile
     const testFile = model.features.test?.testFile
+    const webapps = model.features.webapps
 
     // generate the metafile that tracks what was bundled and why
     // FIXME - make this configurable
@@ -340,6 +341,20 @@ export class Build {
         out: path.join(projectRoot, "dist", "test", "test.es.js"),
         format: "esm",
       })
+    }
+    // Add any webapp dev api servers
+    if (webapps != null) {
+      for (const webappName of Object.keys(webapps)) {
+        const webapp = webapps[webappName]
+        if (webapp?.devApiServer != null) {
+          const {sourcePath, builtPath} = webapp.devApiServer
+          builds.push({
+            entry: sourcePath,
+            out: builtPath,
+            format: "esm",
+          })
+        }
+      }
     }
 
     const tsconfig = this.generateEsbuildTsconfigRaw()

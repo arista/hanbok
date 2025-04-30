@@ -279,6 +279,27 @@ function getWebappsConfig(
         const devServerBase = `/${name}/`
         const devServerRoute = `/${name}`
         const viteProjectRoot = path.join(webappPath, "ui")
+
+        // Check for a DevApiServer
+        const devApiServerSourcePath = path.join(
+          webappPath,
+          "server",
+          "DevApiServer.ts"
+        )
+        const devApiServerBuiltPath = path.resolve(
+          projectRoot,
+          "dist",
+          "webapp-dev-servers",
+          name,
+          "DevApiServer.es.js"
+        )
+        const devApiServer = FsUtils.isFile(devApiServerSourcePath)
+          ? {
+              sourcePath: devApiServerSourcePath,
+              builtPath: devApiServerBuiltPath,
+            }
+          : null
+
         ret[name] = {
           name,
           path: webappPath,
@@ -286,6 +307,7 @@ function getWebappsConfig(
           builtWebappRoot,
           devServerBase,
           devServerRoute,
+          devApiServer,
         }
       }
       return ret

@@ -33,9 +33,9 @@ export class HttpServer {
     // Prepare the server
     const server = http.createServer(app)
 
-    server.listen(this.port, () => {
-      console.log(`[local-server] Api server running at:`)
-      console.log(` → http://localhost:${this.port}/`)
+    await new Promise<void>((resolve, reject) => {
+      server.listen(this.port, () => resolve())
+      server.on("error", reject)
     })
 
     return async () => {
