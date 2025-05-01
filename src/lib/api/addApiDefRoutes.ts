@@ -48,7 +48,7 @@ export function addApiDefRoutes({
     apiDef: ApiDefRoute,
     handlerPath: Array<string>
   ) {
-    const requestSchema = toFullRequestSchema(apiDef)
+    const requestSchema = apiDef.request ?? z.any()
 
     const handler: IRouterRequestHandler = async (
       routerRequest,
@@ -56,11 +56,7 @@ export function addApiDefRoutes({
     ) => {
       // Merge the params, query and body
       const {params, query, body} = routerRequest
-      const request: Record<string, any> = {
-        ...(params ?? {}),
-        ...(query ?? {}),
-        ...(body instanceof Object ? body : {}),
-      }
+      const request = {params, query, body}
 
       onRequest({
         routerRequest,
@@ -83,24 +79,6 @@ export function addApiDefRoutes({
         router.post(path, handler)
         break
     }
-  }
-
-  // The request passed to the method is a combination of the path
-  // parameters, query parameters, and the body.  Build up the
-  // validator for that full request structure
-  function toFullRequestSchema(apiDef: ApiDefRoute) {
-    const {params, query, body} = apiDef
-    let requestSchema: z.ZodTypeAny = z.object({})
-    if (params != null) {
-      requestSchema = z.intersection(requestSchema, params)
-    }
-    if (query != null) {
-      requestSchema = z.intersection(requestSchema, query)
-    }
-    if (body != null) {
-      requestSchema = z.intersection(requestSchema, body)
-    }
-    return requestSchema
   }
 
   function traverseHandlerPath(root: any, path: Array<string>): Function {

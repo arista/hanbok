@@ -7,9 +7,8 @@ export type ApiDefEntry = ApiDefRoute | ApiDefNested
 export type ApiDefRoute = {
   method: ApiDefMethod
   path: string
-  params?: z.ZodTypeAny
-  query?: z.ZodTypeAny
-  body?: z.ZodTypeAny
+  // The request should be an object {params, query, body}
+  request?: z.ZodTypeAny
   response?: z.ZodTypeAny
 }
 
@@ -43,11 +42,8 @@ export type ApiInterface<T extends ApiDef> = {
 }
 
 export type RequestType<T extends ApiDefRoute> = ZodTypeOrEmptyObject<
-  T["params"]
-> &
-  ZodTypeOrEmptyObject<T["query"]> &
-  ZodTypeOrEmptyObject<T["body"]>
-
+  T["request"]
+>
 export type ResponseType<T extends ApiDefRoute> = ZodTypeOrEmptyObject<
   T["response"]
 >
