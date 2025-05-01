@@ -27,3 +27,8 @@ export interface IRouterResponse {
   json(body: any): void
   send(body: string): void
 }
+
+export interface IRouterRequestResponse {
+  request: IRouterRequest
+  response: IRouterResponse
+}
