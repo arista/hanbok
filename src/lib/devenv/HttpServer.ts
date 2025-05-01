@@ -1,4 +1,5 @@
 import connect from "connect"
+import bodyParser from "body-parser"
 import {FindMyWayRouter} from "./FindMyWayRouter"
 import http from "http"
 import type {IRouter} from "./IRouter"
@@ -21,6 +22,7 @@ export class HttpServer {
 
   async run() {
     const app = connect()
+    app.use(bodyParser.json())
 
     const router = new FindMyWayRouter()
     this.addRoutes(router)

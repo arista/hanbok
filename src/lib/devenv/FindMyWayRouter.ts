@@ -7,6 +7,7 @@ import {
 import router from "find-my-way"
 import {HTTPMethod} from "find-my-way"
 import Router from "find-my-way"
+import http from "node:http"
 
 export class FindMyWayRouter implements IRouter {
   r: Router.Instance<Router.HTTPVersion.V1> = router({
@@ -27,8 +28,16 @@ export class FindMyWayRouter implements IRouter {
   }
 
   _register(method: HTTPMethod, path: string, handler: IRouterRequestHandler) {
-    this.r.on(method, path, () => {
-      return (req: IRouterRequest, res: IRouterResponse) => handler(req, res)
+    this.r.on(method, path, async (req, res, params, store, searchParams) => {
+      const routerRequest = new FindMyWayRouterRequest({
+        req,
+        params,
+        searchParams,
+      })
+      const routerResponse = new FindMyWayRouterResponse({
+        res,
+      })
+      await handler(routerRequest, routerResponse)
     })
   }
 }
@@ -40,5 +49,57 @@ function stringToHttpMethod(str: string): HTTPMethod {
       return str
     default:
       throw new Error(`Unrecognized HTTPMethod "${str}"`)
+  }
+}
+
+export class FindMyWayRouterRequest implements IRouterRequest {
+  constructor(
+    public props: {
+      req: http.IncomingMessage
+      params: Record<string, string | undefined>
+      searchParams: Record<string, string>
+    }
+  ) {}
+
+  get params() {
+    return this.props.params
+  }
+
+  get query() {
+    return this.props.searchParams
+  }
+
+  get body() {
+    return (this.props.req as any).body
+  }
+}
+
+export class FindMyWayRouterResponse implements IRouterResponse {
+  constructor(
+    public props: {
+      res: http.ServerResponse
+    }
+  ) {}
+
+  status(code: number): IRouterResponse {
+    this.props.res.statusCode = code
+    return this
+  }
+
+  type(value: string): void {
+    this.set("Content-Type", value)
+  }
+
+  set(field: string, value: string): void {
+    this.props.res.setHeader(field, value)
+  }
+
+  json(body: any): void {
+    this.type("application/json")
+    this.send(JSON.stringify(body))
+  }
+
+  send(body: string): void {
+    this.props.res.end(body)
   }
 }

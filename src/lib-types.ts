@@ -2,7 +2,12 @@
 
 export {defineConfig} from "@lib/devenv/ProjectConfig"
 export {LocalServerBase} from "@lib/devenv/LocalServerBase"
-export {defineApi} from "@lib/api/ApiDef"
+export {
+  defineApi,
+  NotFoundError,
+  InvalidDataError,
+  InvalidRequestError,
+} from "@lib/api/ApiDef"
 export type {
   ApiDef,
   ApiDefEntry,

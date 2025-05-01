@@ -31,7 +31,7 @@ export function addApiDefRoutes({
     for (const name of Object.keys(apiDef)) {
       const entry = apiDef[name]
       if (entry != null) {
-        if (Object.hasOwnProperty("prefix")) {
+        if (entry.hasOwnProperty("prefix")) {
           const e = entry as ApiDefNested
           addRoutes(path.join(prefix, e.prefix), e.api, [...handlerPath, name])
         } else {
@@ -61,7 +61,7 @@ export function addApiDefRoutes({
         ...(body instanceof Object ? body : {}),
       }
 
-      const req: ApiDefRequest<any, any> = {
+      onRequest({
         routerRequest,
         routerResponse,
         request,
@@ -70,7 +70,7 @@ export function addApiDefRoutes({
           const f = traverseHandlerPath(rootHandler, handlerPath)
           return await f(request)
         },
-      }
+      })
     }
 
     // Register with the router
