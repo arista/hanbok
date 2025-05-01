@@ -55,27 +55,3 @@ export type ResponseType<T extends ApiDefRoute> = ZodTypeOrEmptyObject<
 type NestedApiType<T extends ApiDefNested> = ApiInterface<T["api"]>
 
 type ZodTypeOrEmptyObject<T> = T extends z.ZodTypeAny ? z.infer<T> : {}
-
-export class NotFoundError extends Error {
-  constructor(message: string) {
-    super(message)
-    this.name = "NotFoundError"
-  }
-}
-
-export class InvalidRequestError extends Error {
-  constructor(message: string) {
-    super(message)
-    this.name = "InvalidRequestError"
-  }
-}
-
-export class InvalidDataError extends Error {
-  constructor(
-    message: string,
-    public error: ZodFormattedError<unknown, string>
-  ) {
-    super(message)
-    this.name = "InvalidDataError"
-  }
-}

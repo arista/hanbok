@@ -1,8 +1,9 @@
 export {defineConfig} from "@lib/devenv/ProjectConfig"
+export {defineApi} from "@lib/api/ApiDef"
+export {addApiDefRoutes} from "@lib/api/addApiDefRoutes"
 export {
-  defineApi,
+  handleApiDefRoute,
   NotFoundError,
   InvalidDataError,
   InvalidRequestError,
-} from "@lib/api/ApiDef"
-export {addApiDefRoutes} from "@lib/api/addApiDefRoutes"
+} from "@lib/api/handleApiDefRoute"

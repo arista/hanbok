@@ -1,4 +1,5 @@
 import type {ApiDef, ApiDefRoute, ApiDefNested} from "./ApiDef"
+import type {ApiDefRequest} from "./handleApiDefRoute"
 import type {
   IRouter,
   IRouterRequest,
@@ -139,14 +140,4 @@ export function addApiDefRoutes({
 
   //   return params;
   // }
-}
-
-type ApiHandler = any
-
-export type ApiDefRequest<RQ, RS> = {
-  routerRequest: IRouterRequest
-  routerResponse: IRouterResponse
-  request: RQ
-  requestSchema: z.ZodTypeAny
-  handler: (rootHandler: ApiHandler, request: RQ) => Promise<RS>
 }

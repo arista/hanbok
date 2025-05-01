@@ -1,12 +1,7 @@
 // The list of types to be exposed in the library's .d.ts file
 
 export {defineConfig} from "@lib/devenv/ProjectConfig"
-export {
-  defineApi,
-  NotFoundError,
-  InvalidDataError,
-  InvalidRequestError,
-} from "@lib/api/ApiDef"
+export {defineApi} from "@lib/api/ApiDef"
 export type {
   ApiDef,
   ApiDefEntry,
@@ -24,3 +19,9 @@ export type {
   IRouterResponse,
 } from "@lib/api/IRouter"
 export {addApiDefRoutes} from "@lib/api/addApiDefRoutes"
+export {
+  handleApiDefRoute,
+  NotFoundError,
+  InvalidDataError,
+  InvalidRequestError,
+} from "@lib/api/handleApiDefRoute"
