@@ -2,7 +2,7 @@
 // plus any other required services
 
 import {HttpServer} from "./HttpServer"
-import type {IRouter} from "./IRouter"
+import type {IRouter} from "../api/IRouter"
 import {ProjectModel} from "./ProjectModel"
 import {createProjectModel} from "./createProjectModel"
 

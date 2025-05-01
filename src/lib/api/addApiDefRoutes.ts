@@ -4,7 +4,7 @@ import type {
   IRouterRequest,
   IRouterResponse,
   IRouterRequestHandler,
-} from "../devenv/IRouter"
+} from "./IRouter"
 import {z} from "zod"
 import path from "node:path"
 

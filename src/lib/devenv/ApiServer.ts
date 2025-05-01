@@ -2,7 +2,7 @@ import {HttpServer} from "./HttpServer"
 import {ProjectModel} from "./ProjectModel"
 import {createProjectModel} from "@lib/devenv/createProjectModel"
 import type {IDevApiServer} from "@lib/api/IDevApiServer"
-import type {IRouter} from "@lib/devenv/IRouter"
+import type {IRouter} from "@lib/api/IRouter"
 
 export class ApiServer {
   constructor(public props: {}) {}

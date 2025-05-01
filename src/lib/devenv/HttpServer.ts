@@ -1,8 +1,8 @@
 import connect from "connect"
 import bodyParser from "body-parser"
-import {FindMyWayRouter} from "./FindMyWayRouter"
+import {FindMyWayRouter} from "../api/FindMyWayRouter"
 import http from "http"
-import type {IRouter} from "./IRouter"
+import type {IRouter} from "../api/IRouter"
 
 export interface Props {
   port: number

@@ -23,5 +23,5 @@ export type {
   IRouterRequestHandler,
   IRouterRequest,
   IRouterResponse,
-} from "@lib/devenv/IRouter"
+} from "@lib/api/IRouter"
 export {addApiDefRoutes} from "@lib/api/addApiDefRoutes"
