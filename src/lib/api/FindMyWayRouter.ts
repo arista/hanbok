@@ -29,11 +29,11 @@ export class FindMyWayRouter implements IRouter {
 
   _register(method: HTTPMethod, path: string, handler: IRouterRequestHandler) {
     this.r.on(method, path, async (req, res, params, store, searchParams) => {
-      const routerRequest = new FindMyWayRouterRequest({
-        req,
+      const routerRequest:IRouterRequest = {
         params,
-        searchParams,
-      })
+        query: searchParams,
+        body: (req as any).body
+      }
       const routerResponse = new FindMyWayRouterResponse({
         res,
       })
@@ -49,28 +49,6 @@ function stringToHttpMethod(str: string): HTTPMethod {
       return str
     default:
       throw new Error(`Unrecognized HTTPMethod "${str}"`)
-  }
-}
-
-export class FindMyWayRouterRequest implements IRouterRequest {
-  constructor(
-    public props: {
-      req: http.IncomingMessage
-      params: Record<string, string | undefined>
-      searchParams: Record<string, string>
-    }
-  ) {}
-
-  get params() {
-    return this.props.params
-  }
-
-  get query() {
-    return this.props.searchParams
-  }
-
-  get body() {
-    return (this.props.req as any).body
   }
 }
 

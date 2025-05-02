@@ -64,7 +64,7 @@ export class ApiDefRouter<HF> {
 
   nested<A extends ApiDef>(
     n: ApiDefNestedTyped<A>,
-    f: (r: ApiDefRouter<HF>, a: ApiDef) => void
+    f: (r: ApiDefRouter<HF>, a: A) => void
   ) {
     const {prefix, api} = n
     const nestedRouter = new ApiDefRouter<HF>({
