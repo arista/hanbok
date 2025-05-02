@@ -47,7 +47,7 @@ export class ApiDefRouter<HF> {
       const requestResponse: IRouterRequestResponse = {request, response}
       const handlerFactory = this.createHandlerFactory(requestResponse)
       const handler = getHandler(handlerFactory)
-      await handler.handleRequest(handler, requestSchema, invokeHandler)
+      await handler.baseHandleRequest(handler, requestSchema, invokeHandler)
     }
     const fullPath = path.join(this.prefix, routePath)
     switch (method) {

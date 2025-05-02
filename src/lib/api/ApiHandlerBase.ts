@@ -25,7 +25,7 @@ export class ApiHandlerBase<C extends ApiHandlerBaseProps> {
     return this.requestResponse.response
   }
 
-  async handleRequest<H, RQ>(
+  async baseHandleRequest<H, RQ>(
     handler: H,
     requestSchema: z.ZodTypeAny,
     invokeHandler: (handler: H, request: RQ) => Promise<void>
@@ -43,7 +43,7 @@ export class ApiHandlerBase<C extends ApiHandlerBaseProps> {
       }
 
       // Pass in the request
-      invokeHandler(handler, parseResult.data)
+      return await this.handleRequest(handler, parseResult.data, invokeHandler)
     } catch (err) {
       if (err instanceof NotFoundError) {
         response.status(404).json({
@@ -68,6 +68,14 @@ export class ApiHandlerBase<C extends ApiHandlerBaseProps> {
         console.error(err)
       }
     }
+  }
+
+  async handleRequest<H, RQ>(
+    handler: H,
+    request: RQ,
+    invokeHandler: (handler: H, request: RQ) => Promise<void>
+  ) {
+    return await invokeHandler(handler, request)
   }
 
   validateRequest<S extends z.ZodTypeAny, R = z.infer<S>>(schema: S): R {
