@@ -1,4 +1,5 @@
 import type {IRouterRequest, IRouterResponse} from "./IRouter"
+import {NotFoundError, InvalidDataError, InvalidRequestError} from "./IRouter"
 import {z, ZodFormattedError} from "zod"
 
 export async function handleApiDefRoute({
@@ -64,28 +65,4 @@ export type ApiDefRequest<RQ, RS> = {
   request: RQ
   requestSchema: z.ZodTypeAny
   handler: (rootHandler: ApiHandler, request: RQ) => Promise<RS>
-}
-
-export class NotFoundError extends Error {
-  constructor(message: string) {
-    super(message)
-    this.name = "NotFoundError"
-  }
-}
-
-export class InvalidRequestError extends Error {
-  constructor(message: string) {
-    super(message)
-    this.name = "InvalidRequestError"
-  }
-}
-
-export class InvalidDataError extends Error {
-  constructor(
-    message: string,
-    public error: ZodFormattedError<unknown, string>
-  ) {
-    super(message)
-    this.name = "InvalidDataError"
-  }
 }

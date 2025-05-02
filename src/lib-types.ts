@@ -7,9 +7,11 @@ export type {
   ApiDefEntry,
   ApiDefRoute,
   ApiDefNested,
+  ApiDefNestedTyped,
   ApiInterface,
   RequestType,
   ResponseType,
+  InferredRequest,
 } from "@lib/api/ApiDef"
 export type {IDevApiServer} from "@lib/api/IDevApiServer"
 export type {
@@ -19,10 +21,12 @@ export type {
   IRouterResponse,
   IRouterRequestResponse,
 } from "@lib/api/IRouter"
-export {addApiDefRoutes} from "@lib/api/addApiDefRoutes"
-export {
-  handleApiDefRoute,
+export type {
   NotFoundError,
   InvalidDataError,
   InvalidRequestError,
-} from "@lib/api/handleApiDefRoute"
+} from "@lib/api/IRouter"
+export {addApiDefRoutes} from "@lib/api/addApiDefRoutes"
+export {handleApiDefRoute} from "@lib/api/handleApiDefRoute"
+export {ApiHandlerBase} from "@lib/api/ApiHandlerBase"
+export type {ApiHandlerBaseProps} from "@lib/api/ApiHandlerBase"

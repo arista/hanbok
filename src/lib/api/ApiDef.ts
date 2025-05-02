@@ -19,6 +19,11 @@ export type ApiDefNested = {
   api: ApiDef
 }
 
+export type ApiDefNestedTyped<A extends ApiDef> = {
+  prefix: string
+  api: A
+}
+
 export function defineApi<T extends ApiDef>(apiDef: T): T {
   return apiDef
 }
@@ -51,3 +56,6 @@ export type ResponseType<T extends ApiDefRoute> = ZodTypeOrEmptyObject<
 type NestedApiType<T extends ApiDefNested> = ApiInterface<T["api"]>
 
 type ZodTypeOrEmptyObject<T> = T extends z.ZodTypeAny ? z.infer<T> : {}
+
+export type InferredRequest<T extends ApiDefRoute> =
+  T["request"] extends z.ZodTypeAny ? z.infer<T["request"]> : void
