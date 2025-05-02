@@ -29,10 +29,10 @@ export class FindMyWayRouter implements IRouter {
 
   _register(method: HTTPMethod, path: string, handler: IRouterRequestHandler) {
     this.r.on(method, path, async (req, res, params, store, searchParams) => {
-      const routerRequest:IRouterRequest = {
+      const routerRequest: IRouterRequest = {
         params,
         query: searchParams,
-        body: (req as any).body
+        body: (req as any).body,
       }
       const routerResponse = new FindMyWayRouterResponse({
         res,
