@@ -28,6 +28,7 @@ export interface IRouterResponse {
   set(field: string, value: string): void
   json(body: any): void
   send(body: string): void
+  isSent: boolean
 }
 
 export interface IRouterRequestResponse {

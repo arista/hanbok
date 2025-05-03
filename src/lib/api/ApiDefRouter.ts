@@ -34,10 +34,10 @@ export class ApiDefRouter<HF> {
     return this.props.prefix
   }
 
-  add<R extends ApiDefRoute, H extends ApiHandlerBase<any>>(
+  add<R extends ApiDefRoute, H extends ApiHandlerBase<any>, RS>(
     route: R,
     getHandler: (handlerFactory: HF) => H,
-    invokeHandler: (handler: H, request: InferredRequest<R>) => Promise<void>
+    invokeHandler: (handler: H, request: InferredRequest<R>) => Promise<RS>
   ) {
     const {method} = route
     const requestSchema = route.request ?? z.any()
@@ -47,7 +47,12 @@ export class ApiDefRouter<HF> {
       const requestResponse: IRouterRequestResponse = {request, response}
       const handlerFactory = this.createHandlerFactory(requestResponse)
       const handler = getHandler(handlerFactory)
-      await handler.baseHandleRequest(handler, requestSchema, invokeHandler)
+      await handler.baseHandleRequest(
+        handler,
+        requestSchema,
+        responseSchema,
+        invokeHandler
+      )
     }
     const fullPath = path.join(this.prefix, routePath)
     switch (method) {

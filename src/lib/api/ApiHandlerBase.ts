@@ -25,10 +25,11 @@ export class ApiHandlerBase<C extends ApiHandlerBaseProps> {
     return this.requestResponse.response
   }
 
-  async baseHandleRequest<H, RQ>(
+  async baseHandleRequest<H, RQ, RS>(
     handler: H,
     requestSchema: z.ZodTypeAny,
-    invokeHandler: (handler: H, request: RQ) => Promise<void>
+    responseSchema: z.ZodTypeAny | null | undefined,
+    invokeHandler: (handler: H, request: RQ) => Promise<RS>
   ) {
     const {request, response} = this
     try {
@@ -43,7 +44,29 @@ export class ApiHandlerBase<C extends ApiHandlerBaseProps> {
       }
 
       // Pass in the request
-      return await this.handleRequest(handler, parseResult.data, invokeHandler)
+      const result = await this.handleRequest(
+        handler,
+        parseResult.data,
+        invokeHandler
+      )
+
+      // If a responseSchema is specified, then assume we're supposed
+      // to send back a JSON result
+      if (responseSchema != null) {
+        // FIXME - implement this
+        const responseResult = responseSchema.safeParse(result)
+        if (responseResult.success) {
+          response.json(responseResult.data)
+        } else {
+          const error = responseResult.error.format()
+          throw new InvalidDataError(
+            "Response did not match the expected format",
+            error
+          )
+        }
+      } else if (!response.isSent) {
+        throw new Error(`Handler did not send a response`)
+      }
     } catch (err) {
       if (err instanceof NotFoundError) {
         response.status(404).json({
@@ -70,10 +93,10 @@ export class ApiHandlerBase<C extends ApiHandlerBaseProps> {
     }
   }
 
-  async handleRequest<H, RQ>(
+  async handleRequest<H, RQ, RS>(
     handler: H,
     request: RQ,
-    invokeHandler: (handler: H, request: RQ) => Promise<void>
+    invokeHandler: (handler: H, request: RQ) => Promise<RS>
   ) {
     return await invokeHandler(handler, request)
   }

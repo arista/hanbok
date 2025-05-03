@@ -79,5 +79,8 @@ export class FindMyWayRouterResponse implements IRouterResponse {
 
   send(body: string): void {
     this.props.res.end(body)
+    this.isSent = true
   }
+
+  isSent = false
 }
