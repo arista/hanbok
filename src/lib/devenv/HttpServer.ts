@@ -27,6 +27,7 @@ export class HttpServer {
     const router = new FindMyWayRouter()
     this.addRoutes(router)
     app.use((req, res, next) => {
+      console.log(`Request at ${req.url}`)
       if (!router.r.lookup(req, res)) {
         next()
       }
