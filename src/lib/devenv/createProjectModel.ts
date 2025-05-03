@@ -279,6 +279,7 @@ function getWebappsConfig(
         const devServerBase = `/${name}/`
         const devServerRoute = `/${name}`
         const viteProjectRoot = path.join(webappPath, "ui")
+        const indexHtmlPath = path.join(viteProjectRoot, "index.html")
 
         // Check for a DevApiServer
         const devApiServerSourcePath = path.join(
@@ -304,6 +305,7 @@ function getWebappsConfig(
           name,
           path: webappPath,
           viteProjectRoot,
+          indexHtmlPath,
           builtWebappRoot,
           devServerBase,
           devServerRoute,

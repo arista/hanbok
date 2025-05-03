@@ -64,16 +64,7 @@ export class DevServer {
                   "/api": {
                     target: `http://localhost:${apiPort}/${name}`,
                     changeOrigin: true,
-
                   },
-                  // Proxy all non-asset requests to the api server as
-                  // well
-
-                  // //"^/(?!src/|node_modules/|@vite/|@fs/|favicon\\.ico|robots\\.txt).*": {
-                  // "^/(?!src/).*": {
-                  //   target: `http://localhost:${apiPort}/${name}`,
-                  //   changeOrigin: true,
-                  // },
                 },
           },
         })

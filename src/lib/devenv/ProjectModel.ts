@@ -64,6 +64,7 @@ export type WebappConfig = {
   name: string
   path: string
   viteProjectRoot: string
+  indexHtmlPath: string
   builtWebappRoot: string
   devServerRoute: string
   devServerBase: string
