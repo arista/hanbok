@@ -1,10 +1,9 @@
 import connect from "connect"
 import http from "http"
-import path from "path"
 import serveStatic from "serve-static"
 import {parse} from "url"
 import * as PM from "@lib/devenv/ProjectModel"
-import fs from "node:fs"
+import {proxyRequest, shouldProxyRequest} from "./proxyRequest"
 
 export class PreviewServer {
   constructor(public props: {model: PM.ProjectModel}) {}
@@ -44,7 +43,7 @@ export class PreviewServer {
           index: false,
         })
 
-        app.use(devServerRoute, (req, res, next) => {
+        app.use(devServerRoute, async (req, res, next) => {
           console.log(`req: ${req.url}`)
           const urlPath = parse(req.url || "").pathname || ""
           if (
@@ -54,15 +53,13 @@ export class PreviewServer {
             urlPath.endsWith(".css") ||
             urlPath.includes("/assets/")
           ) {
-            if (urlPath === "/" || !path.extname(urlPath)) {
-              // All non-asset requests are fulfilled with index.html
-              const indexPath = path.join(builtWebappRoot, "index.html")
-              const indexHtml = fs.readFileSync(indexPath, "utf-8")
-
-              // FIXME - modify indexHtml to inject the page context
-
-              res.setHeader("Content-Type", "text/html")
-              res.end(indexHtml)
+            const apiPort = this.model.devenv.apiServer?.port
+            if (shouldProxyRequest({model: this.model, webapp, req})) {
+              await proxyRequest({
+                req,
+                res,
+                targetUrlBase: `http://localhost:${apiPort}/${webapp.name}`,
+              })
             } else {
               staticHandler(req, res, next)
             }

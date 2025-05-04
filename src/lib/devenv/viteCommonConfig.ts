@@ -2,7 +2,7 @@ import * as vite from "vite"
 import react from "@vitejs/plugin-react"
 import tailwindcss from "@tailwindcss/vite"
 import {ProjectModel, WebappConfig} from "./ProjectModel"
-import {proxyRequest} from "./proxyRequest"
+import {proxyRequest, shouldProxyRequest} from "./proxyRequest"
 
 export function viteCommonConfig(model: ProjectModel, webapp: WebappConfig) {
   // FIXME - only use this for the dev server
@@ -13,12 +13,7 @@ export function viteCommonConfig(model: ProjectModel, webapp: WebappConfig) {
       configureServer: (server: vite.ViteDevServer) => {
         server.middlewares.use(async (req, res, next) => {
           const apiPort = model.devenv.apiServer?.port
-          if (
-            apiPort != null &&
-            webapp.devApiServer != null &&
-            req.url?.startsWith("/") &&
-            req.headers.accept?.includes("text/html")
-          ) {
+          if (shouldProxyRequest({model, webapp, req})) {
             await proxyRequest({
               req,
               res,

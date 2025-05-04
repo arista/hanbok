@@ -2,6 +2,7 @@ import {IncomingMessage, ServerResponse} from "node:http"
 import {parse as parseUrl} from "node:url"
 import getRawBody from "raw-body"
 import {Readable} from "node:stream"
+import * as PM from "@lib/devenv/ProjectModel"
 
 export async function proxyRequest({
   req,
@@ -68,4 +69,22 @@ export async function proxyRequest({
     res.statusCode = 500
     res.end("Internal server error")
   }
+}
+
+export function shouldProxyRequest({
+  model,
+  webapp,
+  req,
+}: {
+  model: PM.ProjectModel
+  webapp: PM.WebappConfig
+  req: IncomingMessage
+}) {
+  const apiPort = model.devenv.apiServer?.port
+  return (
+    apiPort != null &&
+    webapp.devApiServer != null &&
+    req.url?.startsWith("/") &&
+      req.headers.accept?.includes("text/html")
+  )
 }

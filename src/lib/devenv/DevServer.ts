@@ -41,7 +41,11 @@ export class DevServer {
         const route = devServerRoute
 
         const vite = await createViteServer({
+          // This includes the plugin that proxies html requests to
+          // the api server, but then lets vite transform the result
+          // to support HMR
           ...viteCommonConfig(this.model, webapp),
+
           server: {
             middlewareMode: true,
 
