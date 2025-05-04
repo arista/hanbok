@@ -506,7 +506,7 @@ export class Build {
         // NOTE - if you make changes here, also check on the vite
         // configuration in DevServer
         const viteConfig = vite.defineConfig({
-          ...viteCommonConfig(webapp),
+          ...viteCommonConfig(model, webapp),
           build: {
             outDir,
             emptyOutDir: true,

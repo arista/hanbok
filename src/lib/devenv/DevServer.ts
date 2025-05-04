@@ -41,7 +41,7 @@ export class DevServer {
         const route = devServerRoute
 
         const vite = await createViteServer({
-          ...viteCommonConfig(webapp),
+          ...viteCommonConfig(this.model, webapp),
           server: {
             middlewareMode: true,
 
