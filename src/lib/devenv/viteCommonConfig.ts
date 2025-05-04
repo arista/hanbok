@@ -5,7 +5,6 @@ import {ProjectModel, WebappConfig} from "./ProjectModel"
 import fs from "node:fs"
 
 export function viteCommonConfig(webapp: WebappConfig) {
-
   // FIXME - only use this for the dev server
   const injectPageContextPlugin = (): vite.Plugin => {
     const plugin: vite.Plugin = {
@@ -35,10 +34,10 @@ export function viteCommonConfig(webapp: WebappConfig) {
               `</html>`,
             ]
             const htmlText = lines.join("\n")
-            
+
             const transformedIndexHtml = await server.transformIndexHtml(
               req.url,
-              htmlText,
+              htmlText
             )
             res.setHeader("Content-Type", "text/html")
             res.end(transformedIndexHtml)

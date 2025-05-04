@@ -61,11 +61,11 @@ export class DevServer {
               apiPort == null
                 ? {}
                 : {
-                  "/api": {
-                    target: `http://localhost:${apiPort}/${name}`,
-                    changeOrigin: true,
+                    "/api": {
+                      target: `http://localhost:${apiPort}/${name}`,
+                      changeOrigin: true,
+                    },
                   },
-                },
           },
         })
         viteServers.push(vite)

@@ -1,7 +1,10 @@
 import {HttpServer} from "./HttpServer"
 import {ProjectModel} from "./ProjectModel"
 import {createProjectModel} from "@lib/devenv/createProjectModel"
-import type {IDevApiServer, DevApiServerCreateFunc} from "@lib/api/IDevApiServer"
+import type {
+  IDevApiServer,
+  DevApiServerCreateFunc,
+} from "@lib/api/IDevApiServer"
 import type {IRouter} from "@lib/api/IRouter"
 
 export class ApiServer {
@@ -26,7 +29,9 @@ export class ApiServer {
           // Create the DevApiServer
           const webappApiEndpoint = `/${webappName}`
           const routerBase = `/${webappName}`
-          const devApiCreateFunc:DevApiServerCreateFunc = (await import(builtPath)).default
+          const devApiCreateFunc: DevApiServerCreateFunc = (
+            await import(builtPath)
+          ).default
           const devApiServer: IDevApiServer = devApiCreateFunc({
             webappApiEndpoint,
             routerBase,

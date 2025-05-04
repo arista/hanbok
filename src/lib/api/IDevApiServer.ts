@@ -7,4 +7,4 @@ export interface IDevApiServer {
 export type DevApiServerCreateFunc = (props: {
   webappApiEndpoint: string
   routerBase: string
-})=>IDevApiServer
+}) => IDevApiServer
