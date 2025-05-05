@@ -1,8 +1,20 @@
 import {z, ZodFormattedError} from "zod"
 
-export type ApiDef = Record<string, ApiDefEntry>
+export const API_GROUP = Symbol("API_GROUP")
 
-export type ApiDefEntry = ApiDefRoute | ApiDefNested
+export type ApiDef = {
+  [key: string]: ApiDefRoute | ApiDef
+  [API_GROUP]?: ApiGroupMetadata
+}
+
+export type GroupApiDef = {
+  [key: string]: ApiDefRoute | ApiDef
+  [API_GROUP]: ApiGroupMetadata
+}
+
+export type ApiGroupMetadata = {
+  prefix: string
+}
 
 export type ApiDefRoute = {
   method: ApiDefMethod
@@ -14,16 +26,6 @@ export type ApiDefRoute = {
 
 export type ApiDefMethod = "GET" | "POST"
 
-export type ApiDefNested = {
-  prefix: string
-  api: ApiDef
-}
-
-export type ApiDefNestedTyped<A extends ApiDef> = {
-  prefix: string
-  api: A
-}
-
 export function defineApi<T extends ApiDef>(apiDef: T): T {
   return apiDef
 }
@@ -32,30 +34,45 @@ export function defineApi<T extends ApiDef>(apiDef: T): T {
 //
 // interface {
 //   routeName(req: RequestType) => Promise<ResponseType>
-//   nestedRouteName: interface {...}
+//   groupRouteName: interface {...}
 // }
 //
 // The request type is just the params, query, and body types all
 // combined into a single structure
 
 export type ApiInterface<T extends ApiDef> = {
-  [K in keyof T]: T[K] extends ApiDefRoute
-    ? (req: RequestType<T[K]>) => Promise<ResponseType<T[K]>>
-    : T[K] extends ApiDefNested
-      ? NestedApiType<T[K]>
+  [K in keyof T as K extends typeof API_GROUP
+    ? never
+    : K]: T[K] extends ApiDefRoute
+    ? ApiRouteFunction<T[K]>
+    : T[K] extends ApiDef
+      ? ApiInterface<T[K]>
       : never
 }
 
-export type RequestType<T extends ApiDefRoute> = ZodTypeOrEmptyObject<
-  T["request"]
->
-export type ResponseType<T extends ApiDefRoute> = ZodTypeOrEmptyObject<
-  T["response"]
->
+type ApiRouteFunction<R extends ApiDefRoute> = (
+  req: RequestType<R>
+) => Promise<ResponseType<R>>
 
-type NestedApiType<T extends ApiDefNested> = ApiInterface<T["api"]>
-
-type ZodTypeOrEmptyObject<T> = T extends z.ZodTypeAny ? z.infer<T> : {}
-
-export type InferredRequest<T extends ApiDefRoute> =
+export type RequestType<T extends ApiDefRoute> =
   T["request"] extends z.ZodTypeAny ? z.infer<T["request"]> : void
+export type ResponseType<T extends ApiDefRoute> =
+  T["response"] extends z.ZodTypeAny ? z.infer<T["response"]> : void
+
+export function isGroup(obj: any): obj is GroupApiDef {
+  return obj && typeof obj === "object" && API_GROUP in obj
+}
+
+export function isRoute(obj: any): obj is ApiDefRoute {
+  return obj && typeof obj === "object" && !(API_GROUP in obj)
+}
+
+export function getGroupMetadata(apiDef: ApiDef): ApiGroupMetadata {
+  if (isGroup(apiDef)) {
+    return apiDef[API_GROUP]
+  } else {
+    throw new Error(
+      `Assertion failed: apiDef is not a group (no [API_GROUP] specified)`
+    )
+  }
+}

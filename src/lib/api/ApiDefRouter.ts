@@ -1,9 +1,4 @@
-import type {
-  ApiDef,
-  ApiDefRoute,
-  ApiDefNestedTyped,
-  InferredRequest,
-} from "./ApiDef"
+import {ApiDef, ApiDefRoute, RequestType, getGroupMetadata} from "./ApiDef"
 import {ApiHandlerBase} from "./ApiHandlerBase"
 import type {
   IRouter,
@@ -37,7 +32,7 @@ export class ApiDefRouter<HF> {
   add<R extends ApiDefRoute, H extends ApiHandlerBase<any>, RS>(
     route: R,
     getHandler: (handlerFactory: HF) => H,
-    invokeHandler: (handler: H, request: InferredRequest<R>) => Promise<RS>
+    invokeHandler: (handler: H, request: RequestType<R>) => Promise<RS>
   ) {
     const {method} = route
     const requestSchema = route.request ?? z.any()
@@ -67,16 +62,14 @@ export class ApiDefRouter<HF> {
     }
   }
 
-  nested<A extends ApiDef>(
-    n: ApiDefNestedTyped<A>,
-    f: (r: ApiDefRouter<HF>, a: A) => void
-  ) {
-    const {prefix, api} = n
+  nested<A extends ApiDef>(n: A, f: (r: ApiDefRouter<HF>, a: A) => void) {
+    const {prefix} = n
+    const group = getGroupMetadata(n)
     const nestedRouter = new ApiDefRouter<HF>({
       router: this.router,
       createHandlerFactory: this.createHandlerFactory,
-      prefix: path.join(this.prefix, prefix),
+      prefix: path.join(this.prefix, group.prefix),
     })
-    f(nestedRouter, api)
+    f(nestedRouter, n)
   }
 }

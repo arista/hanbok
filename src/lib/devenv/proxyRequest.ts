@@ -85,6 +85,6 @@ export function shouldProxyRequest({
     apiPort != null &&
     webapp.devApiServer != null &&
     req.url?.startsWith("/") &&
-      req.headers.accept?.includes("text/html")
+    req.headers.accept?.includes("text/html")
   )
 }
