@@ -7,8 +7,7 @@ export type ApiDef = {
   [API_GROUP]?: ApiGroupMetadata
 }
 
-export type GroupApiDef = {
-  [key: string]: ApiDefRoute | ApiDef
+export type GroupApiDef<T extends ApiDef = ApiDef> = T & {
   [API_GROUP]: ApiGroupMetadata
 }
 
@@ -16,9 +15,12 @@ export type ApiGroupMetadata = {
   prefix: string
 }
 
-export type ApiDefRoute = {
+export type ApiDefRoute<T extends ApiDefRouteSchema = ApiDefRouteSchema> = T & {
   method: ApiDefMethod
   path: string
+}
+
+export type ApiDefRouteSchema = {
   // The request should be an object {params, query, body}
   request?: z.ZodTypeAny
   response?: z.ZodTypeAny
@@ -75,4 +77,35 @@ export function getGroupMetadata(apiDef: ApiDef): ApiGroupMetadata {
       `Assertion failed: apiDef is not a group (no [API_GROUP] specified)`
     )
   }
+}
+
+export const api = {
+  group: <T extends ApiDef>(prefix: string, def: T): GroupApiDef<T> => {
+    return {
+      ...def,
+      [API_GROUP]: {prefix},
+    }
+  },
+
+  get: <T extends ApiDefRouteSchema = {}>(
+    path: string,
+    schema?: T
+  ): ApiDefRoute<T> => {
+    return {
+      method: "GET",
+      path,
+      ...(schema || ({} as T)),
+    }
+  },
+
+  post: <T extends ApiDefRouteSchema = {}>(
+    path: string,
+    schema?: T
+  ): ApiDefRoute<T> => {
+    return {
+      method: "POST",
+      path,
+      ...(schema || ({} as T)),
+    }
+  },
 }

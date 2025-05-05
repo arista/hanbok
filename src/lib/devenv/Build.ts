@@ -506,7 +506,7 @@ export class Build {
         // NOTE - if you make changes here, also check on the vite
         // configuration in DevServer
         const viteConfig = vite.defineConfig({
-          ...viteCommonConfig(model, webapp),
+          ...viteCommonConfig({model, webapp, includeProxyPagePlugin: false}),
           build: {
             outDir,
             emptyOutDir: true,

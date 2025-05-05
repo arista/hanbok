@@ -4,9 +4,16 @@ import tailwindcss from "@tailwindcss/vite"
 import {ProjectModel, WebappConfig} from "./ProjectModel"
 import {proxyRequest, shouldProxyRequest} from "./proxyRequest"
 
-export function viteCommonConfig(model: ProjectModel, webapp: WebappConfig) {
-  // FIXME - only use this for the dev server
-  const injectPageContextPlugin = (): vite.Plugin => {
+export function viteCommonConfig({
+  model,
+  webapp,
+  includeProxyPagePlugin,
+}: {
+  model: ProjectModel
+  webapp: WebappConfig
+  includeProxyPagePlugin: boolean
+}) {
+  const proxyPagePlugin = (): vite.Plugin => {
     const plugin: vite.Plugin = {
       name: "inject-page-context-plugin",
       apply: "serve",
@@ -30,6 +37,8 @@ export function viteCommonConfig(model: ProjectModel, webapp: WebappConfig) {
     return plugin
   }
 
+  const proxyPagePlugins = includeProxyPagePlugin ? [proxyPagePlugin()] : []
+
   return {
     // Where index.html is located
     root: webapp.viteProjectRoot,
@@ -39,7 +48,7 @@ export function viteCommonConfig(model: ProjectModel, webapp: WebappConfig) {
       // everywhere
       react(),
       tailwindcss(),
-      injectPageContextPlugin(),
+      ...proxyPagePlugins,
     ],
   }
 }

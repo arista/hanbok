@@ -44,7 +44,11 @@ export class DevServer {
           // This includes the plugin that proxies html requests to
           // the api server, but then lets vite transform the result
           // to support HMR
-          ...viteCommonConfig(this.model, webapp),
+          ...viteCommonConfig({
+            model: this.model,
+            webapp,
+            includeProxyPagePlugin: true,
+          }),
 
           server: {
             middlewareMode: true,
