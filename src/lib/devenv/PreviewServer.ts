@@ -1,6 +1,8 @@
 import connect from "connect"
 import http from "http"
+import httpProxy from "http-proxy"
 import serveStatic from "serve-static"
+import finalhandler from "finalhandler"
 import {parse} from "url"
 import * as PM from "@lib/devenv/ProjectModel"
 import {proxyRequest, shouldProxyRequest} from "./proxyRequest"
@@ -39,24 +41,24 @@ export class PreviewServer {
         const route = devServerRoute
 
         const staticHandler = serveStatic(builtWebappRoot, {
-          // We want to serve index.html manually
+          // Don't let it serve index.html (we want that proxied)
           index: false,
+          fallthrough: true,
         })
 
+        // Let the static handler try first, which will pick up
+        // requests that are for assets.  If the static handler
+        // doesn't find an asset, then fall back to proxying to the
+        // AppServer, which will primarily be handling html requests.
         app.use(devServerRoute, async (req, res, next) => {
-          console.log(`req: ${req.url}`)
-          const urlPath = parse(req.url || "").pathname || ""
-          const apiPort = this.model.devenv.apiServer?.port
-          if (shouldProxyRequest({model: this.model, webapp, req})) {
-            await proxyRequest({
-              req,
-              res,
-              targetUrlBase: `http://localhost:${apiPort}/${webapp.name}`,
-              devMode: "preview",
-            })
-          } else {
-            staticHandler(req, res, next)
-          }
+          staticHandler(req, res, async (err) => {
+            if (err) {
+              finalhandler(req, res)(err)
+            }
+            else {
+              await proxyRequest({req, res, targetUrlBase: `http://localhost:${apiPort}/${webapp.name}`, devMode: "preview"})
+            }
+          })
         })
 
         console.log(`[preview] Mounting "${name}" at ${devServerRoute}/`)

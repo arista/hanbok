@@ -1,4 +1,5 @@
 import * as vite from "vite"
+import httpProxy from "http-proxy"
 import react from "@vitejs/plugin-react"
 import tailwindcss from "@tailwindcss/vite"
 import {ProjectModel, WebappConfig} from "./ProjectModel"
