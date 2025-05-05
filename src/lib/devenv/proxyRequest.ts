@@ -102,6 +102,8 @@ export function shouldProxyRequest({
   webapp: PM.WebappConfig
   req: IncomingMessage
 }) {
+  // FIXME - is there a more reliable way to distinguish between
+  // assset requests and "AppServer" requests?
   const apiPort = model.devenv.apiServer?.port
   return (
     apiPort != null &&
