@@ -106,6 +106,7 @@ export class ApiHandlerBase<C extends ApiHandlerBaseProps> {
       request: this.request.params,
       query: this.request.query,
       body: this.request.body,
+      headers: this.request.headers,
     }
     const parseResult = schema.safeParse(request)
     if (!parseResult.success) {

@@ -46,25 +46,16 @@ export class PreviewServer {
         app.use(devServerRoute, async (req, res, next) => {
           console.log(`req: ${req.url}`)
           const urlPath = parse(req.url || "").pathname || ""
-          if (
-            urlPath === "/" ||
-            urlPath.endsWith(".html") ||
-            urlPath.endsWith(".js") ||
-            urlPath.endsWith(".css") ||
-            urlPath.includes("/assets/")
-          ) {
-            const apiPort = this.model.devenv.apiServer?.port
-            if (shouldProxyRequest({model: this.model, webapp, req})) {
-              await proxyRequest({
-                req,
-                res,
-                targetUrlBase: `http://localhost:${apiPort}/${webapp.name}`,
-              })
-            } else {
-              staticHandler(req, res, next)
-            }
+          const apiPort = this.model.devenv.apiServer?.port
+          if (shouldProxyRequest({model: this.model, webapp, req})) {
+            await proxyRequest({
+              req,
+              res,
+              targetUrlBase: `http://localhost:${apiPort}/${webapp.name}`,
+              devMode: "preview",
+            })
           } else {
-            next()
+            staticHandler(req, res, next)
           }
         })
 

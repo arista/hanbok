@@ -6,9 +6,12 @@ export type {ApiDef, ApiDefRoute, ApiInterface} from "@lib/api/ApiDef"
 export {API_GROUP, api} from "@lib/api/ApiDef"
 export {ApiDefRouter} from "@lib/api/ApiDefRouter"
 export type {
-  DevApiServerCreateProps,
+  AppServerEnvBase,
+  WebappEnvBase,
+  ViteManifestEntry,
+  ViteManifest,
   DevApiServerCreateFunc,
-} from "@lib/api/IDevApiServer"
+} from "@lib/api/AppServerTypes"
 export type {
   IRouter,
   IRouterRequestHandler,

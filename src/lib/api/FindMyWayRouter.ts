@@ -29,9 +29,23 @@ export class FindMyWayRouter implements IRouter {
 
   _register(method: HTTPMethod, path: string, handler: IRouterRequestHandler) {
     this.r.on(method, path, async (req, res, params, store, searchParams) => {
+      // Convert find-my-way headers to string/string records
+      const rawHeaders = req.headers
+      const headers: Record<string, string> = {}
+      for (const [key, value] of Object.entries(rawHeaders)) {
+        if (typeof value === "string") {
+          headers[key] = value
+        } else if (Array.isArray(value)) {
+          headers[key] = value.join(", ") // or take value[0], depending on your needs
+        } else if (value != null) {
+          headers[key] = String(value)
+        }
+      }
+
       const routerRequest: IRouterRequest = {
         params,
         query: searchParams,
+        headers,
         body: (req as any).body,
       }
       const routerResponse = new FindMyWayRouterResponse({

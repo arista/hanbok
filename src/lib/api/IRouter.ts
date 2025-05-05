@@ -19,6 +19,7 @@ export type StringMap = {[key: string]: string | undefined}
 export interface IRouterRequest {
   params: StringMap
   query: StringMap
+  headers: StringMap
   body: any
 }
 

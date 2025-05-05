@@ -4,16 +4,20 @@ import getRawBody from "raw-body"
 import {Readable} from "node:stream"
 import * as PM from "@lib/devenv/ProjectModel"
 
+export type DevMode = "dev" | "preview"
+
 export async function proxyRequest({
   req,
   res,
   targetUrlBase,
   transformHtml,
+  devMode,
 }: {
   req: IncomingMessage
   res: ServerResponse
   targetUrlBase: string
   transformHtml?: (html: string) => Promise<string>
+  devMode: DevMode
 }) {
   try {
     const pathname = parseUrl(req.url || "").pathname || ""
@@ -22,6 +26,7 @@ export async function proxyRequest({
     // Prepare fetch options
     const headers = {...req.headers} as Record<string, string>
     delete headers["host"] // avoid leaking dev host
+    headers["hb-dev-mode"] = devMode
 
     const method = req.method || "GET"
     const fetchOpts: RequestInit = {

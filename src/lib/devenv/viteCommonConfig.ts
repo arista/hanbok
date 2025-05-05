@@ -27,6 +27,7 @@ export function viteCommonConfig({
               targetUrlBase: `http://localhost:${apiPort}/${webapp.name}`,
               transformHtml: async (html) =>
                 server.transformIndexHtml(req.url!, html),
+              devMode: "dev",
             })
           } else {
             next()

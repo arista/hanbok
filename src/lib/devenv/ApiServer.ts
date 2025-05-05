@@ -3,8 +3,9 @@ import bodyParser from "body-parser"
 import {FindMyWayRouter} from "../api/FindMyWayRouter"
 import http from "http"
 import {createProjectModel} from "@lib/devenv/createProjectModel"
-import type {DevApiServerCreateFunc} from "@lib/api/IDevApiServer"
+import type {DevApiServerCreateFunc} from "@lib/api/AppServerTypes"
 import type {IRouter} from "@lib/api/IRouter"
+import fs from "node:fs"
 
 export class ApiServer {
   constructor(public props: {}) {}
@@ -28,17 +29,25 @@ export class ApiServer {
         const webapp = webapps[webappName]
         if (webapp?.devApiServer != null) {
           const {builtPath} = webapp.devApiServer
+          const {viteManifestPath} = webapp
           // Create the DevApiServer
           const webappApiEndpoint = `/${webappName}`
           const routerBase = `/${webappName}`
+          const assetsBase = `/${webappName}/`
           const devApiCreateFunc: DevApiServerCreateFunc = (
             await import(builtPath)
           ).default
+          const manifest = JSON.parse(
+            fs.readFileSync(viteManifestPath, "utf-8")
+          )
           await devApiCreateFunc({
             router,
             routesPrefix: `/${webappName}`,
+            isProduction: false,
             webappApiEndpoint,
             routerBase,
+            assetsBase,
+            manifest,
           })
           console.log(
             `Webapp "${webappName}" dev api server listening at http://localhost:${port}${webappApiEndpoint}`

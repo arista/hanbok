@@ -21,7 +21,7 @@ export type ApiDefRoute<T extends ApiDefRouteSchema = ApiDefRouteSchema> = T & {
 }
 
 export type ApiDefRouteSchema = {
-  // The request should be an object {params, query, body}
+  // The request should be an object {params, query, headers, body}
   request?: z.ZodTypeAny
   response?: z.ZodTypeAny
 }
@@ -39,8 +39,8 @@ export function defineApi<T extends ApiDef>(apiDef: T): T {
 //   groupRouteName: interface {...}
 // }
 //
-// The request type is just the params, query, and body types all
-// combined into a single structure
+// The request type is just the params, query, headers, and body types
+// all combined into a single structure
 
 export type ApiInterface<T extends ApiDef> = {
   [K in keyof T as K extends typeof API_GROUP

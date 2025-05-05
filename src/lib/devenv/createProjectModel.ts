@@ -275,6 +275,11 @@ function getWebappsConfig(
           "webapps",
           name
         )
+        const viteManifestPath = path.resolve(
+          builtWebappRoot,
+          ".vite",
+          "manifest.json"
+        )
         // In the dev server, each webapp appears under `/{webapp name}`
         const devServerBase = `/${name}/`
         const devServerRoute = `/${name}`
@@ -307,6 +312,7 @@ function getWebappsConfig(
           viteProjectRoot,
           indexHtmlPath,
           builtWebappRoot,
+          viteManifestPath,
           devServerBase,
           devServerRoute,
           devApiServer,
