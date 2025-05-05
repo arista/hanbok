@@ -1,10 +1,10 @@
 import type {IRouter} from "./IRouter"
 
-export interface IDevApiServer {
-  addRoutes(prefix: string, router: IRouter): void
-}
-
-export type DevApiServerCreateFunc = (props: {
+export type DevApiServerCreateProps = {
+  router: IRouter
+  routesPrefix: string
   webappApiEndpoint: string
   routerBase: string
-}) => IDevApiServer
+}
+
+export type DevApiServerCreateFunc = (props: DevApiServerCreateProps) => void
