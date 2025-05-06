@@ -224,8 +224,8 @@ export class Build {
 
   generateTsconfig(model: PM.ProjectModel): TsconfigJson {
     const {projectRoot} = model
-    const libTypesFile = model.features.lib?.libTypesFile
-    const generateTypes = libTypesFile != null
+    const typesSourcePath = model.features.lib?.typesSourcePath
+    const generateTypes = typesSourcePath != null
     const generateTest = model.features.test != null
 
     // Additional options and files to add depending on whether we're
@@ -280,7 +280,7 @@ export class Build {
       // Sometimes the "lib-types.ts" file needs to be included
       // explicitly, otherwise tsc might not generate its .d.ts file
       // if it only contains types
-      include.push(libTypesFile)
+      include.push(typesSourcePath)
     }
     include.push("src/**/*")
     if (generateTest) {
@@ -317,9 +317,10 @@ export class Build {
   // web-environment bundles will be generated separately by vite
   async runEsbuild(model: PM.ProjectModel) {
     const {projectRoot} = model
-    const libFile = model.features.lib?.libFile
-    const testFile = model.features.test?.testFile
+    const lib = model.features.lib
+    const test = model.features.test
     const webapps = model.features.webapps
+    const cdk = model.features.cdk
 
     // generate the metafile that tracks what was bundled and why
     // FIXME - make this configurable
@@ -327,18 +328,18 @@ export class Build {
 
     const builds: Array<EsbuildTarget> = []
     // Add the "lib" build
-    if (libFile != null) {
+    if (lib != null) {
       builds.push({
-        entry: libFile,
-        out: path.join(projectRoot, "dist", "lib", "lib.es.js"),
+        entry: lib.sourcePath,
+        out: lib.builtPath,
         format: "esm",
       })
     }
     // Add the "test" build
-    if (testFile != null) {
+    if (test != null) {
       builds.push({
-        entry: testFile,
-        out: path.join(projectRoot, "dist", "test", "test.es.js"),
+        entry: test.sourcePath,
+        out: test.builtPath,
         format: "esm",
       })
     }
@@ -355,6 +356,14 @@ export class Build {
           })
         }
       }
+    }
+    // Add the "cdk" build
+    if (cdk != null) {
+      builds.push({
+        entry: cdk.sourcePath,
+        out: cdk.builtPath,
+        format: "esm",
+      })
     }
 
     const tsconfig = this.generateEsbuildTsconfigRaw()
@@ -428,8 +437,8 @@ export class Build {
   // lib.es.js
   async runRollup(model: PM.ProjectModel) {
     const {projectRoot} = model
-    const libTypesFile = model.features.lib?.libTypesFile
-    const generateTypes = libTypesFile != null
+    const typesSourcePath = model.features.lib?.typesSourcePath
+    const generateTypes = typesSourcePath != null
     const generateTest = model.features.test != null
 
     if (generateTypes) {

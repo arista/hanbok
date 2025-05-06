@@ -46,6 +46,8 @@
   "dependencies": {
     "@tailwindcss/vite": "^4.1.4",
     "@vitejs/plugin-react": "^4.4.1",
+    "aws-cdk": "^2.1013.0",
+    "aws-cdk-lib": "^2.194.0",
     "body-parser": "^2.2.0",
     "chokidar": "^4.0.3",
     "connect": "^3.7.0",

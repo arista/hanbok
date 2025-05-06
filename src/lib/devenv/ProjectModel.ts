@@ -26,15 +26,18 @@ export type Features = {
   test: TestConfig | null
   services: ServicesConfig | null
   webapps: WebappsConfig | null
+  cdk: CdkConfig | null
 }
 
 export type LibConfig = {
-  libFile: string
-  libTypesFile: string | null
+  sourcePath: string
+  typesSourcePath: string | null
+  builtPath: string
 }
 
 export type TestConfig = {
-  testFile: string
+  sourcePath: string
+  builtPath: string
 }
 
 export type ServicesConfig = Record<string, ServiceConfig>
@@ -68,6 +71,11 @@ export type WebappConfig = {
 }
 
 export type DevAppServer = {
+  sourcePath: string
+  builtPath: string
+}
+
+export type CdkConfig = {
   sourcePath: string
   builtPath: string
 }

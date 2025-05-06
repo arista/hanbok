@@ -22,6 +22,7 @@ export async function createProjectModel({
   const test = getTestConfig(config, projectRoot)
   const services = getServicesConfig(config, projectRoot)
   const webapps = getWebappsConfig(config, projectRoot)
+  const cdk = getCdkConfig(config, projectRoot)
   return {
     projectRoot,
     devenv,
@@ -30,6 +31,7 @@ export async function createProjectModel({
       test,
       services,
       webapps,
+      cdk,
     },
   }
 }
@@ -135,17 +137,21 @@ function getLibConfig(
       if (configLib !== true) {
         return null
       }
-      const libFile = path.join(projectRoot, "src", "lib.ts")
-      const libTypesFile = path.join(projectRoot, "src", "lib-types.ts")
-      if (!FsUtils.isFile(libFile)) {
+      const sourcePath = path.join(projectRoot, "src", "lib.ts")
+      const typesSourcePath = path.join(projectRoot, "src", "lib-types.ts")
+      const builtPath = path.join(projectRoot, "dist", "lib", "lib.es.js")
+      if (!FsUtils.isFile(sourcePath)) {
         console.log(
           `Warning: projectConfig.features.lib is set, but there is no "src/lib.ts" file`
         )
         return null
       }
       return {
-        libFile,
-        libTypesFile: FsUtils.isFile(libTypesFile) ? libTypesFile : null,
+        sourcePath,
+        typesSourcePath: FsUtils.isFile(typesSourcePath)
+          ? typesSourcePath
+          : null,
+        builtPath,
       }
     }
     case "Suite": {
@@ -165,15 +171,17 @@ function getTestConfig(
       if (configTest !== true) {
         return null
       }
-      const testFile = path.join(projectRoot, "test", "test.ts")
-      if (!FsUtils.isFile(testFile)) {
+      const sourcePath = path.join(projectRoot, "test", "test.ts")
+      const builtPath = path.join(projectRoot, "dist", "test", "test.es.js")
+      if (!FsUtils.isFile(sourcePath)) {
         console.log(
           `Warning: projectConfig.features.test is set, but there is no "test/test.ts" file`
         )
         return null
       }
       return {
-        testFile,
+        sourcePath,
+        builtPath,
       }
     }
     case "Suite": {
@@ -305,6 +313,30 @@ function getWebappsConfig(
         }
       }
       return ret
+    }
+    case "Suite": {
+      // FIXME - implement this
+      return null
+    }
+  }
+}
+
+function getCdkConfig(
+  projectConfig: PC.ProjectConfig,
+  projectRoot: string
+): PM.CdkConfig | null {
+  switch (projectConfig.type) {
+    case "App": {
+      const cdkConfig = projectConfig.features?.cdk
+      if (cdkConfig !== true) {
+        return null
+      }
+      const sourcePath = path.join(projectRoot, "src", "cdk.ts")
+      const builtPath = path.join(projectRoot, "dist", "cdk", "cdk.es.js")
+      return {
+        sourcePath,
+        builtPath,
+      }
     }
     case "Suite": {
       // FIXME - implement this
