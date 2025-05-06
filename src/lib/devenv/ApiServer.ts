@@ -7,6 +7,7 @@ import finalhandler from "finalhandler"
 import {createProjectModel} from "@lib/devenv/createProjectModel"
 import type {DevApiServerCreateFunc} from "@lib/api/AppServerTypes"
 import type {IRouter} from "@lib/api/IRouter"
+import chokidar from "chokidar"
 import fs from "node:fs"
 
 export class ApiServer {
@@ -25,6 +26,13 @@ export class ApiServer {
     // Start the http server
     const app = connect()
     const server = http.createServer(app)
+    if (this._isShutdown) {
+      return
+    }
+    this._httpShutdown = async () => {
+      console.log("[AppServer] Shutting down...")
+      await server.close()
+    }
 
     // Go through each of the webapps, mount them into the router
     const webapps = model.features.webapps
@@ -80,8 +88,11 @@ export class ApiServer {
         }
       }
 
+      if (this._isShutdown) {
+        return
+      }
       server.listen(port, () => {
-        console.log(`[preview] Multi-app AppServer running at:`)
+        console.log(`[AppServer] Multi-app AppServer running at:`)
         for (const webapp of Object.values(webapps)) {
           console.log(`  http://localhost:${port}/${webapp.name}/`)
         }
@@ -96,39 +107,90 @@ export class ApiServer {
     }
   }
 
-  async startHttpServer(port: number): Promise<IRouter> {
-    const app = connect()
-    app.use(bodyParser.json())
-
-    const router = new FindMyWayRouter()
-    app.use((req, res, next) => {
-      console.log(`Request at ${req.url}`)
-      if (!router.r.lookup(req, res)) {
-        next()
-      }
-    })
-
-    // Prepare the server
-    const server = http.createServer(app)
-
-    await new Promise<void>((resolve, reject) => {
-      server.listen(port, () => resolve())
-      server.on("error", reject)
-    })
-
-    this._httpShutdown = async () => {
-      console.log("[local-server] Shutting down...")
-      await server.close()
-    }
-
-    return router
-  }
-
   _httpShutdown: (() => Promise<void>) | null = null
   async onShutdownSignal(signal: string) {
+    await this.shutdown()
+    process.exit(0)
+  }
+
+  _isShutdown = false
+  async shutdown() {
+    this._isShutdown = true
     if (this._httpShutdown) {
       await this._httpShutdown()
     }
-    process.exit(0)
+  }
+}
+
+export class ApiServerWatch {
+  apiServer: ApiServer | null = null
+
+  async run() {
+    const model = await createProjectModel({})
+    const watchFiles = []
+
+    // Gather the list of files to watch
+    const webapps = model.features.webapps
+    if (webapps != null) {
+      for (const webappName of Object.keys(webapps)) {
+        const webapp = webapps[webappName]
+        if (webapp?.devApiServer != null) {
+          const {builtPath} = webapp.devApiServer
+          const {viteManifestPath} = webapp
+          watchFiles.push(builtPath)
+          watchFiles.push(viteManifestPath)
+        }
+      }
+    }
+
+    if (watchFiles.length > 0) {
+      const watcher = chokidar.watch(watchFiles, {
+        persistent: true,
+      })
+      watcher.on("ready", async () => {
+        await this.restartApiServer()
+      })
+      watcher.on("change", async () => {
+        await this.restartApiServer()
+      })
+      watcher.on("add", async () => {
+        await this.restartApiServer()
+      })
+      watcher.on("unlink", async () => {
+        await this.restartApiServer()
+      })
+    } else {
+      await this.startApiServer()
+    }
+  }
+
+  async stopApiServer() {
+    if (this.apiServer != null) {
+      await this.apiServer.shutdown()
+      this.apiServer = null
+    }
+  }
+
+  async startApiServer() {
+    this.apiServer = new ApiServer({})
+    await this.apiServer.run()
+  }
+
+  _restartPending = false
+  restartApiServer() {
+    if (!this._restartPending) {
+      this._restartPending = true
+      setTimeout(() => {
+        this._restartPending = false
+        this._restartApiServer()
+      }, 200)
+    }
+  }
+
+  async _restartApiServer() {
+    if (this.apiServer != null) {
+      await this.stopApiServer()
+    }
+    await this.startApiServer()
   }
 }
