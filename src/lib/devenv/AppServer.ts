@@ -33,6 +33,7 @@ export class AppServer {
       console.log("[AppServer] Shutting down...")
       await server.close()
     }
+    app.use(bodyParser.json())
 
     // Go through each of the webapps, mount them into the router
     const webapps = model.features.webapps

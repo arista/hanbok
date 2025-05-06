@@ -19,7 +19,7 @@ export type {
   IRouterResponse,
   IRouterRequestResponse,
 } from "@lib/api/IRouter"
-export type {
+export {
   NotFoundError,
   InvalidDataError,
   InvalidRequestError,
