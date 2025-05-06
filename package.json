@@ -54,6 +54,7 @@
     "globby": "^14.1.0",
     "http-proxy": "^1.18.1",
     "oclif": "^4.17.46",
+    "path-to-regexp": "^8.2.0",
     "pkg-dir": "^8.0.0",
     "prisma": "^6.6.0",
     "raw-body": "^3.0.0",

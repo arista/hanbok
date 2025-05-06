@@ -54,9 +54,13 @@ export class PreviewServer {
           staticHandler(req, res, async (err) => {
             if (err) {
               finalhandler(req, res)(err)
-            }
-            else {
-              await proxyRequest({req, res, targetUrlBase: `http://localhost:${apiPort}/${webapp.name}`, devMode: "preview"})
+            } else {
+              await proxyRequest({
+                req,
+                res,
+                targetUrlBase: `http://localhost:${apiPort}/${webapp.name}`,
+                devMode: "preview",
+              })
             }
           })
         })

@@ -27,3 +27,5 @@ export type {
 export {handleApiDefRoute} from "@lib/api/handleApiDefRoute"
 export {ApiHandlerBase} from "@lib/api/ApiHandlerBase"
 export type {ApiHandlerBaseProps} from "@lib/api/ApiHandlerBase"
+export {createClientApi, sendClientRequest} from "@lib/api/ClientApi"
+export type {ClientRequest, ClientRequestHandler} from "@lib/api/ClientApi"
