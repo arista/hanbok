@@ -4,13 +4,21 @@ import {createProjectModel} from "@lib/devenv/createProjectModel"
 import {ApiServerWatch} from "@lib/devenv/ApiServer"
 
 export class Dev {
-  constructor(public props: {}) {}
+  constructor(
+    public props: {
+      noAppServer: boolean
+    }
+  ) {}
 
   async run() {
     const model = await createProjectModel({})
     const build = new Build({watch: true, model})
     const devServer = new DevServer({model})
-    const appServerRunner = new ApiServerWatch()
-    await Promise.all([build.run(), devServer.run(), appServerRunner.run()])
+    const running: Array<Promise<any>> = [build.run(), devServer.run()]
+    if (!this.props.noAppServer) {
+      const appServerRunner = new ApiServerWatch()
+      running.push(appServerRunner.run())
+    }
+    await Promise.all(running)
   }
 }
