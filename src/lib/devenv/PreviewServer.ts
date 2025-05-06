@@ -51,8 +51,10 @@ export class PreviewServer {
         // doesn't find an asset, then fall back to proxying to the
         // AppServer, which will primarily be handling html requests.
         app.use(devServerRoute, async (req, res, next) => {
+          console.log(`PreviewServer: ${req.url}`)
           staticHandler(req, res, async (err) => {
             if (err) {
+              console.log(`  error`)
               finalhandler(req, res)(err)
             } else {
               await proxyRequest({
