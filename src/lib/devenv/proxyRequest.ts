@@ -25,10 +25,10 @@ export async function proxyRequest({
       target: targetUrlBase,
       changeOrigin: true,
     })
-    proxy.on('proxyReq', (proxyReq, req, res) => {
-      proxyReq.setHeader('hb-dev-mode', devMode)
-    });    
-    proxy.web(req, res, {}, err => {
+    proxy.on("proxyReq", (proxyReq, req, res) => {
+      proxyReq.setHeader("hb-dev-mode", devMode)
+    })
+    proxy.web(req, res, {}, (err) => {
       console.error("Error proxying request (is the AppServer running?):", err)
       res.statusCode = 500
       res.end("Internal server error")
