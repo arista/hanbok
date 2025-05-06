@@ -21,7 +21,7 @@ export function viteCommonConfig({
       configureServer: (server: vite.ViteDevServer) => {
         server.middlewares.use(async (req, res, next) => {
           console.log(`viteCommonConfig, req.url: ${req.url}`)
-          const apiPort = model.devenv.apiServer?.port
+          const apiPort = model.devenv.appServer?.port
           if (shouldProxyRequest({model, webapp, req})) {
             console.log(`  proxying request`)
             await proxyRequest({

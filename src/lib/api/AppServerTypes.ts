@@ -26,4 +26,4 @@ export interface ViteManifestEntry {
 
 export type ViteManifest = Record<string, ViteManifestEntry>
 
-export type DevApiServerCreateFunc = (props: AppServerEnvBase) => void
+export type DevAppServerCreateFunc = (props: AppServerEnvBase) => void

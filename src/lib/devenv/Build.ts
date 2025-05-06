@@ -342,12 +342,12 @@ export class Build {
         format: "esm",
       })
     }
-    // Add any webapp dev api servers
+    // Add any webapp dev app servers
     if (webapps != null) {
       for (const webappName of Object.keys(webapps)) {
         const webapp = webapps[webappName]
-        if (webapp?.devApiServer != null) {
-          const {sourcePath, builtPath} = webapp.devApiServer
+        if (webapp?.devAppServer != null) {
+          const {sourcePath, builtPath} = webapp.devAppServer
           builds.push({
             entry: sourcePath,
             out: builtPath,

@@ -14,19 +14,14 @@ export type AppProjectConfig = {
 
 export type DevEnv = {
   devServer?: DevServer | null | undefined
-  apiServer?: ApiServer | null | undefined
-  previewServer?: PreviewServer | null | undefined
+  appServer?: AppServer | null | undefined
 }
 
 export type DevServer = {
   port: number
 }
 
-export type ApiServer = {
-  port: number
-}
-
-export type PreviewServer = {
+export type AppServer = {
   port: number
 }
 

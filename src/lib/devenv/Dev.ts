@@ -1,7 +1,7 @@
 import {Build} from "./Build"
 import {DevServer} from "./DevServer"
 import {createProjectModel} from "@lib/devenv/createProjectModel"
-import {ApiServerWatch} from "@lib/devenv/ApiServer"
+import {AppServerWatch} from "@lib/devenv/AppServer"
 
 export class Dev {
   constructor(
@@ -16,7 +16,7 @@ export class Dev {
     const devServer = new DevServer({model})
     const running: Array<Promise<any>> = [build.run(), devServer.run()]
     if (!this.props.noAppServer) {
-      const appServerRunner = new ApiServerWatch()
+      const appServerRunner = new AppServerWatch()
       running.push(appServerRunner.run())
     }
     await Promise.all(running)

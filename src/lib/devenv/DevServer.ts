@@ -27,7 +27,6 @@ export class DevServer {
     } else {
       const app = connect()
       const port = this.model.devenv.devServer.port
-      const apiPort = this.model.devenv.apiServer?.port
       const projectRoot = this.model.projectRoot
 
       // Prepare the server
@@ -65,15 +64,6 @@ export class DevServer {
               // access other resources in the project.
               allow: [projectRoot],
             },
-            // proxy:
-            //   apiPort == null
-            //     ? {}
-            //     : {
-            //         "/api": {
-            //           target: `http://localhost:${apiPort}/${name}`,
-            //           changeOrigin: true,
-            //         },
-            //       },
           },
         })
         viteServers.push(vite)

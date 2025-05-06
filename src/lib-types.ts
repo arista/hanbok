@@ -10,7 +10,7 @@ export type {
   WebappEnvBase,
   ViteManifestEntry,
   ViteManifest,
-  DevApiServerCreateFunc,
+  DevAppServerCreateFunc,
 } from "@lib/api/AppServerTypes"
 export type {
   IRouter,

@@ -1,9 +1,9 @@
 import * as OC from "@oclif/core"
-import {ApiServer, ApiServerWatch} from "@lib/devenv/ApiServer"
+import {AppServer, AppServerWatch} from "@lib/devenv/AppServer"
 
 export class Command extends OC.Command {
   static override description =
-    "Start the local api server running application code"
+    "Start the local app server running application code"
 
   static override args = {}
   static override flags = {
@@ -21,9 +21,9 @@ export class Command extends OC.Command {
     const {watch} = flags
     return await (async () => {
       if (watch) {
-        return await new ApiServerWatch().run()
+        return await new AppServerWatch().run()
       } else {
-        return await new ApiServer({}).run()
+        return await new AppServer({}).run()
       }
     })()
   }

@@ -84,10 +84,10 @@ export function shouldProxyRequest({
 }) {
   // FIXME - is there a more reliable way to distinguish between
   // assset requests and "AppServer" requests?
-  const apiPort = model.devenv.apiServer?.port
+  const appPort = model.devenv.appServer?.port
   return (
-    apiPort != null &&
-    webapp.devApiServer != null &&
+    appPort != null &&
+    webapp.devAppServer != null &&
     ((req.url?.startsWith("/") && req.headers.accept?.includes("text/html")) ||
       req.url?.startsWith("/api/"))
   )

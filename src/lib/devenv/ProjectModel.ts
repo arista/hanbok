@@ -10,19 +10,14 @@ export type ProjectModel = {
 
 export type DevEnv = {
   devServer: DevServer | null
-  apiServer: ApiServer | null
-  previewServer: PreviewServer | null
+  appServer: AppServer | null
 }
 
 export type DevServer = {
   port: number
 }
 
-export type ApiServer = {
-  port: number
-}
-
-export type PreviewServer = {
+export type AppServer = {
   port: number
 }
 
@@ -69,10 +64,10 @@ export type WebappConfig = {
   viteManifestPath: string
   devServerRoute: string
   devServerBase: string
-  devApiServer: DevApiServer | null
+  devAppServer: DevAppServer | null
 }
 
-export type DevApiServer = {
+export type DevAppServer = {
   sourcePath: string
   builtPath: string
 }

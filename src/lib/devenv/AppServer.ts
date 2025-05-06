@@ -5,19 +5,19 @@ import http from "http"
 import serveStatic from "serve-static"
 import finalhandler from "finalhandler"
 import {createProjectModel} from "@lib/devenv/createProjectModel"
-import type {DevApiServerCreateFunc} from "@lib/api/AppServerTypes"
+import type {DevAppServerCreateFunc} from "@lib/api/AppServerTypes"
 import type {IRouter} from "@lib/api/IRouter"
 import chokidar from "chokidar"
 import fs from "node:fs"
 
-export class ApiServer {
+export class AppServer {
   constructor(public props: {}) {}
 
   async run() {
     const model = await createProjectModel({})
-    const port = model.devenv.apiServer?.port
+    const port = model.devenv.appServer?.port
     if (port == null) {
-      console.log(`No devenv.apiServer.port specified in hanbok.config.js`)
+      console.log(`No devenv.appServer.port specified in hanbok.config.js`)
       return
     }
 
@@ -39,21 +39,21 @@ export class ApiServer {
     if (webapps != null) {
       for (const webappName of Object.keys(webapps)) {
         const webapp = webapps[webappName]
-        if (webapp?.devApiServer != null) {
-          const {builtPath} = webapp.devApiServer
+        if (webapp?.devAppServer != null) {
+          const {builtPath} = webapp.devAppServer
           const {viteManifestPath, builtWebappRoot} = webapp
-          // Create the DevApiServer
+          // Create the DevAppServer
           const webappApiEndpoint = `/${webappName}`
           const routerBase = `/${webappName}`
           const assetsBase = `/${webappName}/`
-          const devApiCreateFunc: DevApiServerCreateFunc = (
+          const devAppCreateFunc: DevAppServerCreateFunc = (
             await import(builtPath)
           ).default
           const manifest = JSON.parse(
             fs.readFileSync(viteManifestPath, "utf-8")
           )
           const router = new FindMyWayRouter()
-          await devApiCreateFunc({
+          await devAppCreateFunc({
             router,
             routesPrefix: `/`,
             isProduction: false,
@@ -122,8 +122,8 @@ export class ApiServer {
   }
 }
 
-export class ApiServerWatch {
-  apiServer: ApiServer | null = null
+export class AppServerWatch {
+  appServer: AppServer | null = null
 
   async run() {
     const model = await createProjectModel({})
@@ -134,8 +134,8 @@ export class ApiServerWatch {
     if (webapps != null) {
       for (const webappName of Object.keys(webapps)) {
         const webapp = webapps[webappName]
-        if (webapp?.devApiServer != null) {
-          const {builtPath} = webapp.devApiServer
+        if (webapp?.devAppServer != null) {
+          const {builtPath} = webapp.devAppServer
           const {viteManifestPath} = webapp
           watchFiles.push(builtPath)
           watchFiles.push(viteManifestPath)
@@ -148,49 +148,49 @@ export class ApiServerWatch {
         persistent: true,
       })
       watcher.on("ready", async () => {
-        await this.restartApiServer()
+        await this.restartAppServer()
       })
       watcher.on("change", async () => {
-        await this.restartApiServer()
+        await this.restartAppServer()
       })
       watcher.on("add", async () => {
-        await this.restartApiServer()
+        await this.restartAppServer()
       })
       watcher.on("unlink", async () => {
-        await this.restartApiServer()
+        await this.restartAppServer()
       })
     } else {
-      await this.startApiServer()
+      await this.startAppServer()
     }
   }
 
-  async stopApiServer() {
-    if (this.apiServer != null) {
-      await this.apiServer.shutdown()
-      this.apiServer = null
+  async stopAppServer() {
+    if (this.appServer != null) {
+      await this.appServer.shutdown()
+      this.appServer = null
     }
   }
 
-  async startApiServer() {
-    this.apiServer = new ApiServer({})
-    await this.apiServer.run()
+  async startAppServer() {
+    this.appServer = new AppServer({})
+    await this.appServer.run()
   }
 
   _restartPending = false
-  restartApiServer() {
+  restartAppServer() {
     if (!this._restartPending) {
       this._restartPending = true
       setTimeout(() => {
         this._restartPending = false
-        this._restartApiServer()
+        this._restartAppServer()
       }, 200)
     }
   }
 
-  async _restartApiServer() {
-    if (this.apiServer != null) {
-      await this.stopApiServer()
+  async _restartAppServer() {
+    if (this.appServer != null) {
+      await this.stopAppServer()
     }
-    await this.startApiServer()
+    await this.startAppServer()
   }
 }

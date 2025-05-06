@@ -39,14 +39,12 @@ function getDevEnv(config: PC.ProjectConfig): PM.DevEnv {
     case "App":
       return {
         devServer: getDevServer(config.devenv.devServer),
-        apiServer: getApiServer(config.devenv.apiServer),
-        previewServer: getPreviewServer(config.devenv.previewServer),
+        appServer: getAppServer(config.devenv.appServer),
       }
     case "Suite": {
       return {
         devServer: null,
-        apiServer: null,
-        previewServer: null,
+        appServer: null,
       }
     }
   }
@@ -64,21 +62,9 @@ function getDevServer(
   }
 }
 
-function getApiServer(
-  config: PC.ApiServer | null | undefined
-): PM.ApiServer | null {
-  if (config == null) {
-    return null
-  } else {
-    return {
-      port: config.port,
-    }
-  }
-}
-
-function getPreviewServer(
-  config: PC.PreviewServer | null | undefined
-): PM.PreviewServer | null {
+function getAppServer(
+  config: PC.AppServer | null | undefined
+): PM.AppServer | null {
   if (config == null) {
     return null
   } else {
@@ -286,23 +272,23 @@ function getWebappsConfig(
         const viteProjectRoot = path.join(webappPath, "ui")
         const indexHtmlPath = path.join(viteProjectRoot, "index.html")
 
-        // Check for a DevApiServer
-        const devApiServerSourcePath = path.join(
+        // Check for a DevAppServer
+        const devAppServerSourcePath = path.join(
           webappPath,
           "server",
-          "DevApiServer.ts"
+          "DevAppServer.ts"
         )
-        const devApiServerBuiltPath = path.resolve(
+        const devAppServerBuiltPath = path.resolve(
           projectRoot,
           "dist",
-          "webapp-dev-servers",
+          "app-servers",
           name,
-          "DevApiServer.es.js"
+          "DevAppServer.es.js"
         )
-        const devApiServer = FsUtils.isFile(devApiServerSourcePath)
+        const devAppServer = FsUtils.isFile(devAppServerSourcePath)
           ? {
-              sourcePath: devApiServerSourcePath,
-              builtPath: devApiServerBuiltPath,
+              sourcePath: devAppServerSourcePath,
+              builtPath: devAppServerBuiltPath,
             }
           : null
 
@@ -315,7 +301,7 @@ function getWebappsConfig(
           viteManifestPath,
           devServerBase,
           devServerRoute,
-          devApiServer,
+          devAppServer,
         }
       }
       return ret
