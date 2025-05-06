@@ -1,35 +1,6 @@
 // The list of types to be exposed in the library's .d.ts file
 
 export {defineConfig} from "@lib/devenv/ProjectConfig"
-// export {defineApi} from "@lib/api/ApiDef"
-// export type {ApiDef, ApiDefRoute, ApiInterface} from "@lib/api/ApiDef"
-// export {API_GROUP, api} from "@lib/api/ApiDef"
-// export {ApiDefRouter} from "@lib/api/ApiDefRouter"
-// export type {
-//   AppServerEnvBase,
-//   WebappEnvBase,
-//   ViteManifestEntry,
-//   ViteManifest,
-//   DevAppServerCreateFunc,
-// } from "@lib/api/AppServerTypes"
-// export type {
-//   IRouter,
-//   IRouterRequestHandler,
-//   IRouterRequest,
-//   IRouterResponse,
-//   IRouterRequestResponse,
-// } from "@lib/api/IRouter"
-// export {
-//   NotFoundError,
-//   InvalidDataError,
-//   InvalidRequestError,
-// } from "@lib/api/IRouter"
-// export {handleApiDefRoute} from "@lib/api/handleApiDefRoute"
-// export {ApiHandlerBase} from "@lib/api/ApiHandlerBase"
-// export type {ApiHandlerBaseProps} from "@lib/api/ApiHandlerBase"
-// export {createClientApi, sendClientRequest} from "@lib/api/ClientApi"
-// export type {ClientRequest, ClientRequestHandler} from "@lib/api/ClientApi"
-
 export {defineRoutes, routes, GROUP_ROUTE} from "@lib/routes/RouteDefs"
 export type {RouteDefs, RouteDef, RoutesInterface} from "@lib/routes/RouteDefs"
 export {RoutesServerHelper} from "@lib/routes/RoutesServerHelper"

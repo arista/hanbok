@@ -1,12 +1,12 @@
 import connect from "connect"
 import bodyParser from "body-parser"
-import {FindMyWayRouter} from "../api/FindMyWayRouter"
+import {HttpRouterImpl} from "../routes/HttpRouterImpl"
 import http from "http"
 import serveStatic from "serve-static"
 import finalhandler from "finalhandler"
 import {createProjectModel} from "@lib/devenv/createProjectModel"
-import type {DevAppServerCreateFunc} from "@lib/api/AppServerTypes"
-import type {IRouter} from "@lib/api/IRouter"
+import type {DevAppServerCreateFunc} from "@lib/appserver/AppServerTypes"
+import type {IRouter} from "@lib/routes/IRouter"
 import chokidar from "chokidar"
 import fs from "node:fs"
 
@@ -53,7 +53,7 @@ export class AppServer {
           const manifest = JSON.parse(
             fs.readFileSync(viteManifestPath, "utf-8")
           )
-          const router = new FindMyWayRouter()
+          const router = new HttpRouterImpl()
           await devAppCreateFunc({
             router,
             routesPrefix: `/`,
@@ -80,7 +80,7 @@ export class AppServer {
               if (err) {
                 finalhandler(req, res)(err)
               } else {
-                if (!router.r.lookup(req, res)) {
+                if (!router.httpRouter.lookup(req, res)) {
                   next()
                 }
               }
