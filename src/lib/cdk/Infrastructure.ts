@@ -1,14 +1,13 @@
 import {createProjectModel} from "../devenv/createProjectModel"
 import * as FsUtils from "../utils/FsUtils"
-import {CloudAssemblyBuilder} from "aws-cdk-lib/cx-api"
-import {Deployments} from "@aws-cdk/cloudformation-deployments"
+import { Toolkit, StackSelectionStrategy } from '@aws-cdk/toolkit-lib';
+import * as core from 'aws-cdk-lib/core';
 
 export class Infrastructure {
   constructor(public props: {}) {}
 
   async run() {
     const projectModel = await createProjectModel({})
-    console.log(JSON.stringify(projectModel, null, 2))
     const cdk = projectModel.features.cdk
     if (cdk == null) {
       throw new Error(
@@ -22,11 +21,39 @@ export class Infrastructure {
       )
     }
     const cdkLib = await import(cdkPath)
-    const stackClass = cdkLib["Infrastructure"]
+    const cdkStackName = "Infrastructure"
+    const stackClass = cdkLib[cdkStackName].Stack
     if (stackClass == null) {
       throw new Error(
-        `The built cdk file at "${cdkPath}" does not export an "Infrastructure" stack`
+        `The built cdk file at "${cdkPath}" does not export stack "${Infrastructure}"`
       )
     }
+
+    const stackName = "hb-test-app-Infrastructure"
+    const cdkToolkit = new Toolkit({
+      // ioHost: {
+      //   notify: async function (msg) {
+      //     console.log(msg);
+      //   },
+      //   requestResponse: async function (msg) {
+      //     console.log(msg);
+      //     return msg.defaultResponse;
+      //   }
+      // }
+    })
+    const cx = await cdkToolkit.fromAssemblyBuilder(async() => {
+      const app = new core.App()
+      console.log(`creating new stackClass`, stackClass)
+      const stack = new stackClass(app, stackName)
+      console.log(`stack`, stack)
+      return app.synth()
+    })
+
+    await cdkToolkit.deploy(cx, {
+      stacks: {
+        strategy: StackSelectionStrategy.PATTERN_MUST_MATCH,
+        patterns: [stackName],
+      }
+    })
   }
 }

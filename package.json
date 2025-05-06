@@ -44,6 +44,7 @@
     "prettier": "npx prettier --write **/*.{ts,tsx,css,scss,html,json,js}"
   },
   "dependencies": {
+    "@aws-cdk/toolkit-lib": "^0.3.3",
     "@tailwindcss/vite": "^4.1.4",
     "@vitejs/plugin-react": "^4.4.1",
     "aws-cdk": "^2.1013.0",
