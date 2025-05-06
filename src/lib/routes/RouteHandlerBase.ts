@@ -8,6 +8,7 @@ import {
   InvalidDataError,
   InvalidRequestError,
 } from "./IRouter"
+import type {ViteManifest} from "../appserver/AppServerTypes"
 import {z} from "zod"
 
 export type RouteHandlerBaseProps = {
@@ -134,5 +135,68 @@ export class RouteHandlerBase<C extends RouteHandlerBaseProps> {
       )
     }
     return request as any
+  }
+
+  async generateIndexHtml({
+    pageContext,
+    serveDevMode,
+    title,
+    assetsBase,
+    manifest,
+    headElems,
+  }: {
+    pageContext: any
+    serveDevMode: boolean
+    title: string
+    assetsBase: string
+    manifest: ViteManifest
+    headElems: string
+  }) {
+    const {response} = this
+    const manifestEntry = manifest["index.html"]!
+    const {file, imports, css} = manifestEntry
+    const pageContextJson = JSON.stringify(pageContext)
+
+    const lines: Array<string> = []
+    lines.push(
+      `<!doctype html>`,
+      `<html lang="en">`,
+      `  <head>`,
+      `    <script>window.__PAGE_CONTEXT__ = ${pageContextJson};</script>`,
+      headElems,
+      // FIXME - should probably HTML-escape the title string
+      `    <title>${title}</title>`
+    )
+    if (!serveDevMode) {
+      if (imports != null) {
+        imports.forEach((val) => {
+          const importManifestEntry = manifest[val]!
+          lines.push(
+            `    <link rel="modulepreload" crossorigin href="${assetsBase}${importManifestEntry.file}">`
+          )
+        })
+      }
+      if (css != null) {
+        css.forEach((val) => {
+          lines.push(
+            `    <link rel="stylesheet" crossorigin href="${assetsBase}${val}">`
+          )
+        })
+      }
+    }
+    lines.push(`  </head>`, `  <body>`, `    <div id="root"></div>`)
+    if (!serveDevMode) {
+      lines.push(
+        `    <script type="module" crossorigin src="${assetsBase}${file}"></script>`
+      )
+    } else {
+      lines.push(
+        `    <script type="module" src="/boilerplate/main.tsx"></script>`
+      )
+    }
+    lines.push(`  </body>`, `</html>`)
+    const htmlText = lines.join("\n")
+    response.type("text/html")
+    response.send(htmlText)
   }
 }
