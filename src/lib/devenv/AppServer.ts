@@ -44,7 +44,7 @@ export class AppServer {
           const {builtPath} = webapp.devAppServer
           const {viteManifestPath, builtWebappRoot} = webapp
           // Create the DevAppServer
-          const webappApiEndpoint = `/${webappName}`
+          const routesEndpoint = `/${webappName}`
           const routerBase = `/${webappName}`
           const assetsBase = `/${webappName}/`
           const devAppCreateFunc: DevAppServerCreateFunc = (
@@ -58,7 +58,7 @@ export class AppServer {
             router,
             routesPrefix: `/`,
             isProduction: false,
-            webappApiEndpoint,
+            routesEndpoint,
             routerBase,
             assetsBase,
             manifest,

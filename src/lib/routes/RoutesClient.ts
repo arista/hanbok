@@ -99,18 +99,18 @@ export function _createRoutesClient(
 }
 
 export function sendClientRequest<RS>(
-  webappApiEndpoint: string,
+  routesEndpoint: string,
   request: ClientRequest
 ): Promise<Response> {
   const {method, path, headers, body} = request
 
-  // fetch requires a full url, so if the webappApiEndpoint is a
+  // fetch requires a full url, so if the routesEndpoint is a
   // relative url, resolve it relative to the current window's origin
   const absoluteBase =
-    webappApiEndpoint.startsWith("http://") ||
-    webappApiEndpoint.startsWith("https://")
-      ? webappApiEndpoint
-      : new URL(webappApiEndpoint, window.location.origin).toString()
+    routesEndpoint.startsWith("http://") ||
+    routesEndpoint.startsWith("https://")
+      ? routesEndpoint
+      : new URL(routesEndpoint, window.location.origin).toString()
 
   // Add the request's path
   const normalizedPath = path.startsWith("/") ? path.substring(1) : path

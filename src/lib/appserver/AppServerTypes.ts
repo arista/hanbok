@@ -7,7 +7,7 @@ export type AppServerEnvBase = WebappEnvBase & {
 }
 
 export type WebappEnvBase = {
-  webappApiEndpoint: string
+  routesEndpoint: string
   routerBase: string
   manifest: ViteManifest
   assetsBase: string
