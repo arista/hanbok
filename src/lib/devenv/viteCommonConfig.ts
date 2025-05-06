@@ -20,14 +20,17 @@ export function viteCommonConfig({
       apply: "serve",
       configureServer: (server: vite.ViteDevServer) => {
         server.middlewares.use(async (req, res, next) => {
+          console.log(`viteCommonConfig, req.url: ${req.url}`)
           const apiPort = model.devenv.apiServer?.port
           if (shouldProxyRequest({model, webapp, req})) {
+            console.log(`  proxying request`)
             await proxyRequest({
               req,
               res,
               targetUrlBase: `http://localhost:${apiPort}/${webapp.name}`,
-              transformHtml: async (html) =>
-                server.transformIndexHtml(req.url!, html),
+              transformHtml: async (html) => {
+                return server.transformIndexHtml(req.url!, html)
+              },
               devMode: "dev",
             })
           } else {

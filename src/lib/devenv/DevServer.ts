@@ -65,15 +65,15 @@ export class DevServer {
               // access other resources in the project.
               allow: [projectRoot],
             },
-            proxy:
-              apiPort == null
-                ? {}
-                : {
-                    "/api": {
-                      target: `http://localhost:${apiPort}/${name}`,
-                      changeOrigin: true,
-                    },
-                  },
+            // proxy:
+            //   apiPort == null
+            //     ? {}
+            //     : {
+            //         "/api": {
+            //           target: `http://localhost:${apiPort}/${name}`,
+            //           changeOrigin: true,
+            //         },
+            //       },
           },
         })
         viteServers.push(vite)
