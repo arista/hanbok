@@ -438,9 +438,12 @@ export class Build {
       // them under "build/tsc/".  It's a quirk of tsc, which
       // basically looks for a common root of its input files and uses
       // that to decide where to put the output files
-      const input = generateTest
-        ? "build/tsc/src/lib-types.d.ts"
-        : "build/tsc/lib-types.d.ts"
+      const input = path.join(
+        projectRoot,
+        generateTest
+          ? "build/tsc/src/lib-types.d.ts"
+          : "build/tsc/lib-types.d.ts"
+      )
 
       const bundle = await rollup({
         input,
@@ -448,7 +451,7 @@ export class Build {
           dts({
             respectExternal: true,
             compilerOptions: {
-              baseUrl: "./build/tsc",
+              baseUrl: path.join(projectRoot, "build/tsc"),
               paths: this.generateTsconfigPaths(),
             },
           }),
@@ -456,7 +459,7 @@ export class Build {
       })
 
       await bundle.write({
-        file: "dist/lib/lib.d.ts",
+        file: path.join(projectRoot, "dist/lib/lib.d.ts"),
         format: "es",
       })
 
