@@ -1,17 +1,20 @@
 import {createProjectModel} from "../devenv/createProjectModel"
 import * as FsUtils from "../utils/FsUtils"
-import { Toolkit, StackSelectionStrategy } from '@aws-cdk/toolkit-lib';
-import * as core from 'aws-cdk-lib/core';
+import {Toolkit, StackSelectionStrategy} from "@aws-cdk/toolkit-lib"
+import * as core from "aws-cdk-lib/core"
+import {toCdkStackName} from "../utils/NameUtils"
 
 export type CdkCommand = "deploy" | "destroy"
 
 export async function runCdkStack({
   stackClassName,
-  stackName,
+  stackRole,
+  roleInstance,
   command,
 }: {
   stackClassName: string
-  stackName: string
+  stackRole: string
+  roleInstance?: string | null | undefined
   command: CdkCommand
 }) {
   const projectModel = await createProjectModel({})
@@ -36,8 +39,9 @@ export async function runCdkStack({
     )
   }
 
-  const cdkToolkit = new Toolkit({
-  })
+  const cdkToolkit = new Toolkit({})
+
+  const stackName = toCdkStackName([projectModel.name, stackRole, roleInstance])
 
   const cx = await cdkToolkit.fromAssemblyBuilder(async () => {
     const app = new core.App()
@@ -45,13 +49,13 @@ export async function runCdkStack({
     return app.synth()
   })
 
-  switch(command) {
+  switch (command) {
     case "deploy":
       await cdkToolkit.deploy(cx, {
         stacks: {
           strategy: StackSelectionStrategy.PATTERN_MUST_MATCH,
           patterns: [stackName],
-        }
+        },
       })
       break
     case "destroy":
@@ -59,11 +63,11 @@ export async function runCdkStack({
         stacks: {
           strategy: StackSelectionStrategy.PATTERN_MUST_MATCH,
           patterns: [stackName],
-        }
+        },
       })
       break
     default:
-      const unexpected:never = command
+      const unexpected: never = command
       throw new Error(`Command "${command}" not supported`)
       break
   }

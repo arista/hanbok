@@ -1,6 +1,5 @@
 import * as OC from "@oclif/core"
 import {runCdkStack, CdkCommand} from "@lib/cdk/runCdkStack"
-import {Infrastructure} from "@lib/cdk/Infrastructure"
 
 export class Command extends OC.Command {
   static override description =
@@ -11,7 +10,7 @@ export class Command extends OC.Command {
       description: "The CDK command to run on the stack",
       options: ["deploy", "destroy"],
       required: true,
-    })
+    }),
   }
   static override flags = {}
   static override enableJsonFlag = true
@@ -22,7 +21,7 @@ export class Command extends OC.Command {
     return await (async () => {
       await runCdkStack({
         stackClassName: "Infrastructure",
-        stackName: "hb-test-app-infrastructure",
+        stackRole: "infrastructure",
         command: command as CdkCommand,
       })
     })()

@@ -3,6 +3,7 @@
 import {ProjectConfig} from "./ProjectConfig"
 
 export type ProjectModel = {
+  name: string
   projectRoot: string
   devenv: DevEnv
   features: Features

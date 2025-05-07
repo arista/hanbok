@@ -24,6 +24,7 @@ export async function createProjectModel({
   const webapps = getWebappsConfig(config, projectRoot)
   const cdk = getCdkConfig(config, projectRoot)
   return {
+    name: config.name,
     projectRoot,
     devenv,
     features: {
