@@ -3,7 +3,7 @@ import {runCdkStack, CdkCommand} from "@lib/utils/cdk/runCdkStack"
 
 export class Command extends OC.Command {
   static override description =
-    "Runs the CDK command to generate the app's infrastructure"
+    "Runs the CDK command to generate the AWS infrastructure resources for the app in the current directory"
 
   static override args = {
     command: OC.Args.string({
@@ -21,8 +21,8 @@ export class Command extends OC.Command {
     const stackProps: any = {}
     return await (async () => {
       await runCdkStack({
-        stackClassName: "Infrastructure",
-        stackRole: "infrastructure",
+        stackClassName: "AppInfrastructure",
+        stackRole: "app-infrastructure",
         command: command as CdkCommand,
         stackProps,
       })

@@ -61,16 +61,18 @@ export async function runCdkStack({
   const cdkToolkit = new Toolkit({})
 
   const suiteName = projectModel.suite?.name
-  const stackName = toCdkStackName([
+  const stackNameParts = [
     suiteName,
     projectModel.name,
     stackRole,
     roleInstance,
-  ])
+  ].filter((p) => p != null)
+  const stackName = toCdkStackName(stackNameParts)
 
   const fullStackProps = {
     ...stackProps,
     projectModel,
+    stackNameParts,
   }
   const cx = await cdkToolkit.fromAssemblyBuilder(async () => {
     const app = new core.App()
