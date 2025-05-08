@@ -2,10 +2,19 @@
 
 export type ProjectModel = {
   name: string
+  source: SourceModel | null
   projectRoot: string
   devenv: DevEnv
   features: Features
   suite: ProjectModel | null
+}
+
+export type SourceModel = GithubSourceModel
+
+export type GithubSourceModel = {
+  type: "Github"
+  owner: string
+  repo: string
 }
 
 export type DevEnv = {

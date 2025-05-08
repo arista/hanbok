@@ -3,12 +3,14 @@ export type ProjectConfig = SuiteProjectConfig | AppProjectConfig
 export type SuiteProjectConfig = {
   type: "Suite"
   name: string
+  source?: SourceConfig
   features?: SuiteFeatures
 }
 
 export type AppProjectConfig = {
   type: "App"
   name: string
+  source?: SourceConfig
   devenv: DevEnv
   features?: AppFeatures
   suite?: AppSuiteConfig
@@ -41,6 +43,14 @@ export type AppSuiteConfig = {
 export type SuiteFeatures = {
   lib?: boolean | null | undefined
   test?: boolean | null | undefined
+}
+
+export type SourceConfig = GithubSourceConfig
+
+export type GithubSourceConfig = {
+  type: "Github"
+  owner: string
+  repo: string
 }
 
 // This is just a convenient way for the config file to invoke type

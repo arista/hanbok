@@ -28,6 +28,7 @@ export async function parseProjectConfig({
   config: PC.ProjectConfig
   projectRoot: string
 }): Promise<PM.ProjectModel> {
+  const source = getSourceConfig(config, projectRoot)
   const devenv = await getDevEnv(config)
   const lib = getLibConfig(config, projectRoot)
   const test = getTestConfig(config, projectRoot)
@@ -37,6 +38,7 @@ export async function parseProjectConfig({
   const suite = await getSuiteConfig(config, projectRoot)
   return {
     name: config.name,
+    source,
     projectRoot,
     devenv,
     features: {
@@ -47,6 +49,26 @@ export async function parseProjectConfig({
       cdk,
     },
     suite,
+  }
+}
+
+function getSourceConfig(
+  config: PC.ProjectConfig,
+  projectRoot: string
+): PM.SourceModel | null {
+  const sourceConfig = config.source
+  if (sourceConfig == null) {
+    return null
+  }
+  switch (sourceConfig.type) {
+    case "Github": {
+      const {owner, repo} = sourceConfig
+      return {
+        type: "Github",
+        owner,
+        repo,
+      }
+    }
   }
 }
 
@@ -372,17 +394,10 @@ async function getSuiteConfig(
       }
       const {name} = suiteConfig
       const require = createRequire(`${projectRoot}/package.json`)
-      console.log(`name: ${name}`)
       const suitePackagePath = require.resolve(`${name}/package.json`)
-      console.log(`suitePackagePath: ${suitePackagePath}`)
       const suiteDir = path.dirname(suitePackagePath)
-      console.log(`suiteDir: ${suiteDir}`)
       const suiteConfigPath = path.join(suiteDir, "hanbok.config.ts")
-      console.log(`suiteConfigPath: ${suiteConfigPath}`)
-
       const suite = await readHanbokConfig(suiteDir, suiteConfigPath)
-      console.log(`suiteConfigFile: ${JSON.stringify(suite, null, 2)}`)
-
       return await parseProjectConfig({config: suite, projectRoot: suiteDir})
     }
     case "Suite": {
