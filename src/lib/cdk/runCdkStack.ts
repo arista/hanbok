@@ -3,6 +3,7 @@ import * as FsUtils from "../utils/FsUtils"
 import {Toolkit, StackSelectionStrategy} from "@aws-cdk/toolkit-lib"
 import * as core from "aws-cdk-lib/core"
 import {toCdkStackName} from "../utils/NameUtils"
+import {z} from "zod"
 
 export type CdkCommand = "deploy" | "destroy"
 
@@ -11,11 +12,13 @@ export async function runCdkStack({
   stackRole,
   roleInstance,
   command,
+  stackProps,
 }: {
   stackClassName: string
   stackRole: string
   roleInstance?: string | null | undefined
   command: CdkCommand
+  stackProps: any
 }) {
   const projectModel = await createProjectModel({})
   const cdk = projectModel.features.cdk
@@ -32,20 +35,42 @@ export async function runCdkStack({
   }
   const cdkLib = await import(cdkPath)
 
-  const stackClass = cdkLib[stackClassName].Stack
+  const stackModule = cdkLib[stackClassName]
+  const stackPropsSchema: z.ZodTypeAny | undefined =
+    stackModule["StackPropsSchema"]
+  const stackClass = stackModule.Stack
   if (stackClass == null) {
     throw new Error(
-      `The built cdk file at "${cdkPath}" does not export stack "${stackClassName}"`
+      `The built cdk file at "${cdkPath}" does not export a "Stack" class for stack "${stackClassName}"`
+    )
+  }
+  if (stackPropsSchema == null) {
+    throw new Error(
+      `The built cdk file at "${cdkPath}" does not export a "StackPropsSchema" for stack "${stackClassName}"`
+    )
+  }
+
+  const parseResult = stackPropsSchema.safeParse(stackProps)
+  if (!parseResult.success) {
+    const error = parseResult.error.format()
+    throw new Error(
+      `StackProps did not match the expected format: ${JSON.stringify(error, null, 2)}`
     )
   }
 
   const cdkToolkit = new Toolkit({})
 
-  const stackName = toCdkStackName([projectModel.name, stackRole, roleInstance])
+  const suiteName = projectModel.suite?.name
+  const stackName = toCdkStackName([
+    suiteName,
+    projectModel.name,
+    stackRole,
+    roleInstance,
+  ])
 
   const cx = await cdkToolkit.fromAssemblyBuilder(async () => {
     const app = new core.App()
-    const stack = new stackClass(app, stackName)
+    const stack = new stackClass(app, stackName, stackProps)
     return app.synth()
   })
 

@@ -5,6 +5,7 @@ import {Command as PrettierCommand} from "@cli/commands/prettier"
 import {Command as AppServerCommand} from "@cli/commands/app-server"
 import {Command as ShowConfigCommand} from "@cli/commands/show-config"
 import {Command as CdkInfrastructureCommand} from "@cli/commands/cdk/infrastructure"
+import {Command as CdkDeployenvCommand} from "@cli/commands/cdk/deployenv"
 
 export const COMMANDS = {
   build: BuildCommand,
@@ -14,4 +15,5 @@ export const COMMANDS = {
   sample: SampleCommand,
   "show-config": ShowConfigCommand,
   "cdk:infrastructure": CdkInfrastructureCommand,
+  "cdk:deployenv": CdkDeployenvCommand,
 }

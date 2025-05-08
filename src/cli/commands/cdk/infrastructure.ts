@@ -18,11 +18,13 @@ export class Command extends OC.Command {
   async run() {
     const {args, flags} = await this.parse(Command)
     const {command} = args
+    const stackProps: any = {}
     return await (async () => {
       await runCdkStack({
         stackClassName: "Infrastructure",
         stackRole: "infrastructure",
         command: command as CdkCommand,
+        stackProps,
       })
     })()
   }
