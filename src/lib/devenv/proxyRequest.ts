@@ -79,7 +79,7 @@ export function shouldProxyRequest({
   req,
 }: {
   model: PM.ProjectModel
-  webapp: PM.WebappConfig
+  webapp: PM.WebappModel
   req: IncomingMessage
 }) {
   // FIXME - is there a more reliable way to distinguish between

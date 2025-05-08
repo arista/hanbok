@@ -144,7 +144,7 @@ async function readHanbokConfig(
 function getLibConfig(
   projectConfig: PC.ProjectConfig,
   projectRoot: string
-): PM.LibConfig | null {
+): PM.LibModel | null {
   switch (projectConfig.type) {
     case "App":
     case "Suite":
@@ -179,7 +179,7 @@ function getLibConfig(
 function getTestConfig(
   projectConfig: PC.ProjectConfig,
   projectRoot: string
-): PM.TestConfig | null {
+): PM.TestModel | null {
   switch (projectConfig.type) {
     case "App": {
       const configTest = projectConfig.features?.test
@@ -209,7 +209,7 @@ function getTestConfig(
 function getServicesConfig(
   projectConfig: PC.ProjectConfig,
   projectRoot: string
-): PM.ServicesConfig | null {
+): PM.ServicesModel | null {
   switch (projectConfig.type) {
     case "App": {
       const servicesPath = path.join(projectRoot, "src", "services")
@@ -223,10 +223,10 @@ function getServicesConfig(
       if (serviceNames.length === 0) {
         return null
       }
-      const ret: PM.ServicesConfig = {}
+      const ret: PM.ServicesModel = {}
       for (const name of serviceNames) {
         const servicePath = path.join(servicesPath, name)
-        let prisma: PM.PrismaConfig | null = null
+        let prisma: PM.PrismaModel | null = null
         const schemaFile = path.join(servicePath, "prisma", "schema.prisma")
         if (FsUtils.isFile(schemaFile)) {
           const schemaFileContents = fs.readFileSync(schemaFile).toString()
@@ -261,7 +261,7 @@ function getServicesConfig(
 function getWebappsConfig(
   projectConfig: PC.ProjectConfig,
   projectRoot: string
-): PM.WebappsConfig | null {
+): PM.WebappsModel | null {
   switch (projectConfig.type) {
     case "App": {
       const webappsPath = path.join(projectRoot, "src", "webapps")
@@ -275,7 +275,7 @@ function getWebappsConfig(
       if (webappNames.length === 0) {
         return null
       }
-      const ret: PM.WebappsConfig = {}
+      const ret: PM.WebappsModel = {}
       for (const name of webappNames) {
         const webappPath = path.join(webappsPath, name)
         const builtWebappRoot = path.resolve(
@@ -339,7 +339,7 @@ function getWebappsConfig(
 function getCdkConfig(
   projectConfig: PC.ProjectConfig,
   projectRoot: string
-): PM.CdkConfig | null {
+): PM.CdkModel | null {
   switch (projectConfig.type) {
     case "App": {
       const cdkConfig = projectConfig.features?.cdk

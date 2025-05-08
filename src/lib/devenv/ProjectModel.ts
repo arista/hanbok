@@ -1,7 +1,5 @@
 // Models a project
 
-import {ProjectConfig} from "./ProjectConfig"
-
 export type ProjectModel = {
   name: string
   projectRoot: string
@@ -24,33 +22,33 @@ export type AppServer = {
 }
 
 export type Features = {
-  lib: LibConfig | null
-  test: TestConfig | null
-  services: ServicesConfig | null
-  webapps: WebappsConfig | null
-  cdk: CdkConfig | null
+  lib: LibModel | null
+  test: TestModel | null
+  services: ServicesModel | null
+  webapps: WebappsModel | null
+  cdk: CdkModel | null
 }
 
-export type LibConfig = {
+export type LibModel = {
   sourcePath: string
   typesSourcePath: string | null
   builtPath: string
 }
 
-export type TestConfig = {
+export type TestModel = {
   sourcePath: string
   builtPath: string
 }
 
-export type ServicesConfig = Record<string, ServiceConfig>
+export type ServicesModel = Record<string, ServiceModel>
 
-export type ServiceConfig = {
+export type ServiceModel = {
   name: string
   path: string
-  prisma: PrismaConfig | null
+  prisma: PrismaModel | null
 }
 
-export type PrismaConfig = {
+export type PrismaModel = {
   schemaFile: string
   builtSchemaFile: string
   injectSchemaHeader: boolean
@@ -58,9 +56,9 @@ export type PrismaConfig = {
 
 export const PRISMA_SCHEMA_INJECTION_POINT = "__HANBOK_PRISMA_HEADER__"
 
-export type WebappsConfig = Record<string, WebappConfig>
+export type WebappsModel = Record<string, WebappModel>
 
-export type WebappConfig = {
+export type WebappModel = {
   name: string
   path: string
   viteProjectRoot: string
@@ -77,7 +75,7 @@ export type DevAppServer = {
   builtPath: string
 }
 
-export type CdkConfig = {
+export type CdkModel = {
   sourcePath: string
   builtPath: string
 }

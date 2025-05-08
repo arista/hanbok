@@ -2,7 +2,7 @@ import * as vite from "vite"
 import httpProxy from "http-proxy"
 import react from "@vitejs/plugin-react"
 import tailwindcss from "@tailwindcss/vite"
-import {ProjectModel, WebappConfig} from "./ProjectModel"
+import {ProjectModel, WebappModel} from "./ProjectModel"
 import {proxyRequest, shouldProxyRequest} from "./proxyRequest"
 
 export function viteCommonConfig({
@@ -11,7 +11,7 @@ export function viteCommonConfig({
   includeProxyPagePlugin,
 }: {
   model: ProjectModel
-  webapp: WebappConfig
+  webapp: WebappModel
   includeProxyPagePlugin: boolean
 }) {
   const proxyPagePlugin = (): vite.Plugin => {
