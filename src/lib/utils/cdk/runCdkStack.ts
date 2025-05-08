@@ -1,8 +1,8 @@
-import {createProjectModel} from "../devenv/createProjectModel"
-import * as FsUtils from "../utils/FsUtils"
+import {createProjectModel} from "../../devenv/createProjectModel"
+import * as FsUtils from "../FsUtils"
 import {Toolkit, StackSelectionStrategy} from "@aws-cdk/toolkit-lib"
 import * as core from "aws-cdk-lib/core"
-import {toCdkStackName} from "../utils/NameUtils"
+import {toCdkStackName} from "../NameUtils"
 import {z} from "zod"
 
 export type CdkCommand = "deploy" | "destroy"
@@ -68,9 +68,13 @@ export async function runCdkStack({
     roleInstance,
   ])
 
+  const fullStackProps = {
+    ...stackProps,
+    projectModel,
+  }
   const cx = await cdkToolkit.fromAssemblyBuilder(async () => {
     const app = new core.App()
-    const stack = new stackClass(app, stackName, stackProps)
+    const stack = new stackClass(app, stackName, fullStackProps)
     return app.synth()
   })
 

@@ -1,5 +1,5 @@
 import * as OC from "@oclif/core"
-import {runCdkStack, CdkCommand} from "@lib/cdk/runCdkStack"
+import {runCdkStack, CdkCommand} from "@lib/utils/cdk/runCdkStack"
 
 export class Command extends OC.Command {
   static override description =

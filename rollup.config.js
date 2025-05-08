@@ -24,7 +24,7 @@ export default [
     },
     // Don't pull in all the types from libraries that hanbok
     // consumers will need to include anyway
-    external: ["zod"],
+    external: ["zod", "constructs", "aws-cdk-lib"],
     plugins: [
       dts({
         respectExternal: true,
