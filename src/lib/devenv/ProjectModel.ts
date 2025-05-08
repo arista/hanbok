@@ -7,6 +7,7 @@ export type ProjectModel = {
   projectRoot: string
   devenv: DevEnv
   features: Features
+  suite: ProjectModel | null
 }
 
 export type DevEnv = {

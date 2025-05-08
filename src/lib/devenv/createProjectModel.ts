@@ -8,6 +8,7 @@ import * as esbuild from "esbuild"
 import os from "node:os"
 import path from "node:path"
 import fs from "node:fs"
+import {createRequire} from "node:module"
 
 export async function createProjectModel({
   curdir,
@@ -17,12 +18,23 @@ export async function createProjectModel({
   const projectRoot = getProjectRoot(curdir)
   // FIXME - filename is null, or specified by the config
   const config = await readHanbokConfig(projectRoot, null)
+  return parseProjectConfig({config, projectRoot})
+}
+
+export async function parseProjectConfig({
+  config,
+  projectRoot,
+}: {
+  config: PC.ProjectConfig
+  projectRoot: string
+}): Promise<PM.ProjectModel> {
   const devenv = await getDevEnv(config)
   const lib = getLibConfig(config, projectRoot)
   const test = getTestConfig(config, projectRoot)
   const services = getServicesConfig(config, projectRoot)
   const webapps = getWebappsConfig(config, projectRoot)
   const cdk = getCdkConfig(config, projectRoot)
+  const suite = await getSuiteConfig(config, projectRoot)
   return {
     name: config.name,
     projectRoot,
@@ -34,6 +46,7 @@ export async function createProjectModel({
       webapps,
       cdk,
     },
+    suite,
   }
 }
 
@@ -133,7 +146,8 @@ function getLibConfig(
   projectRoot: string
 ): PM.LibConfig | null {
   switch (projectConfig.type) {
-    case "App": {
+    case "App":
+    case "Suite":
       const configLib = projectConfig.features?.lib
       if (configLib !== true) {
         return null
@@ -154,12 +168,12 @@ function getLibConfig(
           : null,
         builtPath,
       }
-    }
-    case "Suite": {
-      // FIXME - implement this
-      return null
-    }
   }
+  // case "Suite": {
+  //   // FIXME - implement this
+  //   return null
+  // }
+  //  }
 }
 
 function getTestConfig(
@@ -341,6 +355,37 @@ function getCdkConfig(
     }
     case "Suite": {
       // FIXME - implement this
+      return null
+    }
+  }
+}
+
+async function getSuiteConfig(
+  projectConfig: PC.ProjectConfig,
+  projectRoot: string
+): Promise<PM.ProjectModel | null> {
+  switch (projectConfig.type) {
+    case "App": {
+      const suiteConfig = projectConfig.suite
+      if (suiteConfig == null) {
+        return null
+      }
+      const {name} = suiteConfig
+      const require = createRequire(`${projectRoot}/package.json`)
+      console.log(`name: ${name}`)
+      const suitePackagePath = require.resolve(`${name}/package.json`)
+      console.log(`suitePackagePath: ${suitePackagePath}`)
+      const suiteDir = path.dirname(suitePackagePath)
+      console.log(`suiteDir: ${suiteDir}`)
+      const suiteConfigPath = path.join(suiteDir, "hanbok.config.ts")
+      console.log(`suiteConfigPath: ${suiteConfigPath}`)
+
+      const suite = await readHanbokConfig(suiteDir, suiteConfigPath)
+      console.log(`suiteConfigFile: ${JSON.stringify(suite, null, 2)}`)
+
+      return await parseProjectConfig({config: suite, projectRoot: suiteDir})
+    }
+    case "Suite": {
       return null
     }
   }

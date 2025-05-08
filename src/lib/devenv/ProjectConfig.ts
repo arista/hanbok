@@ -3,6 +3,7 @@ export type ProjectConfig = SuiteProjectConfig | AppProjectConfig
 export type SuiteProjectConfig = {
   type: "Suite"
   name: string
+  features?: SuiteFeatures
 }
 
 export type AppProjectConfig = {
@@ -10,6 +11,7 @@ export type AppProjectConfig = {
   name: string
   devenv: DevEnv
   features?: AppFeatures
+  suite?: AppSuiteConfig
 }
 
 export type DevEnv = {
@@ -30,6 +32,15 @@ export type AppFeatures = {
   test?: boolean | null | undefined
   services?: boolean | null | undefined
   cdk?: boolean | null | undefined
+}
+
+export type AppSuiteConfig = {
+  name: string
+}
+
+export type SuiteFeatures = {
+  lib?: boolean | null | undefined
+  test?: boolean | null | undefined
 }
 
 // This is just a convenient way for the config file to invoke type
