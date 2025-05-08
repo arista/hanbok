@@ -4,7 +4,7 @@ export function dashesToCamelCase(str: string): string {
     .replace(/-([a-z0-9])/g, (_, char) => char.toUpperCase())
 }
 
-export function toAlphanumDash(str:string, maxLength: number): string {
+export function toAlphanumDash(str: string, maxLength: number): string {
   return str
     .replace(/[^a-zA-Z0-9-]/g, "-") // replace bad chars
     .replace(/^-+|-+$/g, "") // trim leading/trailing dashes
@@ -14,7 +14,7 @@ export function toAlphanumDash(str:string, maxLength: number): string {
 
 export function toDashedName(
   parts: Array<string | null | undefined>,
-  sanitize: (str:string)=>string
+  sanitize: (str: string) => string
 ): string {
   return parts
     .filter((p) => p != null)
