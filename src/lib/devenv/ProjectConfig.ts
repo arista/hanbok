@@ -43,6 +43,7 @@ export type AppSuiteConfig = {
 export type SuiteFeatures = {
   lib?: boolean | null | undefined
   test?: boolean | null | undefined
+  cdk?: boolean | null | undefined
 }
 
 export type SourceConfig = GithubSourceConfig

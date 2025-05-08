@@ -363,7 +363,8 @@ function getCdkConfig(
   projectRoot: string
 ): PM.CdkModel | null {
   switch (projectConfig.type) {
-    case "App": {
+    case "App":
+    case "Suite": {
       const cdkConfig = projectConfig.features?.cdk
       if (cdkConfig !== true) {
         return null
@@ -374,10 +375,6 @@ function getCdkConfig(
         sourcePath,
         builtPath,
       }
-    }
-    case "Suite": {
-      // FIXME - implement this
-      return null
     }
   }
 }
