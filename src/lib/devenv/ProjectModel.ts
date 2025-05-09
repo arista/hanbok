@@ -3,6 +3,7 @@
 export type ProjectModel = {
   name: string
   source: SourceModel | null
+  hanbokSource: SourceModel | null
   projectRoot: string
   devenv: DevEnv
   features: Features
@@ -13,6 +14,7 @@ export type SourceModel = GithubSourceModel
 
 export type GithubSourceModel = {
   type: "Github"
+  codestarConnectionArnParamName: string
   owner: string
   repo: string
 }

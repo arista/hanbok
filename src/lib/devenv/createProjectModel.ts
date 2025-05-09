@@ -28,6 +28,7 @@ export async function parseProjectConfig({
   projectRoot: string
 }): Promise<PM.ProjectModel> {
   const source = getSourceConfig(config, projectRoot)
+  const hanbokSource = getHanbokSourceConfig(config, projectRoot)
   const devenv = await getDevEnv(config)
   const lib = getLibConfig(config, projectRoot)
   const test = getTestConfig(config, projectRoot)
@@ -38,6 +39,7 @@ export async function parseProjectConfig({
   return {
     name: config.name,
     source,
+    hanbokSource,
     projectRoot,
     devenv,
     features: {
@@ -61,9 +63,31 @@ function getSourceConfig(
   }
   switch (sourceConfig.type) {
     case "Github": {
-      const {owner, repo} = sourceConfig
+      const {owner, repo, codestarConnectionArnParamName} = sourceConfig
       return {
         type: "Github",
+        codestarConnectionArnParamName,
+        owner,
+        repo,
+      }
+    }
+  }
+}
+
+function getHanbokSourceConfig(
+  config: PC.ProjectConfig,
+  projectRoot: string
+): PM.SourceModel | null {
+  const sourceConfig = config.hanbokSource
+  if (sourceConfig == null) {
+    return null
+  }
+  switch (sourceConfig.type) {
+    case "Github": {
+      const {owner, repo, codestarConnectionArnParamName} = sourceConfig
+      return {
+        type: "Github",
+        codestarConnectionArnParamName,
         owner,
         repo,
       }

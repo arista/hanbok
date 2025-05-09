@@ -4,6 +4,7 @@ import * as s3 from "aws-cdk-lib/aws-s3"
 import * as cdk from "aws-cdk-lib"
 import * as route53 from "aws-cdk-lib/aws-route53"
 import * as ec2 from "aws-cdk-lib/aws-ec2"
+import * as NU from "../utils/NameUtils"
 
 export type ResourcesProps = {
   cdkExportsPrefix: string
@@ -27,33 +28,33 @@ export class Resources<C extends ResourcesProps> extends Construct {
     })())
   }
 
-  // _ssmStringParams: CachedResources<string> | null = null
-  // get ssmStringParams(): CachedResources<string> {
-  //   return (this._ssmStringParams ||= (() => {
-  //     return new CachedResources((name) => {
-  //       return ssm.StringParameter.valueForStringParameter(
-  //         this.scope,
-  //         `ssm-param-${name}`
-  //       )
-  //     })
-  //   })())
-  // }
+  _ssmStringParams: CachedResources<string> | null = null
+  get ssmStringParams(): CachedResources<string> {
+    return (this._ssmStringParams ||= (() => {
+      return new CachedResources((name) => {
+        return ssm.StringParameter.valueForStringParameter(
+          this.scope,
+          name,//   `ssm-param-${NU.toAlphanumDash(name, 64)}`
+        )
+      })
+    })())
+  }
 
-  // _ssmSecureStringParams: CachedResources<string> | null = null
-  // get ssmSecureStringParams(): CachedResources<string> {
-  //   return (this._ssmSecureStringParams ||= (() => {
-  //     return new CachedResources((name) => {
-  //       // The version must be specified for secure SSM params, and
-  //       // must be changed if the value changes
-  //       const version = 1
-  //       return ssm.StringParameter.valueForSecureStringParameter(
-  //         this.scope,
-  //         `ssm-secureparam-${name}`,
-  //         version
-  //       )
-  //     })
-  //   })())
-  // }
+  _ssmSecureStringParams: CachedResources<string> | null = null
+  get ssmSecureStringParams(): CachedResources<string> {
+    return (this._ssmSecureStringParams ||= (() => {
+      return new CachedResources((name) => {
+        // The version must be specified for secure SSM params, and
+        // must be changed if the value changes
+        const version = 1
+        return ssm.StringParameter.valueForSecureStringParameter(
+          this.scope,
+          `ssm-secureparam-${name}`,
+          version
+        )
+      })
+    })())
+  }
 
   // _s3Buckets: CachedResources<s3.IBucket> | null = null
   // get buckets(): CachedResources<s3.IBucket> {

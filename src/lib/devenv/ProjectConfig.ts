@@ -4,6 +4,7 @@ export type SuiteProjectConfig = {
   type: "Suite"
   name: string
   source?: SourceConfig
+  hanbokSource?: SourceConfig
   features?: SuiteFeatures
 }
 
@@ -11,6 +12,7 @@ export type AppProjectConfig = {
   type: "App"
   name: string
   source?: SourceConfig
+  hanbokSource?: SourceConfig
   devenv: DevEnv
   features?: AppFeatures
   suite?: AppSuiteConfig
@@ -50,6 +52,7 @@ export type SourceConfig = GithubSourceConfig
 
 export type GithubSourceConfig = {
   type: "Github"
+  codestarConnectionArnParamName: string
   owner: string
   repo: string
 }

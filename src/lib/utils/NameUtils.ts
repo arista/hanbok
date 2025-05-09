@@ -43,6 +43,16 @@ export function toCodePipelineName(
   return toDashedName(parts, sanitizeCodePipelineName)
 }
 
+export function sanitizeCodeBuildName(name: string): string {
+  return toAlphanumDash(name, 255)
+}
+
+export function toCodeBuildName(
+  parts: Array<string | null | undefined>
+): string {
+  return toDashedName(parts, sanitizeCodeBuildName)
+}
+
 export function sanitizeCodebuildProjectName(name: string): string {
   return toAlphanumDash(name, 100)
 }
