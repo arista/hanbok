@@ -6,7 +6,7 @@ import * as route53 from "aws-cdk-lib/aws-route53"
 import * as ec2 from "aws-cdk-lib/aws-ec2"
 
 export type ResourcesProps = {
-  exportsPrefix: string
+  cdkExportsPrefix: string
 }
 
 export class Resources<C extends ResourcesProps> extends Construct {
@@ -95,7 +95,7 @@ export class S3BucketResource {
   ) {}
 
   get exportName() {
-    return `${this.resources.props.exportsPrefix}:${this.exportNameSuffix}`
+    return `${this.resources.props.cdkExportsPrefix}:${this.exportNameSuffix}`
   }
 
   // Returns the token representing the value exported with the given

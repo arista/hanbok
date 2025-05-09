@@ -9,7 +9,7 @@ import * as PM from "../devenv/ProjectModel"
 import * as NU from "../utils/NameUtils"
 
 export type SuiteResourcesBaseProps = R.ResourcesProps & {
-  exportsPrefix: string
+  cdkExportsPrefix: string
 }
 
 export class SuiteResourcesBase<
@@ -22,7 +22,7 @@ export class SuiteResourcesBase<
   // Returns a value exported by the suite infrastructure CDK stack.
   // The given name will be appended to the infrastructure base name
   getInfrastructureExport(name: string): string {
-    return cdk.Fn.importValue(`${this.props.exportsPrefix}:${name}`)
+    return cdk.Fn.importValue(`${this.props.cdkExportsPrefix}:${name}`)
   }
 
   // The bucket holding the codepipeline artifacts

@@ -8,7 +8,7 @@ export class Command extends OC.Command {
   static override args = {
     command: OC.Args.string({
       description: "The CDK command to run on the stack",
-      options: ["deploy", "destroy"],
+      options: ["deploy", "destroy", "synth"],
       required: true,
     }),
   }

@@ -5,7 +5,7 @@ import * as core from "aws-cdk-lib/core"
 import {toCdkStackName} from "../NameUtils"
 import {z} from "zod"
 
-export type CdkCommand = "deploy" | "destroy"
+export type CdkCommand = "deploy" | "destroy" | "synth"
 
 export async function runCdkStack({
   stackClassName,
@@ -20,6 +20,7 @@ export async function runCdkStack({
   command: CdkCommand
   stackProps: any
 }) {
+  try {
   const projectModel = await createProjectModel({})
   const cdk = projectModel.features.cdk
   if (cdk == null) {
@@ -97,9 +98,22 @@ export async function runCdkStack({
         },
       })
       break
+    case "synth":
+      await cdkToolkit.synth(cx, {
+        stacks: {
+          strategy: StackSelectionStrategy.PATTERN_MUST_MATCH,
+          patterns: [stackName],
+        },
+      })
+      break
     default:
       const unexpected: never = command
       throw new Error(`Command "${command}" not supported`)
       break
+  }
+  }
+  catch(err) {
+    console.error(`Error running CDK stack`, err)
+    throw err
   }
 }

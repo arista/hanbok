@@ -62,3 +62,13 @@ export function toStackOutputName(
 ): string {
   return toDashedName(parts, sanitizeStackOutputName)
 }
+
+export function sanitizeS3BucketName(name: string): string {
+  return toAlphanumDash(name, 63).toLowerCase()
+}
+
+export function toS3BucketName(
+  parts: Array<string | null | undefined>
+): string {
+  return toDashedName(parts, sanitizeS3BucketName)
+}
