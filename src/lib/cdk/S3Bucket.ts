@@ -1,6 +1,7 @@
 import {Construct} from "constructs"
 import * as cdk from "aws-cdk-lib"
 import * as s3 from "aws-cdk-lib/aws-s3"
+import * as Resources from "./Resources"
 
 export type Props = {
   name: string
@@ -10,8 +11,8 @@ export type Props = {
   // What should happen when the bucket is removed from the stack
   removePolicy?: RemovePolicy
   cors?: CorsConfig
-  // The name that should be used to export the bucket's name
-  exportName?: string
+  // The resource used to handle stack exports
+  resource?: Resources.S3BucketResource
 }
 
 export type RemovePolicy =
@@ -26,12 +27,11 @@ export type CorsConfig = "none" | "allow-all-origins"
 
 export class S3Bucket extends Construct {
   bucket: s3.IBucket
-  export: cdk.CfnOutput | null = null
 
   constructor(scope: Construct, id: string, props: Props) {
     super(scope, id)
 
-    const {name, isPublic, isHostable, removePolicy, cors, exportName} = props
+    const {name, isPublic, isHostable, removePolicy, cors, resource} = props
     const access = isPublic
       ? {
           publicReadAccess: true,
@@ -96,10 +96,10 @@ export class S3Bucket extends Construct {
       }
     }
 
-    if (exportName != null) {
-      this.export = new cdk.CfnOutput(this, `export`, {
+    if (resource != null) {
+      new cdk.CfnOutput(this, `export`, {
         value: name,
-        exportName,
+        exportName: resource.exportName,
       })
     }
 

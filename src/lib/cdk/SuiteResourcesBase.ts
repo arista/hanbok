@@ -34,118 +34,124 @@ export class SuiteResourcesBase<
   // The bucket holding public app S3 data, including webapp assets
   publicBucket = new R.S3BucketResource(this, "buckets:public:name")
 
-  // Returns the vpcId of the common VPC
-  get vpcId() {
-    return this.getInfrastructureExport("vpc:id")
-  }
+  // The VPC
+  vpc = new R.VpcResource(this, "vpc")
 
-  _vpc: ec2.IVpc | null = null
-  get vpc(): ec2.IVpc {
-    return (this._vpc ||= (() => {
-      return ec2.Vpc.fromVpcAttributes(this.scope, `vpc-byId-${this.vpcId}`, {
-        vpcId: this.vpcId,
-        availabilityZones: this.vpcAzs,
-        privateSubnetIds: this.privateSubnetIds,
-      })
-    })())
-  }
+  
 
-  get vpcAzs() {
-    return cdk.Fn.split(",", this.getInfrastructureExport("vpc:azs"))
-  }
+  // // Returns the vpcId of the common VPC
+  // get vpcId() {
+  //   return this.getInfrastructureExport("vpc:id")
+  // }
 
-  getSubnetIds(name: string): Array<string> {
-    return cdk.Fn.split(
-      ",",
-      this.getInfrastructureExport(`vpc:subnets:${name}:subnetIds`)
-    )
-  }
+  // _vpc: ec2.IVpc | null = null
+  // get vpc(): ec2.IVpc {
+  //   return (this._vpc ||= (() => {
+  //     return ec2.Vpc.fromVpcAttributes(this.scope, `vpc-byId-${this.vpcId}`, {
+  //       vpcId: this.vpcId,
+  //       availabilityZones: this.vpcAzs,
+  //       privateSubnetIds: this.privateSubnetIds,
+  //     })
+  //   })())
+  // }
 
-  // The ids of the vpc subnets open to the internet
-  get publicSubnetIds() {
-    return this.getSubnetIds("public")
-  }
+  // get vpcAzs() {
+  //   return cdk.Fn.split(",", this.getInfrastructureExport("vpc:azs"))
+  // }
 
-  get publicSubnets() {
-    return this.publicSubnetIds.map((id) => this.subnetsById.get(id))
-  }
+  // getSubnetIds(name: string): Array<string> {
+  //   return cdk.Fn.split(
+  //     ",",
+  //     this.getInfrastructureExport(`vpc:subnets:${name}:subnetIds`)
+  //   )
+  // }
 
-  // The ids of the vpc subnets blocked from internet ingress, but
-  // still with outbound access through the vpc's nat
-  get privateSubnetIds() {
-    return this.getSubnetIds("private")
-  }
+  // // The ids of the vpc subnets open to the internet
+  // get publicSubnetIds() {
+  //   return this.getSubnetIds("public")
+  // }
 
-  get privateSubnets() {
-    return this.privateSubnetIds.map((id) => this.subnetsById.get(id))
-  }
+  // get publicSubnets() {
+  //   return this.publicSubnetIds.map((id) => this.subnetsById.get(id))
+  // }
 
-  // The ids of the vpc subnets blocked from the internet
-  get isolatedSubnetIds() {
-    return this.getSubnetIds("isolated")
-  }
+  // // The ids of the vpc subnets blocked from internet ingress, but
+  // // still with outbound access through the vpc's nat
+  // get privateSubnetIds() {
+  //   return this.getSubnetIds("private")
+  // }
 
-  get isolatedSubnets() {
-    return this.isolatedSubnetIds.map((id) => this.subnetsById.get(id))
-  }
+  // get privateSubnets() {
+  //   return this.privateSubnetIds.map((id) => this.subnetsById.get(id))
+  // }
 
-  // Returns the token corresponding to the codeconnection arn used to
-  // interact with github
-  get codestarConnectionArn() {
-    return this.ssmStringParams.get(
-      "/taterapps/common/build/codestar-connection-arn"
-    )
-  }
+  // // The ids of the vpc subnets blocked from the internet
+  // get isolatedSubnetIds() {
+  //   return this.getSubnetIds("isolated")
+  // }
 
-  // Returns the token corresponding to the dockerhub login used to
-  // pull base images when building docker images.  Using a login
-  // helps with the dockerhub rate limits.
-  get dockerhubAccountId() {
-    return this.ssmStringParams.get(
-      "/taterapps/common/build/dockerhub-account/id"
-    )
-  }
+  // get isolatedSubnets() {
+  //   return this.isolatedSubnetIds.map((id) => this.subnetsById.get(id))
+  // }
 
-  // Returns the token corresponding to the dockerhub password for the
-  // dockerhubAccountId
-  get dockerhubAccountPassword() {
-    return this.ssmSecureStringParams.get(
-      "/taterapps/common/build/dockerhub-account/password"
-    )
-  }
+  
+  // // Returns the token corresponding to the codeconnection arn used to
+  // // interact with github
+  // get codestarConnectionArn() {
+  //   return this.ssmStringParams.get(
+  //     "/taterapps/common/build/codestar-connection-arn"
+  //   )
+  // }
 
-  get abramsonsInfoDomain() {
-    return "abramsons.info"
-  }
+  // // Returns the token corresponding to the dockerhub login used to
+  // // pull base images when building docker images.  Using a login
+  // // helps with the dockerhub rate limits.
+  // get dockerhubAccountId() {
+  //   return this.ssmStringParams.get(
+  //     "/taterapps/common/build/dockerhub-account/id"
+  //   )
+  // }
 
-  get abramsonsInfoHostedZone() {
-    return this.hostedZones.get(this.abramsonsInfoDomain)
-  }
+  // // Returns the token corresponding to the dockerhub password for the
+  // // dockerhubAccountId
+  // get dockerhubAccountPassword() {
+  //   return this.ssmSecureStringParams.get(
+  //     "/taterapps/common/build/dockerhub-account/password"
+  //   )
+  // }
 
-  get dbEndpointAddress() {
-    return this.getInfrastructureExport("db:endpoint:address")
-  }
+  // get abramsonsInfoDomain() {
+  //   return "abramsons.info"
+  // }
 
-  get dbEndpointPort() {
-    return cdk.Token.asNumber(this.getInfrastructureExport("db:endpoint:port"))
-  }
+  // get abramsonsInfoHostedZone() {
+  //   return this.hostedZones.get(this.abramsonsInfoDomain)
+  // }
 
-  get dbAdminCredentialsSecretName() {
-    return this.getInfrastructureExport("db:credentials:admin:secret-name")
-  }
+  // get dbEndpointAddress() {
+  //   return this.getInfrastructureExport("db:endpoint:address")
+  // }
 
-  get dbSecurityGroupId() {
-    return this.getInfrastructureExport("db:security-group-id")
-  }
+  // get dbEndpointPort() {
+  //   return cdk.Token.asNumber(this.getInfrastructureExport("db:endpoint:port"))
+  // }
 
-  _dbSecurityGroup: ec2.ISecurityGroup | null = null
-  get dbSecurityGroup(): ec2.ISecurityGroup {
-    return (this._dbSecurityGroup ||= (() => {
-      return ec2.SecurityGroup.fromSecurityGroupId(
-        this.scope,
-        "dbSecurityGroup",
-        this.dbSecurityGroupId
-      )
-    })())
-  }
+  // get dbAdminCredentialsSecretName() {
+  //   return this.getInfrastructureExport("db:credentials:admin:secret-name")
+  // }
+
+  // get dbSecurityGroupId() {
+  //   return this.getInfrastructureExport("db:security-group-id")
+  // }
+
+  // _dbSecurityGroup: ec2.ISecurityGroup | null = null
+  // get dbSecurityGroup(): ec2.ISecurityGroup {
+  //   return (this._dbSecurityGroup ||= (() => {
+  //     return ec2.SecurityGroup.fromSecurityGroupId(
+  //       this.scope,
+  //       "dbSecurityGroup",
+  //       this.dbSecurityGroupId
+  //     )
+  //   })())
+  // }
 }

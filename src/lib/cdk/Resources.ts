@@ -18,58 +18,6 @@ export class Resources<C extends ResourcesProps> extends Construct {
     super(scope, id)
   }
 
-  _ssmStringParams: CachedResources<string> | null = null
-  get ssmStringParams(): CachedResources<string> {
-    return (this._ssmStringParams ||= (() => {
-      return new CachedResources((name) => {
-        return ssm.StringParameter.valueForStringParameter(
-          this.scope,
-          `ssm-param-${name}`
-        )
-      })
-    })())
-  }
-
-  _ssmSecureStringParams: CachedResources<string> | null = null
-  get ssmSecureStringParams(): CachedResources<string> {
-    return (this._ssmSecureStringParams ||= (() => {
-      return new CachedResources((name) => {
-        // The version must be specified for secure SSM params, and
-        // must be changed if the value changes
-        const version = 1
-        return ssm.StringParameter.valueForSecureStringParameter(
-          this.scope,
-          `ssm-secureparam-${name}`,
-          version
-        )
-      })
-    })())
-  }
-
-  _s3Buckets: CachedResources<s3.IBucket> | null = null
-  get buckets(): CachedResources<s3.IBucket> {
-    return (this._s3Buckets ||= (() => {
-      return new CachedResources((name) => {
-        return s3.Bucket.fromBucketName(this.scope, `bucket-${name}`, name)
-      })
-    })())
-  }
-
-  _hostedZones: CachedResources<route53.IHostedZone> | null = null
-  get hostedZones(): CachedResources<route53.IHostedZone> {
-    return (this._hostedZones ||= (() => {
-      return new CachedResources((name) => {
-        return route53.HostedZone.fromLookup(
-          this.scope,
-          `hosted-zone-${name.replace(/\./g, "")}`,
-          {
-            domainName: name,
-          }
-        )
-      })
-    })())
-  }
-
   _subnetsById: CachedResources<ec2.ISubnet> | null = null
   get subnetsById(): CachedResources<ec2.ISubnet> {
     return (this._subnetsById ||= (() => {
@@ -78,6 +26,62 @@ export class Resources<C extends ResourcesProps> extends Construct {
       })
     })())
   }
+
+
+  
+
+  
+  // _ssmStringParams: CachedResources<string> | null = null
+  // get ssmStringParams(): CachedResources<string> {
+  //   return (this._ssmStringParams ||= (() => {
+  //     return new CachedResources((name) => {
+  //       return ssm.StringParameter.valueForStringParameter(
+  //         this.scope,
+  //         `ssm-param-${name}`
+  //       )
+  //     })
+  //   })())
+  // }
+
+  // _ssmSecureStringParams: CachedResources<string> | null = null
+  // get ssmSecureStringParams(): CachedResources<string> {
+  //   return (this._ssmSecureStringParams ||= (() => {
+  //     return new CachedResources((name) => {
+  //       // The version must be specified for secure SSM params, and
+  //       // must be changed if the value changes
+  //       const version = 1
+  //       return ssm.StringParameter.valueForSecureStringParameter(
+  //         this.scope,
+  //         `ssm-secureparam-${name}`,
+  //         version
+  //       )
+  //     })
+  //   })())
+  // }
+
+  // _s3Buckets: CachedResources<s3.IBucket> | null = null
+  // get buckets(): CachedResources<s3.IBucket> {
+  //   return (this._s3Buckets ||= (() => {
+  //     return new CachedResources((name) => {
+  //       return s3.Bucket.fromBucketName(this.scope, `bucket-${name}`, name)
+  //     })
+  //   })())
+  // }
+
+  // _hostedZones: CachedResources<route53.IHostedZone> | null = null
+  // get hostedZones(): CachedResources<route53.IHostedZone> {
+  //   return (this._hostedZones ||= (() => {
+  //     return new CachedResources((name) => {
+  //       return route53.HostedZone.fromLookup(
+  //         this.scope,
+  //         `hosted-zone-${name.replace(/\./g, "")}`,
+  //         {
+  //           domainName: name,
+  //         }
+  //       )
+  //     })
+  //   })())
+  // }
 }
 
 class CachedResources<T> {
@@ -114,5 +118,62 @@ export class S3BucketResource {
         name
       )
     })())
+  }
+}
+
+export class VpcResource {
+  publicSubnets: VpcSubnetResource
+  privateSubnets: VpcSubnetResource
+  isolatedSubnets: VpcSubnetResource
+
+  constructor(
+    public resources: Resources<any>,
+    public exportNameSuffix: string
+  ) {
+    this.publicSubnets = new VpcSubnetResource(this.resources, `${this.exportNameBase}:subnets:public`)
+    this.privateSubnets = new VpcSubnetResource(this.resources, `${this.exportNameBase}:subnets:private`)
+    this.isolatedSubnets = new VpcSubnetResource(this.resources, `${this.exportNameBase}:subnets:isolated`)
+  }
+
+  get exportNameBase() {
+    return `${this.resources.props.cdkExportsPrefix}:${this.exportNameSuffix}`
+  }
+
+  // id of the vpc
+  get vpcIdExportName() {
+    return `${this.exportNameBase}:id`
+  }
+  get vpcIdExportedValue() {
+    return cdk.Fn.importValue(this.vpcIdExportName)
+  }
+
+  // The comma-separated list of the vpc's availability zones
+  get azsExportName() {
+    return `${this.exportNameBase}:azs`
+  }
+  get azsExportedValue() {
+    return cdk.Fn.split(",", this.azsExportName)
+  }
+}
+
+export class VpcSubnetResource {
+  constructor(
+    public resources: Resources<any>,
+    public exportNameSuffix: string
+  ) {}
+
+  // id of the vpc
+  get subnetIdsExportName() {
+    return `${this.resources.props.cdkExportsPrefix}:${this.exportNameSuffix}:ids`
+  }
+  get subnetIdsExportedValue() {
+    return cdk.Fn.split(",", this.subnetIdsExportName)
+  }
+
+  _subnets?: Array<ec2.ISubnet>
+  get subnets() {
+    return this._subnets ??= (() => {
+      return this.subnetIdsExportedValue.map(id => this.resources.subnetsById.get(id))
+    })()
   }
 }

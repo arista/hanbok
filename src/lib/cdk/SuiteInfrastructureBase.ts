@@ -1,6 +1,7 @@
 import {Construct, IConstruct} from "constructs"
 import {SuiteResourcesBase} from "./SuiteResourcesBase"
 import {S3Bucket} from "./S3Bucket"
+import {Vpc} from "./Vpc"
 import * as PM from "../devenv/ProjectModel"
 import * as NU from "../utils/NameUtils"
 
@@ -11,10 +12,11 @@ export type SuiteInfrastructureBaseProps = {
 
 export class SuiteInfrastructureBase<
   C extends SuiteInfrastructureBaseProps,
-> extends Construct {
+  > extends Construct {
+    vpc: Vpc
   cpArtifactsBucket: S3Bucket
   privateBucket: S3Bucket
-  publicBucket: S3Bucket
+    publicBucket: S3Bucket
 
   constructor(
     scope: IConstruct,
@@ -29,6 +31,13 @@ export class SuiteInfrastructureBase<
     })
 
     //----------------------------------------
+    // Create the vpc
+    this.vpc = new Vpc(this, "vpc", {
+      name: NU.toS3BucketName([suiteName, "vpc"]),
+      resource: resources.vpc,
+    })
+
+    //----------------------------------------
     // Create the buckets
 
     // For holding codepipeline artifacts
@@ -36,7 +45,7 @@ export class SuiteInfrastructureBase<
       name: NU.toS3BucketName([suiteName, "cp-artifacts"]),
       isPublic: false,
       removePolicy: "empty-and-delete",
-      exportName: resources.cpArtifactsBucket.exportName,
+      resource: resources.cpArtifactsBucket,
     })
 
     // For private data storage by all of the suite's apps
@@ -44,7 +53,7 @@ export class SuiteInfrastructureBase<
       name: NU.toS3BucketName([suiteName, "private"]),
       isPublic: false,
       removePolicy: "delete-if-empty",
-      exportName: resources.privateBucket.exportName,
+      resource: resources.privateBucket,
     })
 
     // For public files exposed by all of the suite's apps, such as
@@ -55,7 +64,7 @@ export class SuiteInfrastructureBase<
       isHostable: true,
       removePolicy: "delete-if-empty",
       cors: "allow-all-origins",
-      exportName: resources.publicBucket.exportName,
+      resource: resources.publicBucket,
     })
   }
 }
