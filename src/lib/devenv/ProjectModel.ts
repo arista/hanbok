@@ -2,6 +2,7 @@
 
 export type ProjectModel = {
   name: string
+  type: ProjectType
   source: SourceModel | null
   hanbokSource: SourceModel | null
   projectRoot: string
@@ -9,6 +10,8 @@ export type ProjectModel = {
   features: Features
   suite: ProjectModel | null
 }
+
+export type ProjectType = "Suite" | "App"
 
 export type SourceModel = GithubSourceModel
 

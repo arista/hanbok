@@ -5,9 +5,10 @@ import * as cdk from "aws-cdk-lib"
 import * as route53 from "aws-cdk-lib/aws-route53"
 import * as ec2 from "aws-cdk-lib/aws-ec2"
 import * as NU from "../utils/NameUtils"
+import * as PM from "../devenv/ProjectModel"
 
 export type ResourcesProps = {
-  cdkExportsPrefix: string
+  projectModel: PM.ProjectModel
 }
 
 export class Resources<C extends ResourcesProps> extends Construct {
@@ -17,6 +18,16 @@ export class Resources<C extends ResourcesProps> extends Construct {
     public props: C
   ) {
     super(scope, id)
+  }
+
+  get cdkExportsPrefix() {
+    const {projectModel} = this.props
+    switch(projectModel.type) {
+      case "Suite":
+        return NU.toStackOutputName([projectModel.name])
+      case "App":
+        return NU.toStackOutputName([projectModel.suite?.name])
+    }
   }
 
   _subnetsById: CachedResources<ec2.ISubnet> | null = null
@@ -34,7 +45,7 @@ export class Resources<C extends ResourcesProps> extends Construct {
       return new CachedResources((name) => {
         return ssm.StringParameter.valueForStringParameter(
           this.scope,
-          name,//   `ssm-param-${NU.toAlphanumDash(name, 64)}`
+          name,
         )
       })
     })())
@@ -50,6 +61,7 @@ export class Resources<C extends ResourcesProps> extends Construct {
         return ssm.StringParameter.valueForSecureStringParameter(
           this.scope,
           `ssm-secureparam-${name}`,
+          // ${NU.toAlphanumDash(name, 64)} - do we need this?
           version
         )
       })
@@ -96,7 +108,7 @@ export class S3BucketResource {
   ) {}
 
   get exportName() {
-    return `${this.resources.props.cdkExportsPrefix}:${this.exportNameSuffix}`
+    return `${this.resources.cdkExportsPrefix}:${this.exportNameSuffix}`
   }
 
   // Returns the token representing the value exported with the given
@@ -142,7 +154,7 @@ export class VpcResource {
   }
 
   get exportNameBase() {
-    return `${this.resources.props.cdkExportsPrefix}:${this.exportNameSuffix}`
+    return `${this.resources.cdkExportsPrefix}:${this.exportNameSuffix}`
   }
 
   // id of the vpc
@@ -170,7 +182,7 @@ export class VpcSubnetResource {
 
   // id of the vpc
   get subnetIdsExportName() {
-    return `${this.resources.props.cdkExportsPrefix}:${this.exportNameSuffix}:ids`
+    return `${this.resources.cdkExportsPrefix}:${this.exportNameSuffix}:ids`
   }
   get subnetIdsExportedValue() {
     return cdk.Fn.split(",", this.subnetIdsExportName)

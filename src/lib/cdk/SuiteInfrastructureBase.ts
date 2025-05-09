@@ -27,7 +27,7 @@ export class SuiteInfrastructureBase<
     const {projectModel, stackNameParts} = props
     const suiteName = projectModel.name
     const resources = new SuiteResourcesBase(this, "resources", {
-      cdkExportsPrefix: NU.toStackOutputName(stackNameParts),
+      projectModel,
     })
 
     //----------------------------------------

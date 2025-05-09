@@ -21,7 +21,7 @@ export class BuildDeployPipeline extends Construct {
     const {projectModel, branch, deployenv, stackNameParts} = props
 
     const resources = new SuiteResourcesBase(this, "resources", {
-      cdkExportsPrefix: NU.toStackOutputName(stackNameParts),
+      projectModel
     })
     const permissions = new Permissions()
     const pipelineName = NU.toCodePipelineName(stackNameParts)

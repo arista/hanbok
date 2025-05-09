@@ -38,6 +38,7 @@ export async function parseProjectConfig({
   const suite = await getSuiteConfig(config, projectRoot)
   return {
     name: config.name,
+    type: config.type,
     source,
     hanbokSource,
     projectRoot,
