@@ -37,8 +37,6 @@ export class SuiteResourcesBase<
   // The VPC
   vpc = new R.VpcResource(this, "vpc")
 
-  
-
   // // Returns the vpcId of the common VPC
   // get vpcId() {
   //   return this.getInfrastructureExport("vpc:id")
@@ -94,7 +92,6 @@ export class SuiteResourcesBase<
   //   return this.isolatedSubnetIds.map((id) => this.subnetsById.get(id))
   // }
 
-  
   // // Returns the token corresponding to the codeconnection arn used to
   // // interact with github
   // get codestarConnectionArn() {

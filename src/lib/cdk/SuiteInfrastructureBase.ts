@@ -12,11 +12,11 @@ export type SuiteInfrastructureBaseProps = {
 
 export class SuiteInfrastructureBase<
   C extends SuiteInfrastructureBaseProps,
-  > extends Construct {
-    vpc: Vpc
+> extends Construct {
+  vpc: Vpc
   cpArtifactsBucket: S3Bucket
   privateBucket: S3Bucket
-    publicBucket: S3Bucket
+  publicBucket: S3Bucket
 
   constructor(
     scope: IConstruct,

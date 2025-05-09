@@ -27,10 +27,6 @@ export class Resources<C extends ResourcesProps> extends Construct {
     })())
   }
 
-
-  
-
-  
   // _ssmStringParams: CachedResources<string> | null = null
   // get ssmStringParams(): CachedResources<string> {
   //   return (this._ssmStringParams ||= (() => {
@@ -130,9 +126,18 @@ export class VpcResource {
     public resources: Resources<any>,
     public exportNameSuffix: string
   ) {
-    this.publicSubnets = new VpcSubnetResource(this.resources, `${this.exportNameBase}:subnets:public`)
-    this.privateSubnets = new VpcSubnetResource(this.resources, `${this.exportNameBase}:subnets:private`)
-    this.isolatedSubnets = new VpcSubnetResource(this.resources, `${this.exportNameBase}:subnets:isolated`)
+    this.publicSubnets = new VpcSubnetResource(
+      this.resources,
+      `${this.exportNameBase}:subnets:public`
+    )
+    this.privateSubnets = new VpcSubnetResource(
+      this.resources,
+      `${this.exportNameBase}:subnets:private`
+    )
+    this.isolatedSubnets = new VpcSubnetResource(
+      this.resources,
+      `${this.exportNameBase}:subnets:isolated`
+    )
   }
 
   get exportNameBase() {
@@ -172,8 +177,10 @@ export class VpcSubnetResource {
 
   _subnets?: Array<ec2.ISubnet>
   get subnets() {
-    return this._subnets ??= (() => {
-      return this.subnetIdsExportedValue.map(id => this.resources.subnetsById.get(id))
-    })()
+    return (this._subnets ??= (() => {
+      return this.subnetIdsExportedValue.map((id) =>
+        this.resources.subnetsById.get(id)
+      )
+    })())
   }
 }

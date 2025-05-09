@@ -10,7 +10,7 @@ export type Props = {
 
 export class Vpc extends Construct {
   vpc: ec2.IVpc
-  
+
   constructor(scope: Construct, id: string, props: Props) {
     super(scope, id)
 
@@ -59,16 +59,22 @@ export class Vpc extends Construct {
       exportName: resource.azsExportName,
     })
     new cdk.CfnOutput(this, `export-public-subnet-ids`, {
-      value: vpc.selectSubnets({ subnetType: ec2.SubnetType.PUBLIC }).subnetIds.join(","),
-      exportName: resource.publicSubnets.subnetIdsExportName
+      value: vpc
+        .selectSubnets({subnetType: ec2.SubnetType.PUBLIC})
+        .subnetIds.join(","),
+      exportName: resource.publicSubnets.subnetIdsExportName,
     })
     new cdk.CfnOutput(this, `export-private-subnet-ids`, {
-      value: vpc.selectSubnets({ subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS }).subnetIds.join(","),
-      exportName: resource.privateSubnets.subnetIdsExportName
+      value: vpc
+        .selectSubnets({subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS})
+        .subnetIds.join(","),
+      exportName: resource.privateSubnets.subnetIdsExportName,
     })
     new cdk.CfnOutput(this, `export-isolated-subnet-ids`, {
-      value: vpc.selectSubnets({ subnetType: ec2.SubnetType.PRIVATE_ISOLATED }).subnetIds.join(","),
-      exportName: resource.isolatedSubnets.subnetIdsExportName
+      value: vpc
+        .selectSubnets({subnetType: ec2.SubnetType.PRIVATE_ISOLATED})
+        .subnetIds.join(","),
+      exportName: resource.isolatedSubnets.subnetIdsExportName,
     })
 
     this.vpc = vpc
