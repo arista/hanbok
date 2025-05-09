@@ -9,17 +9,23 @@ export type SuiteInfrastructureBaseProps = {
   stackNameParts: Array<string>
 }
 
-export class SuiteInfrastructureBase<C extends SuiteInfrastructureBaseProps> extends Construct {
-  cpArtifactsBucket:S3Bucket
-  privateBucket:S3Bucket
-  publicBucket:S3Bucket
-  
-  constructor(scope: IConstruct, id: string, public props: C) {
+export class SuiteInfrastructureBase<
+  C extends SuiteInfrastructureBaseProps,
+> extends Construct {
+  cpArtifactsBucket: S3Bucket
+  privateBucket: S3Bucket
+  publicBucket: S3Bucket
+
+  constructor(
+    scope: IConstruct,
+    id: string,
+    public props: C
+  ) {
     super(scope, id)
     const {projectModel, stackNameParts} = props
     const suiteName = projectModel.name
     const resources = new SuiteResourcesBase(this, "resources", {
-      cdkExportsPrefix: NU.toStackOutputName(stackNameParts)
+      cdkExportsPrefix: NU.toStackOutputName(stackNameParts),
     })
 
     //----------------------------------------

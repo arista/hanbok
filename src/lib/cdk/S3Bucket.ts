@@ -1,4 +1,4 @@
-import { Construct } from "constructs"
+import {Construct} from "constructs"
 import * as cdk from "aws-cdk-lib"
 import * as s3 from "aws-cdk-lib/aws-s3"
 
@@ -26,31 +26,31 @@ export type CorsConfig = "none" | "allow-all-origins"
 
 export class S3Bucket extends Construct {
   bucket: s3.IBucket
-  export: cdk.CfnOutput|null = null
+  export: cdk.CfnOutput | null = null
 
   constructor(scope: Construct, id: string, props: Props) {
     super(scope, id)
 
-    const { name, isPublic, isHostable, removePolicy, cors, exportName } = props
+    const {name, isPublic, isHostable, removePolicy, cors, exportName} = props
     const access = isPublic
       ? {
-        publicReadAccess: true,
-        blockPublicAccess: new s3.BlockPublicAccess({
-          blockPublicAcls: false,
-          blockPublicPolicy: false,
-          ignorePublicAcls: false,
-          restrictPublicBuckets: false,
-        }),
-      }
+          publicReadAccess: true,
+          blockPublicAccess: new s3.BlockPublicAccess({
+            blockPublicAcls: false,
+            blockPublicPolicy: false,
+            ignorePublicAcls: false,
+            restrictPublicBuckets: false,
+          }),
+        }
       : {
-        publicReadAccess: false,
-      }
+          publicReadAccess: false,
+        }
 
     const hostable = isHostable
       ? {
-        // This is apparently how you do s3 http hosting
-        websiteIndexDocument: "index.html",
-      }
+          // This is apparently how you do s3 http hosting
+          websiteIndexDocument: "index.html",
+        }
       : {}
 
     const removal = (() => {
