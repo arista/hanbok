@@ -12,7 +12,6 @@ const builds = [
   {entry: "src/tools.ts", out: "dist/tools/tools.es.js", format: "esm"},
   {entry: "src/server.ts", out: "dist/server/server.es.js", format: "esm"},
   {entry: "src/routes.ts", out: "dist/routes/routes.es.js", format: "esm"},
-  {entry: "src/cdk.ts", out: "dist/cdk/cdk.es.js", format: "esm"},
   {entry: "test/tests.ts", out: "build/test/tests.es.js", format: "esm"},
 ]
 

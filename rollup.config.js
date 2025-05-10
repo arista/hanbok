@@ -29,7 +29,6 @@ function getPackageExternals() {
 export default [
   { input: "build/tsc/src/tools.d.ts", output: "dist/tools/tools.es.d.ts", format: "es" },
   { input: "build/tsc/src/server.d.ts", output: "dist/server/server.es.d.ts", format: "es" },
-  { input: "build/tsc/src/cdk.d.ts", output: "dist/cdk/cdk.es.d.ts", format: "es" },
   { input: "build/tsc/src/routes.d.ts", output: "dist/routes/routes.es.d.ts", format: "es" },
 ].map(c => {
   const {input, output, format} = c
