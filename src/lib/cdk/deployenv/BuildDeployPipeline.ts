@@ -20,6 +20,8 @@ export class BuildDeployPipeline extends Construct {
     super(scope, id)
     const {projectModel, branch, deployenv, stackNameParts} = props
 
+    const appName = projectModel.name
+    const suiteName = projectModel.suite?.name
     const resources = new SuiteResourcesBase(this, "resources", {
       projectModel
     })
@@ -143,6 +145,8 @@ export class BuildDeployPipeline extends Construct {
               project: codebuildProject,
               variablesNamespace: "BuildVars",
               environmentVariables: {
+                SUITE_NAME: {value: suiteName},
+                APP_NAME: {value: appName},
                 // Note that codebuild automatically makes
                 // CODEBUILD_BUILD_ID available
                 // APP_NAME: {value: appName},

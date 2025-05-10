@@ -1,8 +1,10 @@
 #!/bin/bash
 
-echo Hanbok source dir: $CODEBUILD_SRC_DIR_Hanbok
-echo Suite source dir: $CODEBUILD_SRC_DIR_Suite
-echo App source dir: $CODEBUILD_SRC_DIR_App
+echo Hanbok source dir: ${CODEBUILD_SRC_DIR_Hanbok}
+echo Suite source dir: ${CODEBUILD_SRC_DIR_Suite}
+echo App source dir: ${CODEBUILD_SRC_DIR_App}
+echo Suite name: ${SUITE_NAME}
+echo App name: ${APP_NAME}
 
 echo "Building hanbok"
 
@@ -10,3 +12,34 @@ cd $CODEBUILD_SRC_DIR_Hanbok
 npm install
 npm run build
 
+echo "Building suite ${SUITE_NAME}"
+cd $CODEBUILD_SRC_DIR_Suite
+
+# Update package.json to point at hanbok
+jq --arg key "hanbok" \
+   --arg val "file:$CODEBUILD_SRC_DIR_Hanbok" \
+   '.dependencies[$key] = $val' \
+   package.json > package.tmp.json && mv package.tmp.json package.json
+
+npm install
+npx hb build
+
+
+echo "Building app ${APP_NAME}"
+cd $CODEBUILD_SRC_DIR_App
+
+# Update package.json to point at hanbok and the suite
+jq --arg key "hanbok" \
+   --arg val "file:$CODEBUILD_SRC_DIR_Hanbok" \
+   '.dependencies[$key] = $val' \
+   package.json > package.tmp.json && mv package.tmp.json package.json
+
+jq --arg key "$SUITE_NAME" \
+   --arg val "file:$CODEBUILD_SRC_DIR_Suite" \
+   '.dependencies[$key] = $val' \
+   package.json > package.tmp.json && mv package.tmp.json package.json
+
+npm install
+npx hb build
+
+find dist
