@@ -2,7 +2,7 @@
 
 echo Hanbok source dir: ${CODEBUILD_SRC_DIR_Hanbok}
 echo Suite source dir: ${CODEBUILD_SRC_DIR_Suite}
-echo App source dir: ${CODEBUILD_SRC_DIR_App}
+echo App source dir: ${CODEBUILD_SRC_DIR}
 echo Suite name: ${SUITE_NAME}
 echo App name: ${APP_NAME}
 
@@ -26,7 +26,7 @@ npx hb build
 
 
 echo "Building app ${APP_NAME}"
-cd $CODEBUILD_SRC_DIR_App
+cd $CODEBUILD_SRC_DIR
 
 # Update package.json to point at hanbok and the suite
 jq --arg key "hanbok" \
