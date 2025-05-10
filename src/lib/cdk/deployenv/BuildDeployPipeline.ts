@@ -48,7 +48,16 @@ export class BuildDeployPipeline extends Construct {
               },
             },
             build: {
-              commands: [`bin/aws/codepipeline-build`],
+              commands: [
+                'echo Hanbok source dir: $CODEBUILD_SRC_DIR_Hanbok',
+                'echo Suite source dir: $CODEBUILD_SRC_DIR_Suite',
+                'echo App source dir: $CODEBUILD_SRC_DIR_App',
+
+                'ls $CODEBUILD_SRC_DIR_Hanbok',
+                'ls $CODEBUILD_SRC_DIR_Suite',
+                'ls $CODEBUILD_SRC_DIR_App',
+                'jq',
+              ],
             },
           },
         }),
@@ -76,8 +85,6 @@ export class BuildDeployPipeline extends Construct {
       if (source != null) {
         const hanbokOutput = new cp.Artifact("Hanbok")
         const {codestarConnectionArnParamName, owner, repo} = source
-      console.log(`*** codestarConnectionArnParamName: ${codestarConnectionArnParamName}`)
-      console.log(`*** resources.ssmStringParams.get(codestarConnectionArnParamName): ${resources.ssmStringParams.get(codestarConnectionArnParamName)}`)
         sourceActions.push(new cp_actions.CodeStarConnectionsSourceAction({
           actionName: "Source_Hanbok",
           connectionArn: resources.ssmStringParams.get(codestarConnectionArnParamName),
@@ -85,7 +92,7 @@ export class BuildDeployPipeline extends Construct {
           repo,
           branch: "main",
           output: hanbokOutput,
-          variablesNamespace: "SourceVars",
+          variablesNamespace: "SourceVars_Hanbok",
         }))
         extraInputs.push(hanbokOutput)
       }
@@ -102,7 +109,7 @@ export class BuildDeployPipeline extends Construct {
           repo,
           branch: "main",
           output: suiteOutput,
-          variablesNamespace: "SourceVars",
+          variablesNamespace: "SourceVars_Suite",
         }))
         extraInputs.push(suiteOutput)
       }
@@ -119,7 +126,7 @@ export class BuildDeployPipeline extends Construct {
           repo,
           branch,
           output: appOutput,
-          variablesNamespace: "SourceVars",
+          variablesNamespace: "SourceVars_App",
         }))
       }
     }

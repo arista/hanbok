@@ -1,0 +1,12 @@
+#!/bin/bash
+
+echo Hanbok source dir: $CODEBUILD_SRC_DIR_Hanbok
+echo Suite source dir: $CODEBUILD_SRC_DIR_Suite
+echo App source dir: $CODEBUILD_SRC_DIR_App
+
+echo "Building hanbok"
+
+cd $CODEBUILD_SRC_DIR_Hanbok
+npm install
+npm run build
+
