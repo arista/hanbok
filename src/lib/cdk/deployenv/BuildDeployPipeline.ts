@@ -49,14 +49,7 @@ export class BuildDeployPipeline extends Construct {
             },
             build: {
               commands: [
-                'echo Hanbok source dir: $CODEBUILD_SRC_DIR_Hanbok',
-                'echo Suite source dir: $CODEBUILD_SRC_DIR_Suite',
-                'echo App source dir: $CODEBUILD_SRC_DIR_App',
-
-                'ls $CODEBUILD_SRC_DIR_Hanbok',
-                'ls $CODEBUILD_SRC_DIR_Suite',
-                'ls $CODEBUILD_SRC_DIR_App',
-                'jq',
+                "$CODEBUILD_SRC_DIR_Hanbok/bin/aws/deployenv-codepipeline-build",
               ],
             },
           },
