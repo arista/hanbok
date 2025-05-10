@@ -9,13 +9,16 @@ const generateMetafile = false
 
 const builds = [
   {entry: "src/cli.ts", out: "dist/cli/cli.es.js", format: "esm"},
-  {entry: "src/lib.ts", out: "dist/lib/lib.es.js", format: "esm"},
+  {entry: "src/tools.ts", out: "dist/tools/tools.es.js", format: "esm"},
+  {entry: "src/server.ts", out: "dist/server/server.es.js", format: "esm"},
+  {entry: "src/routes.ts", out: "dist/routes/routes.es.js", format: "esm"},
+  {entry: "src/cdk.ts", out: "dist/cdk/cdk.es.js", format: "esm"},
   {entry: "test/tests.ts", out: "build/test/tests.es.js", format: "esm"},
 ]
 
 await Promise.all(
   builds.map(async (b) => {
-    const {entry, out, format, isLambda} = b
+    const {entry, out, format, isLambda, noExternal} = b
     const context = await esbuild.context({
       entryPoints: [entry],
       bundle: true,

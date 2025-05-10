@@ -5,13 +5,16 @@
   "license": "MIT",
   "author": "Nathan Abramson",
   "private": false,
-  "main": "dist/lib/lib.es.js",
-  "module": "dist/lib/lib.es.js",
-  "types": "dist/lib/lib.d.ts",
   "sideEffects": false,
   "files": [
     "dist"
   ],
+  "exports": {
+    "./tools": "./dist/tools/tools.es.js",
+    "./server": "./dist/server/server.es.js",
+    "./routes": "./dist/routes/routes.es.js",
+    "./cdk": "./dist/cdk/cdk.es.js"
+  },
   "bin": {
     "hanbok": "bin/hanbok",
     "hanbok-debug": "bin/hanbok-debug",

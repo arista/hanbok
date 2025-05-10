@@ -1,17 +1,7 @@
 // The list of types to be exposed in the library's .d.ts file
 
-export {defineConfig} from "@lib/devenv/ProjectConfig"
-export type {ProjectModel} from "@lib/devenv/ProjectModel"
 export {defineRoutes, routes, GROUP_ROUTE} from "@lib/routes/RouteDefs"
 export type {RouteDefs, RouteDef, RoutesInterface} from "@lib/routes/RouteDefs"
-export {RoutesServerHelper} from "@lib/routes/RoutesServerHelper"
-export type {
-  AppServerEnvBase,
-  WebappEnvBase,
-  ViteManifestEntry,
-  ViteManifest,
-  DevAppServerCreateFunc,
-} from "@lib/appserver/AppServerTypes"
 export type {
   IRouter,
   IRouterRequestHandler,
@@ -31,4 +21,3 @@ export type {
   ClientRequest,
   ClientRequestHandler,
 } from "@lib/routes/RoutesClient"
-export * as cdk from "./lib/cdk"
