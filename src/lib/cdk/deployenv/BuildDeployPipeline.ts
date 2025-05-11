@@ -29,6 +29,8 @@ export class BuildDeployPipeline extends Construct {
     const pipelineName = NU.toCodePipelineName(stackNameParts)
     const codebuildProjectName = NU.toCodebuildProjectName(stackNameParts)
 
+    const publicBucket = resources.publicBucket.bucket
+    const privateBucket = resources.privateBucket.bucket
 
     // Create the codepipeline
     const codebuildProject = new cb.PipelineProject(
@@ -74,6 +76,8 @@ export class BuildDeployPipeline extends Construct {
 
     const sourceActions: Array<cp.IAction> = []
     const extraInputs: Array<cp.Artifact> = []
+    const actionsEnvVars: {[name: string]: cb.BuildEnvironmentVariable} = {}
+    
     // Add the hanbok source
     {
       const source = projectModel.hanbokSource
@@ -90,6 +94,12 @@ export class BuildDeployPipeline extends Construct {
           variablesNamespace: "SourceVars_Hanbok",
         }))
         extraInputs.push(hanbokOutput)
+        Object.assign(actionsEnvVars, {
+          GITHUB_OWNER_Hanbok: {value: owner},
+          GITHUB_REPO_Hanbok: {value: repo},
+          GITHUB_COMMIT_ID_Hanbok: {value: "#{SourceVars_Hanbok.CommitId}"},
+          GITHUB_BRANCH_NAME_Hanbok: {value: "#{SourceVars_Hanbok.BranchName}"},
+        })
       }
     }
     {
@@ -107,6 +117,12 @@ export class BuildDeployPipeline extends Construct {
           variablesNamespace: "SourceVars_Suite",
         }))
         extraInputs.push(suiteOutput)
+        Object.assign(actionsEnvVars, {
+          GITHUB_OWNER_Suite: {value: owner},
+          GITHUB_REPO_Suite: {value: repo},
+          GITHUB_COMMIT_ID_Suite: {value: "#{SourceVars_Suite.CommitId}"},
+          GITHUB_BRANCH_NAME_Suite: {value: "#{SourceVars_Suite.BranchName}"},
+        })
       }
     }
     const appOutput = new cp.Artifact("App")
@@ -123,6 +139,12 @@ export class BuildDeployPipeline extends Construct {
           output: appOutput,
           variablesNamespace: "SourceVars_App",
         }))
+        Object.assign(actionsEnvVars, {
+          GITHUB_OWNER_App: {value: owner},
+          GITHUB_REPO_App: {value: repo},
+          GITHUB_COMMIT_ID_App: {value: "#{SourceVars_App.CommitId}"},
+          GITHUB_BRANCH_NAME_App: {value: "#{SourceVars_App.BranchName}"},
+        })
       }
     }
     
@@ -149,31 +171,27 @@ export class BuildDeployPipeline extends Construct {
                 APP_NAME: {value: appName},
                 // Note that codebuild automatically makes
                 // CODEBUILD_BUILD_ID available
-                // APP_NAME: {value: appName},
-                // DEPLOYENV: {value: deployenv},
-                // DEPLOYENV_PUBLISHED_ASSETS_BASE: {
-                //   value: cdk.Fn.join("", [
-                //     // Unfortunately we have to constrct the https url
-                //     // manually, since bucketWebsiteUrl returns an
-                //     // http url
-                //     //publicBucket.bucketWebsiteUrl,
-                //     "https://",
-                //     publicBucket.bucketName,
-                //     ".s3.",
-                //     cdk.Stack.of(this).region,
-                //     ".amazonaws.com",
-                //     `/webapp-assets/by-app/${appName}/by-deployenv/${deployenv}`,
-                //   ]),
-                // },
-                // PIPELINE_EXECUTION_ID: {
-                //   value: "#{codepipeline.PipelineExecutionId}",
-                // },
-                // GITHUB_OWNER: {value: owner},
-                // GITHUB_REPO: {value: repo},
-                // GITHUB_COMMIT_ID: {value: "#{SourceVars.CommitId}"},
-                // GITHUB_BRANCH_NAME: {value: "#{SourceVars.BranchName}"},
-                // PUBLIC_BUCKET_NAME: {value: publicBucketName},
-                // PRIVATE_BUCKET_NAME: {value: privateBucketName},
+                PIPELINE_EXECUTION_ID: {
+                  value: "#{codepipeline.PipelineExecutionId}",
+                },
+                DEPLOYENV: {value: deployenv},
+                PUBLIC_BUCKET_NAME: {value: publicBucket.bucketName},
+                PRIVATE_BUCKET_NAME: {value: privateBucket.bucketName},
+                DEPLOYENV_PUBLISHED_ASSETS_BASE: {
+                  value: cdk.Fn.join("", [
+                    // Unfortunately we have to constrct the https url
+                    // manually, since bucketWebsiteUrl returns an
+                    // http url
+                    //publicBucket.bucketWebsiteUrl,
+                    "https://",
+                    publicBucket.bucketName,
+                    ".s3.",
+                    cdk.Stack.of(this).region,
+                    ".amazonaws.com",
+                    `/webapp-assets/by-app/${appName}/by-deployenv/${deployenv}`,
+                  ]),
+                },
+                ...actionsEnvVars,
               },
             }),
           ],
