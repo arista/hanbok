@@ -98,7 +98,7 @@ export class BuildDeployPipeline extends Construct {
           GITHUB_OWNER_Hanbok: {value: owner},
           GITHUB_REPO_Hanbok: {value: repo},
           GITHUB_COMMIT_ID_Hanbok: {value: "#{SourceVars_Hanbok.CommitId}"},
-          GITHUB_BRANCH_NAME_Hanbok: {value: "#{SourceVars_Hanbok.BranchName}"},
+          GITHUB_BRANCH_Hanbok: {value: "#{SourceVars_Hanbok.BranchName}"},
         })
       }
     }
@@ -121,7 +121,7 @@ export class BuildDeployPipeline extends Construct {
           GITHUB_OWNER_Suite: {value: owner},
           GITHUB_REPO_Suite: {value: repo},
           GITHUB_COMMIT_ID_Suite: {value: "#{SourceVars_Suite.CommitId}"},
-          GITHUB_BRANCH_NAME_Suite: {value: "#{SourceVars_Suite.BranchName}"},
+          GITHUB_BRANCH_Suite: {value: "#{SourceVars_Suite.BranchName}"},
         })
       }
     }
@@ -143,7 +143,7 @@ export class BuildDeployPipeline extends Construct {
           GITHUB_OWNER_App: {value: owner},
           GITHUB_REPO_App: {value: repo},
           GITHUB_COMMIT_ID_App: {value: "#{SourceVars_App.CommitId}"},
-          GITHUB_BRANCH_NAME_App: {value: "#{SourceVars_App.BranchName}"},
+          GITHUB_BRANCH_App: {value: "#{SourceVars_App.BranchName}"},
         })
       }
     }
