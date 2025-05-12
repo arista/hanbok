@@ -139,7 +139,7 @@ for dir in ${CODEBUILD_SRC_DIR}/dist/webapps/*/; do
     INDEX_DESTS=(
         "${BUILD_INFO_BASE}/indexes/by-codebuild-build-id/${CODEBUILD_BUILD_ID}"
         "${BUILD_INFO_BASE}/indexes/by-build-date/${BUILD_DATE}"
-        "${BUILD_INFO_BASE}/indexes/by-git-commit-id/${GITHUB_COMMIT_ID}"
+        "${BUILD_INFO_BASE}/indexes/by-git-commit-id/${GITHUB_COMMIT_ID_App}"
 
         # This one effectively makes the build live, since the lambda
         # serving the site will likely be looking for the build at a
