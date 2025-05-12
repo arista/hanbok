@@ -13,6 +13,8 @@ echo Suite source dir: ${CODEBUILD_SRC_DIR_Suite}
 echo App source dir: ${CODEBUILD_SRC_DIR}
 echo Suite name: ${SUITE_NAME}
 echo App name: ${APP_NAME}
+echo DEPLOYENV_PUBLISHED_ASSETS_S3_BASE: ${DEPLOYENV_PUBLISHED_ASSETS_S3_BASE}
+echo DEPLOYENV_PUBLISHED_ASSETS_BASE: ${DEPLOYENV_PUBLISHED_ASSETS_BASE}
 
 echo "Building hanbok"
 
@@ -94,8 +96,8 @@ for dir in $CODEBUILD_SRC_DIR}/dist/webapps/*/; do
     hanbokSource: (if ($ARGS.named.githubOwner_Hanbok | length > 0)
       then {
       githubOwner: $ARGS.named.githubOwner_Hanbok,
-      githubRepo: $ARGS.named.githubOwner_Hanbok
-      commitId: $ARGS.named.gitCommitId_Hanbok
+      githubRepo: $ARGS.named.githubOwner_Hanbok,
+      commitId: $ARGS.named.gitCommitId_Hanbok,
       branch: $ARGS.named.gitBranch_Hanbok
       } else null end)
 }' \
