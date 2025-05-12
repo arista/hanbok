@@ -73,15 +73,15 @@ for dir in ${CODEBUILD_SRC_DIR}/dist/webapps/*/; do
         --arg githubOwner_Hanbok "${GITHUB_OWNER_Hanbok:-}" \
         --arg githubRepo_Hanbok "${GITHUB_REPO_Hanbok:-}" \
         --arg gitCommitId_Hanbok "${GITHUB_COMMIT_ID_Hanbok:-}" \
-        --arg gitBranch_Hanbok "${GITHUB_BRANCH_NAME_Hanbok:-}" \
+        --arg gitBranch_Hanbok "${GITHUB_BRANCH_Hanbok:-}" \
         --arg githubOwner_Suite "${GITHUB_OWNER_Suite:-}" \
         --arg githubRepo_Suite "${GITHUB_REPO_Suite:-}" \
         --arg gitCommitId_Suite "${GITHUB_COMMIT_ID_Suite:-}" \
-        --arg gitBranch_Suite "${GITHUB_BRANCH_NAME_Suite:-}" \
+        --arg gitBranch_Suite "${GITHUB_BRANCH_Suite:-}" \
         --arg githubOwner_App "${GITHUB_OWNER_App:-}" \
         --arg githubRepo_App "${GITHUB_REPO_App:-}" \
         --arg gitCommitId_App "${GITHUB_COMMIT_ID_App:-}" \
-        --arg gitBranch_App "${GITHUB_BRANCH_NAME_App:-}" \
+        --arg gitBranch_App "${GITHUB_BRANCH_App:-}" \
        '{
     buildUuid: $ARGS.named.buildUuid,
     suite: $ARGS.named.suite,
@@ -144,7 +144,7 @@ for dir in ${CODEBUILD_SRC_DIR}/dist/webapps/*/; do
         # This one effectively makes the build live, since the lambda
         # serving the site will likely be looking for the build at a
         # specific branch
-        "${BUILD_INFO_BASE}/indexes/by-git-ref/${GITHUB_BRANCH_NAME_App}"
+        "${BUILD_INFO_BASE}/indexes/by-git-ref/${GITHUB_BRANCH_App}"
     )
 
     for index_dest in "${INDEX_DESTS[@]}"; do
