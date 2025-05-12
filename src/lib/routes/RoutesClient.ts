@@ -12,7 +12,7 @@
 // can make that easy), or it may wrap its own additional logic around
 // the request handling.
 
-import {RouteDefs, isGroup, isRoute, getGroupRouteMetadata} from "./RouteDefs"
+import {RouteDefs, RouteDefEntry} from "./RouteDefs"
 import {compile} from "path-to-regexp"
 
 export type RoutesClientCall<RQ extends RoutesClientRequest, RS> = (
@@ -66,34 +66,41 @@ export function _createRoutesClient(
   routesClient: RoutesClient,
   handler: ClientRequestHandler<any>
 ) {
-  for (const [key, value] of Object.entries(routeDefs)) {
-    if (isGroup(value)) {
-      const groupRoutesClient: RoutesClient = {}
-      routesClient[key] = groupRoutesClient
-      const groupPrefix = getGroupRouteMetadata(value).prefix
-      const fullGroupPrefix = joinPath(prefix, groupPrefix)
-      _createRoutesClient(fullGroupPrefix, value, groupRoutesClient, handler)
-    } else if (isRoute(value)) {
-      routesClient[key] = (() => {
-        const {method} = value
-        const routePath = joinPath(prefix, value.path)
-        let compiledPath: ReturnType<typeof compile> | null = null
+  for(const [key, value] of Object.entries(routeDefs)) {
+    const type:("Group" | "Route") = value[":hb:type"]
+    switch(type) {
+      case "Group":
+        const groupRoutesClient: RoutesClient = {}
+        routesClient[key] = groupRoutesClient
+        const groupPrefix = value[":hb:prefix"]
+        const fullGroupPrefix = joinPath(prefix, groupPrefix)
+        _createRoutesClient(fullGroupPrefix, value, groupRoutesClient, handler)
+        break
+      case "Route":
+        routesClient[key] = (() => {
+          const { method } = value
+          const routePath = joinPath(prefix, value.path)
+          let compiledPath: ReturnType<typeof compile> | null = null
 
-        return async (req: RoutesClientRequest) => {
-          const {params, query, headers, body} = req ?? {}
-          if (compiledPath == null) {
-            compiledPath = compile(routePath, {encode: encodeURIComponent})
+          return async (req: RoutesClientRequest) => {
+            const { params, query, headers, body } = req ?? {}
+            if (compiledPath == null) {
+              compiledPath = compile(routePath, { encode: encodeURIComponent })
+            }
+            const clientRequestPath = compiledPath(params ?? {})
+            const clientRequest: ClientRequest = {
+              method,
+              path: clientRequestPath,
+              headers,
+              body,
+            }
+            return await handler(clientRequest)
           }
-          const clientRequestPath = compiledPath(params ?? {})
-          const clientRequest: ClientRequest = {
-            method,
-            path: clientRequestPath,
-            headers,
-            body,
-          }
-          return await handler(clientRequest)
-        }
-      })()
+        })()
+        break
+      default:
+        const unexpected:never = type
+        break
     }
   }
 }

@@ -24,8 +24,8 @@
 import {
   RouteDefs,
   RouteDef,
+  GroupRouteDef,
   RequestType,
-  getGroupRouteMetadata,
 } from "./RouteDefs"
 import {RouteHandlerBase} from "./RouteHandlerBase"
 import type {
@@ -91,15 +91,14 @@ export class RoutesServerHelper<HF> {
   }
 
   nested<A extends RouteDefs>(
-    n: A,
+    n: GroupRouteDef<A>,
     f: (r: RoutesServerHelper<HF>, a: A) => void
   ) {
-    const {prefix} = n
-    const group = getGroupRouteMetadata(n)
+    const prefix = n[":hb:prefix"]
     const nestedRouter = new RoutesServerHelper<HF>({
       router: this.router,
       createHandlerFactory: this.createHandlerFactory,
-      prefix: path.join(this.prefix, group.prefix),
+      prefix: path.join(this.prefix, prefix),
     })
     f(nestedRouter, n)
   }

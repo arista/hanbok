@@ -3,22 +3,19 @@
 
 import {z, ZodFormattedError} from "zod"
 
-export const GROUP_ROUTE = Symbol("GROUP_ROUTE")
+export type RouteDefs = Record<NonRouteReservedKeys, RouteDefEntry>
 
-export type RouteDefs = {
-  [key: string]: RouteDef | RouteDefs
-  [GROUP_ROUTE]?: GroupRouteMetadata
-}
+export type NonRouteReservedKeys = Exclude<string, RouteReservedKeys>
+export type RouteReservedKeys = ":hb:type" | ":hb:prefix"
+export type RouteDefEntry = RouteDef | GroupRouteDef<any>
 
-export type GroupRouteDef<T extends RouteDefs = RouteDefs> = T & {
-  [GROUP_ROUTE]: GroupRouteMetadata
-}
-
-export type GroupRouteMetadata = {
-  prefix: string
+export type GroupRouteDef<T extends RouteDefs> = T & {
+  ":hb:type": "Group"
+  ":hb:prefix": string
 }
 
 export type RouteDef<T extends RouteSchema = RouteSchema> = T & {
+  ":hb:type": "Route"
   method: RouteMethod
   path: string
 }
@@ -46,16 +43,26 @@ export function defineRoutes<T extends RouteDefs>(routesDef: T): T {
 // all combined into a single structure
 
 export type RoutesInterface<T extends RouteDefs> = {
-  [K in keyof T as K extends typeof GROUP_ROUTE
-    ? never
-    : K]: T[K] extends RouteDef
-    ? RouteFunction<T[K]>
-    : T[K] extends RouteDefs
-      ? RoutesInterface<T[K]>
-      : never
-}
+  [K in keyof T as K extends RouteReservedKeys ? never : K]: RouteEntryToInterface<T[K]>
+};
 
-type RouteFunction<R extends RouteDef> = (
+// export type RoutesInterface<T extends RouteDefs> = {
+//   [K in keyof T as K extends RouteReservedKeys ? never : K]:
+//     T[K] extends { ":hb:type": "Group", ":hb:prefix": string }
+//       ? RoutesInterface<T[K]>
+//       : T[K] extends { ":hb:type": "Route" }
+//         ? RouteFunction<T[K]>
+//         : never;
+// }
+
+export type RouteEntryToInterface<V> =
+  V extends { ":hb:type": "Route"; method: RouteMethod; path: string }
+    ? RouteFunction<V>
+    : V extends { ":hb:type": "Group"; ":hb:prefix": string }
+      ? RoutesInterface<V>
+      : never;
+
+export type RouteFunction<R extends RouteDef> = (
   req: RequestType<R>
 ) => Promise<ResponseType<R>>
 
@@ -65,36 +72,18 @@ export type RequestType<T extends RouteDef> = T["request"] extends z.ZodTypeAny
 export type ResponseType<T extends RouteDef> =
   T["response"] extends z.ZodTypeAny ? z.infer<T["response"]> : void
 
-export function isGroup(obj: any): obj is GroupRouteDef {
-  return obj && typeof obj === "object" && GROUP_ROUTE in obj
-}
-
-export function isRoute(obj: any): obj is RouteDef {
-  return obj && typeof obj === "object" && !(GROUP_ROUTE in obj)
-}
-
-export function getGroupRouteMetadata(
-  routeDefs: RouteDefs
-): GroupRouteMetadata {
-  if (isGroup(routeDefs)) {
-    return routeDefs[GROUP_ROUTE]
-  } else {
-    throw new Error(
-      `Assertion failed: routeDefs is not a group (no [GROUP_ROUTE] specified)`
-    )
-  }
-}
-
 export const routes = {
-  group: <T extends RouteDefs>(prefix: string, def: T): GroupRouteDef<T> => {
+  group: <T extends RouteDefs>(prefix: string, routes: T): GroupRouteDef<T> => {
     return {
-      ...def,
-      [GROUP_ROUTE]: {prefix},
+      ":hb:type": "Group",
+      ":hb:prefix": prefix,
+      ...routes
     }
   },
 
   get: <T extends RouteSchema = {}>(path: string, schema?: T): RouteDef<T> => {
     return {
+      ":hb:type": "Route",
       method: "GET",
       path,
       ...(schema || ({} as T)),
@@ -103,6 +92,7 @@ export const routes = {
 
   post: <T extends RouteSchema = {}>(path: string, schema?: T): RouteDef<T> => {
     return {
+      ":hb:type": "Route",
       method: "POST",
       path,
       ...(schema || ({} as T)),
