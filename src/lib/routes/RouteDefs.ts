@@ -43,8 +43,10 @@ export function defineRoutes<T extends RouteDefs>(routesDef: T): T {
 // all combined into a single structure
 
 export type RoutesInterface<T extends RouteDefs> = {
-  [K in keyof T as K extends RouteReservedKeys ? never : K]: RouteEntryToInterface<T[K]>
-};
+  [K in keyof T as K extends RouteReservedKeys
+    ? never
+    : K]: RouteEntryToInterface<T[K]>
+}
 
 // export type RoutesInterface<T extends RouteDefs> = {
 //   [K in keyof T as K extends RouteReservedKeys ? never : K]:
@@ -55,12 +57,15 @@ export type RoutesInterface<T extends RouteDefs> = {
 //         : never;
 // }
 
-export type RouteEntryToInterface<V> =
-  V extends { ":hb:type": "Route"; method: RouteMethod; path: string }
-    ? RouteFunction<V>
-    : V extends { ":hb:type": "Group"; ":hb:prefix": string }
-      ? RoutesInterface<V>
-      : never;
+export type RouteEntryToInterface<V> = V extends {
+  ":hb:type": "Route"
+  method: RouteMethod
+  path: string
+}
+  ? RouteFunction<V>
+  : V extends {":hb:type": "Group"; ":hb:prefix": string}
+    ? RoutesInterface<V>
+    : never
 
 export type RouteFunction<R extends RouteDef> = (
   req: RequestType<R>
@@ -77,7 +82,7 @@ export const routes = {
     return {
       ":hb:type": "Group",
       ":hb:prefix": prefix,
-      ...routes
+      ...routes,
     }
   },
 

@@ -1,4 +1,4 @@
-import 'source-map-support/register.js'
+import "source-map-support/register.js"
 import * as OC from "@oclif/core"
 import {runCdkStack, CdkCommand} from "@lib/utils/cdk/runCdkStack"
 

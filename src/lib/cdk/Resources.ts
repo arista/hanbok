@@ -22,7 +22,7 @@ export class Resources<C extends ResourcesProps> extends Construct {
 
   get cdkExportsPrefix() {
     const {projectModel} = this.props
-    switch(projectModel.type) {
+    switch (projectModel.type) {
       case "Suite":
         return NU.toStackOutputName([projectModel.name])
       case "App":
@@ -43,10 +43,7 @@ export class Resources<C extends ResourcesProps> extends Construct {
   get ssmStringParams(): CachedResources<string> {
     return (this._ssmStringParams ||= (() => {
       return new CachedResources((name) => {
-        return ssm.StringParameter.valueForStringParameter(
-          this.scope,
-          name,
-        )
+        return ssm.StringParameter.valueForStringParameter(this.scope, name)
       })
     })())
   }

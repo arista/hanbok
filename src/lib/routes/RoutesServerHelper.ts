@@ -21,12 +21,7 @@
 //
 // Handlers are expected to inherit from RouteHandlerBase
 
-import {
-  RouteDefs,
-  RouteDef,
-  GroupRouteDef,
-  RequestType,
-} from "./RouteDefs"
+import {RouteDefs, RouteDef, GroupRouteDef, RequestType} from "./RouteDefs"
 import {RouteHandlerBase} from "./RouteHandlerBase"
 import type {
   IRouter,

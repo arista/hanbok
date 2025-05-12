@@ -66,9 +66,9 @@ export function _createRoutesClient(
   routesClient: RoutesClient,
   handler: ClientRequestHandler<any>
 ) {
-  for(const [key, value] of Object.entries(routeDefs)) {
-    const type:("Group" | "Route") = value[":hb:type"]
-    switch(type) {
+  for (const [key, value] of Object.entries(routeDefs)) {
+    const type: "Group" | "Route" = value[":hb:type"]
+    switch (type) {
       case "Group":
         const groupRoutesClient: RoutesClient = {}
         routesClient[key] = groupRoutesClient
@@ -78,14 +78,14 @@ export function _createRoutesClient(
         break
       case "Route":
         routesClient[key] = (() => {
-          const { method } = value
+          const {method} = value
           const routePath = joinPath(prefix, value.path)
           let compiledPath: ReturnType<typeof compile> | null = null
 
           return async (req: RoutesClientRequest) => {
-            const { params, query, headers, body } = req ?? {}
+            const {params, query, headers, body} = req ?? {}
             if (compiledPath == null) {
-              compiledPath = compile(routePath, { encode: encodeURIComponent })
+              compiledPath = compile(routePath, {encode: encodeURIComponent})
             }
             const clientRequestPath = compiledPath(params ?? {})
             const clientRequest: ClientRequest = {
@@ -99,7 +99,7 @@ export function _createRoutesClient(
         })()
         break
       default:
-        const unexpected:never = type
+        const unexpected: never = type
         break
     }
   }

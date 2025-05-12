@@ -1,4 +1,4 @@
-import 'source-map-support/register.js'
+import "source-map-support/register.js"
 import * as OC from "@oclif/core"
 import {Dev} from "@lib/devenv/Dev"
 

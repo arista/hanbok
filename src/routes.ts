@@ -1,7 +1,12 @@
 // The list of types to be exposed in the library's .d.ts file
 
 export {defineRoutes, routes} from "@lib/routes/RouteDefs"
-export type {RouteDefs, RouteDef, GroupRouteDef, RoutesInterface} from "@lib/routes/RouteDefs"
+export type {
+  RouteDefs,
+  RouteDef,
+  GroupRouteDef,
+  RoutesInterface,
+} from "@lib/routes/RouteDefs"
 export type {
   IRouter,
   IRouterRequestHandler,

@@ -23,7 +23,7 @@ export class BuildDeployPipeline extends Construct {
     const appName = projectModel.name
     const suiteName = projectModel.suite?.name
     const resources = new SuiteResourcesBase(this, "resources", {
-      projectModel
+      projectModel,
     })
     const permissions = new Permissions()
     const pipelineName = NU.toCodePipelineName(stackNameParts)
@@ -63,36 +63,39 @@ export class BuildDeployPipeline extends Construct {
     permissions.addToRole(codebuildProject.role!, [
       // FIXME - see if this is necessary, and if so, make it configurable
       ...permissions.toReadSSMParameters("/taterapps/common/*"),
-//      ...cdkUtils.permissions.toWriteS3BucketObjects(privateBucket),
-//      ...cdkUtils.permissions.toWriteS3BucketObjects(publicBucket),
-//
-//      // To deploy the lambda code
-//      ...cdkUtils.permissions.toReadS3Bucket(privateBucket),
-//      ...lambdaFunctionNames
-//        .map((n) => cdkUtils.permissions.toUpdateLambdaCode(n))
-//        .flat(),
+      //      ...cdkUtils.permissions.toWriteS3BucketObjects(privateBucket),
+      //      ...cdkUtils.permissions.toWriteS3BucketObjects(publicBucket),
+      //
+      //      // To deploy the lambda code
+      //      ...cdkUtils.permissions.toReadS3Bucket(privateBucket),
+      //      ...lambdaFunctionNames
+      //        .map((n) => cdkUtils.permissions.toUpdateLambdaCode(n))
+      //        .flat(),
     ])
-
 
     const sourceActions: Array<cp.IAction> = []
     const extraInputs: Array<cp.Artifact> = []
     const actionsEnvVars: {[name: string]: cb.BuildEnvironmentVariable} = {}
-    
+
     // Add the hanbok source
     {
       const source = projectModel.hanbokSource
       if (source != null) {
         const hanbokOutput = new cp.Artifact("Hanbok")
         const {codestarConnectionArnParamName, owner, repo} = source
-        sourceActions.push(new cp_actions.CodeStarConnectionsSourceAction({
-          actionName: "Source_Hanbok",
-          connectionArn: resources.ssmStringParams.get(codestarConnectionArnParamName),
-          owner,
-          repo,
-          branch: "main",
-          output: hanbokOutput,
-          variablesNamespace: "SourceVars_Hanbok",
-        }))
+        sourceActions.push(
+          new cp_actions.CodeStarConnectionsSourceAction({
+            actionName: "Source_Hanbok",
+            connectionArn: resources.ssmStringParams.get(
+              codestarConnectionArnParamName
+            ),
+            owner,
+            repo,
+            branch: "main",
+            output: hanbokOutput,
+            variablesNamespace: "SourceVars_Hanbok",
+          })
+        )
         extraInputs.push(hanbokOutput)
         Object.assign(actionsEnvVars, {
           GITHUB_OWNER_Hanbok: {value: owner},
@@ -107,15 +110,19 @@ export class BuildDeployPipeline extends Construct {
       if (source != null) {
         const suiteOutput = new cp.Artifact("Suite")
         const {codestarConnectionArnParamName, owner, repo} = source
-        sourceActions.push(new cp_actions.CodeStarConnectionsSourceAction({
-          actionName: "Source_Suite",
-          connectionArn: resources.ssmStringParams.get(codestarConnectionArnParamName),
-          owner,
-          repo,
-          branch: "main",
-          output: suiteOutput,
-          variablesNamespace: "SourceVars_Suite",
-        }))
+        sourceActions.push(
+          new cp_actions.CodeStarConnectionsSourceAction({
+            actionName: "Source_Suite",
+            connectionArn: resources.ssmStringParams.get(
+              codestarConnectionArnParamName
+            ),
+            owner,
+            repo,
+            branch: "main",
+            output: suiteOutput,
+            variablesNamespace: "SourceVars_Suite",
+          })
+        )
         extraInputs.push(suiteOutput)
         Object.assign(actionsEnvVars, {
           GITHUB_OWNER_Suite: {value: owner},
@@ -130,15 +137,19 @@ export class BuildDeployPipeline extends Construct {
       const source = projectModel.source
       if (source != null) {
         const {codestarConnectionArnParamName, owner, repo} = source
-        sourceActions.push(new cp_actions.CodeStarConnectionsSourceAction({
-          actionName: "Source_App",
-          connectionArn: resources.ssmStringParams.get(codestarConnectionArnParamName),
-          owner,
-          repo,
-          branch,
-          output: appOutput,
-          variablesNamespace: "SourceVars_App",
-        }))
+        sourceActions.push(
+          new cp_actions.CodeStarConnectionsSourceAction({
+            actionName: "Source_App",
+            connectionArn: resources.ssmStringParams.get(
+              codestarConnectionArnParamName
+            ),
+            owner,
+            repo,
+            branch,
+            output: appOutput,
+            variablesNamespace: "SourceVars_App",
+          })
+        )
         Object.assign(actionsEnvVars, {
           GITHUB_OWNER_App: {value: owner},
           GITHUB_REPO_App: {value: repo},
@@ -147,7 +158,7 @@ export class BuildDeployPipeline extends Construct {
         })
       }
     }
-    
+
     const pipeline = new cp.Pipeline(this, "build-pipeline", {
       pipelineName: pipelineName,
       artifactBucket: resources.cpArtifactsBucket.bucket,
@@ -198,6 +209,5 @@ export class BuildDeployPipeline extends Construct {
         },
       ],
     })
-
-}
+  }
 }

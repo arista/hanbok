@@ -7,8 +7,7 @@ import * as route53 from "aws-cdk-lib/aws-route53"
 import * as ec2 from "aws-cdk-lib/aws-ec2"
 import * as NU from "../utils/NameUtils"
 
-export type SuiteResourcesBaseProps = R.ResourcesProps & {
-}
+export type SuiteResourcesBaseProps = R.ResourcesProps & {}
 
 export class SuiteResourcesBase<
   C extends SuiteResourcesBaseProps,

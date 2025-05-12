@@ -178,9 +178,7 @@ export class Permissions {
           "ssm:GetParameters",
           "ssm:GetParametersByPath",
         ],
-        resources: [
-          `arn:aws:ssm:*:*:parameter${paramPrefix}`
-        ]
+        resources: [`arn:aws:ssm:*:*:parameter${paramPrefix}`],
       },
     ]
   }
