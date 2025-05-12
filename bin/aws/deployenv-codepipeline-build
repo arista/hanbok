@@ -91,13 +91,13 @@ for dir in $CODEBUILD_SRC_DIR}/dist/webapps/*/; do
     buildDate: $ARGS.named.buildDate,
     pipelineExecutionId: $ARGS.named.pipelineExecutionId,
     publishedAssetsBase: $ARGS.named.publishedAssetsBase,
-    hanbokSource: ($ARGS.named.githubOwner_Hanbok | length > 0)
-      ? {
+    hanbokSource: (if ($ARGS.named.githubOwner_Hanbok | length > 0)
+      then {
       githubOwner: $ARGS.named.githubOwner_Hanbok,
       githubRepo: $ARGS.named.githubOwner_Hanbok
       commitId: $ARGS.named.gitCommitId_Hanbok
       branch: $ARGS.named.gitBranch_Hanbok
-      } : null,
+      } else null end)
 }' \
     > ${dir}/.buildInfo/buildInfo.json
 
