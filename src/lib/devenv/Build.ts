@@ -508,6 +508,26 @@ export class Build {
 
   // Run vite to bundle the webapps
   async runVite(model: PM.ProjectModel) {
+
+    // The node_modules to be "chunked" into a separate vendor.js bundle
+    const vendorChunksNodeModules = [
+      "react",
+      "react-dom",
+      "react-router",
+      "react-router-dom",
+      "path-to-regexp",
+      "live-value",
+      "body-parser",
+      "finalhandler",
+      "find-my-way",
+      "globby",
+      "raw-body",
+      "zod",
+    ]
+    const vendorChunksNodeModulesRE = new RegExp(
+      vendorChunksNodeModules.map((c) => `\\/node_modules\\/${c}\\/`).join("|")
+    )
+
     const {projectRoot, features} = model
     const {webapps} = features
     if (webapps != null) {
@@ -524,6 +544,17 @@ export class Build {
             emptyOutDir: true,
             manifest: true,
             watch: this.watch ? {} : null,
+            rollupOptions: {
+              output: {
+                manualChunks(id: string) {
+                  if (vendorChunksNodeModulesRE.test(id)) {
+                    return "vendor"
+                  } else {
+                    return null
+                  }
+                },
+              },
+            },
           },
           logLevel: "info",
         })
