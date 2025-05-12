@@ -510,6 +510,7 @@ export class Build {
   async runVite(model: PM.ProjectModel) {
 
     // The node_modules to be "chunked" into a separate vendor.js bundle
+    // FIXME - maybe this should just come from package.json in hanbok, suite, and app
     const vendorChunksNodeModules = [
       "react",
       "react-dom",
