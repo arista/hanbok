@@ -343,12 +343,19 @@ export class Build {
         format: "esm",
       })
     }
-    // Add any webapp dev app servers
     if (webapps != null) {
       for (const webappName of Object.keys(webapps)) {
         const webapp = webapps[webappName]
         if (webapp?.devAppServer != null) {
           const {sourcePath, builtPath} = webapp.devAppServer
+          builds.push({
+            entry: sourcePath,
+            out: builtPath,
+            format: "esm",
+          })
+        }
+        if (webapp?.lambdaAppServer != null) {
+          const {sourcePath, builtPath} = webapp.lambdaAppServer
           builds.push({
             entry: sourcePath,
             out: builtPath,

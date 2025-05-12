@@ -82,10 +82,16 @@ export type WebappModel = {
   devServerRoute: string
   devServerBase: string
   devAppServer: DevAppServer | null
+  lambdaAppServer: LambdaAppServer | null
   hostingInfo: WebappHostingModel | null
 }
 
 export type DevAppServer = {
+  sourcePath: string
+  builtPath: string
+}
+
+export type LambdaAppServer = {
   sourcePath: string
   builtPath: string
 }

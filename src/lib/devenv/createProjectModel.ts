@@ -366,6 +366,26 @@ function getWebappsConfig(
             }
           : null
 
+        // Check for a LambdaAppServer
+        const lambdaAppServerSourcePath = path.join(
+          webappPath,
+          "server",
+          "LambdaAppServer.ts"
+        )
+        const lambdaAppServerBuiltPath = path.resolve(
+          projectRoot,
+          "dist",
+          "webapp-servers",
+          name,
+          "LambdaAppServer.es.js"
+        )
+        const lambdaAppServer = FsUtils.isFile(lambdaAppServerSourcePath)
+          ? {
+              sourcePath: lambdaAppServerSourcePath,
+              builtPath: lambdaAppServerBuiltPath,
+            }
+          : null
+
         const hostingInfo = (() => {
           if (webappConfig == null) {
             return null
@@ -387,6 +407,7 @@ function getWebappsConfig(
           devServerBase,
           devServerRoute,
           devAppServer,
+          lambdaAppServer,
           hostingInfo,
         }
       }
