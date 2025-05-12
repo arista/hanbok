@@ -144,7 +144,7 @@ for dir in ${CODEBUILD_SRC_DIR}/dist/webapps/*/; do
         # This one effectively makes the build live, since the lambda
         # serving the site will likely be looking for the build at a
         # specific branch
-        "${BUILD_INFO_BASE}/indexes/by-git-ref/${GITHUB_BRANCH_NAME}"
+        "${BUILD_INFO_BASE}/indexes/by-git-ref/${GITHUB_BRANCH_NAME_App}"
     )
 
     for index_dest in "${INDEX_DESTS[@]}"; do
