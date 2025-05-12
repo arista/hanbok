@@ -1,5 +1,13 @@
 #!/bin/bash
 
+# Fail on command failure, undefined variables, and piped command failures
+set -euo pipefail
+
+BUILD_DATE=`date -u -Iseconds`
+BUILD_UUID=`cat /proc/sys/kernel/random/uuid`
+
+echo BUILD_DATE: ${BUILD_DATE}
+echo BUILD_UUID: ${BUILD_UUID}
 echo Hanbok source dir: ${CODEBUILD_SRC_DIR_Hanbok}
 echo Suite source dir: ${CODEBUILD_SRC_DIR_Suite}
 echo App source dir: ${CODEBUILD_SRC_DIR}

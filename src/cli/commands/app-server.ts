@@ -1,3 +1,4 @@
+import 'source-map-support/register.js'
 import * as OC from "@oclif/core"
 import {AppServer, AppServerWatch} from "@lib/devenv/AppServer"
 

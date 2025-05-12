@@ -1,3 +1,4 @@
+import 'source-map-support/register.js'
 import * as OC from "@oclif/core"
 import {Build} from "@lib/devenv/Build"
 
