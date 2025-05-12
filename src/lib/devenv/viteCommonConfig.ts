@@ -44,10 +44,17 @@ export function viteCommonConfig({
 
   const proxyPagePlugins = includeProxyPagePlugin ? [proxyPagePlugin()] : []
 
+  // In a production build, this env var will be set the build process
+  const DEPLOYENV_PUBLISHED_ASSETS_BASE =
+    process.env["DEPLOYENV_PUBLISHED_ASSETS_BASE"]
+  const base = DEPLOYENV_PUBLISHED_ASSETS_BASE
+    ? `${DEPLOYENV_PUBLISHED_ASSETS_BASE}/by-webapp/${webapp.name}/site`
+    : webapp.devServerBase
+
   return {
     // Where index.html is located
     root: webapp.viteProjectRoot,
-    base: webapp.devServerBase,
+    base,
     plugins: [
       // Among other things, this makes sure "React" is defined
       // everywhere
