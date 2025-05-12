@@ -62,9 +62,9 @@ export class BuildDeployPipeline extends Construct {
     )
     permissions.addToRole(codebuildProject.role!, [
       // FIXME - see if this is necessary, and if so, make it configurable
-      ...permissions.toReadSSMParameters("/taterapps/common/*"),
-      //      ...cdkUtils.permissions.toWriteS3BucketObjects(privateBucket),
-      //      ...cdkUtils.permissions.toWriteS3BucketObjects(publicBucket),
+      //...permissions.toReadSSMParameters("/taterapps/common/*"),
+      ...permissions.toWriteS3BucketObjects(privateBucket),
+      ...permissions.toWriteS3BucketObjects(publicBucket),
       //
       //      // To deploy the lambda code
       //      ...cdkUtils.permissions.toReadS3Bucket(privateBucket),

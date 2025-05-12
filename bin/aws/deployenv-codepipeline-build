@@ -54,7 +54,7 @@ npm install
 npx hb build
 
 # Go through each generated webapp
-for dir in $CODEBUILD_SRC_DIR}/dist/webapps/*/; do
+for dir in ${CODEBUILD_SRC_DIR}/dist/webapps/*/; do
     WEBAPP_NAME=$(basename "$dir")
     echo "**** Deploying webapp: ${WEBAPP_NAME}"
 
