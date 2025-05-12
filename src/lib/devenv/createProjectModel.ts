@@ -310,6 +310,10 @@ function getWebappsConfig(
 ): PM.WebappsModel | null {
   switch (projectConfig.type) {
     case "App": {
+      const webappsConfig = projectConfig.features?.webapps
+      if (webappsConfig == null) {
+        return null
+      }
       const webappsPath = path.join(projectRoot, "src", "webapps")
       if (!FsUtils.isDirectory(webappsPath)) {
         return null
@@ -323,6 +327,7 @@ function getWebappsConfig(
       }
       const ret: PM.WebappsModel = {}
       for (const name of webappNames) {
+        const webappConfig = webappsConfig[name]
         const webappPath = path.join(webappsPath, name)
         const builtWebappRoot = path.resolve(
           projectRoot,
@@ -361,6 +366,17 @@ function getWebappsConfig(
             }
           : null
 
+        const hostingInfo = (() => {
+          if (webappConfig == null) {
+            return null
+          }
+          const {hostedZone, hostname} = webappConfig
+          return {
+            hostedZone,
+            hostname,
+          }
+        })()
+
         ret[name] = {
           name,
           path: webappPath,
@@ -371,6 +387,7 @@ function getWebappsConfig(
           devServerBase,
           devServerRoute,
           devAppServer,
+          hostingInfo,
         }
       }
       return ret

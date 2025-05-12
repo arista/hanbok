@@ -82,6 +82,7 @@ export type WebappModel = {
   devServerRoute: string
   devServerBase: string
   devAppServer: DevAppServer | null
+  hostingInfo: WebappHostingModel | null
 }
 
 export type DevAppServer = {
@@ -92,4 +93,11 @@ export type DevAppServer = {
 export type CdkModel = {
   sourcePath: string
   builtPath: string
+}
+
+export type WebappHostingModel = {
+  // The AWS hosted zone name (e.g., "example.com")
+  hostedZone: string
+  // The domain name within the hosted zone (e.g. "myapp")
+  hostname: string
 }

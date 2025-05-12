@@ -35,8 +35,11 @@ export type AppFeatures = {
   lib?: boolean | null | undefined
   test?: boolean | null | undefined
   services?: boolean | null | undefined
+  webapps?: WebappsConfig | null | undefined
   cdk?: boolean | null | undefined
 }
+
+export type WebappsConfig = Record<string, WebappConfig>
 
 export type AppSuiteConfig = {
   name: string
@@ -62,4 +65,11 @@ export type GithubSourceConfig = {
 // defineConfig({...})"
 export function defineConfig(c: ProjectConfig): ProjectConfig {
   return c
+}
+
+export type WebappConfig = {
+  // The AWS hosted zone name (e.g., "example.com")
+  hostedZone: string
+  // The domain name within the hosted zone (e.g. "myapp")
+  hostname: string
 }
