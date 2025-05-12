@@ -152,28 +152,29 @@ for dir in ${CODEBUILD_SRC_DIR}/dist/webapps/*/; do
         aws s3 cp --quiet ${dir}/.buildInfo/buildUuid.txt "${index_dest}"
     done
 
-    # # Deploy the lambda
-    # echo "  **** Bundling webapp-lambda.zip"
-    # LAMBDA_DIR="${PKGDIR}/dist/webapp-servers/${WEBAPP_NAME}/webapp-lambda"
-    # # Bundle the build info with the lambda so it knows how to find
-    # # the manifest, etc.
-    # LAMBDA_BUILD_ARTIFACTS_DIR="${LAMBDA_DIR}/build-artifacts"
-    # mkdir -p ${LAMBDA_BUILD_ARTIFACTS_DIR}
-    # cp ${dir}/.vite/manifest.json ${LAMBDA_BUILD_ARTIFACTS_DIR}
-    # cp ${dir}/.buildInfo/buildInfo.json ${LAMBDA_BUILD_ARTIFACTS_DIR}
+    # Deploy the lambda
+    echo "  **** Bundling webapp-lambda.zip"
+    LAMBDA_DIR="${CODEBUILD_SRC_DIR}/dist/webapp-lambdas/${WEBAPP_NAME}/webapp-lambda"
+    # Bundle the build info with the lambda so it knows how to find
+    # the manifest, etc.
+    LAMBDA_BUILD_ARTIFACTS_DIR="${LAMBDA_DIR}/build-artifacts"
+    mkdir -p ${LAMBDA_BUILD_ARTIFACTS_DIR}
+    cp ${dir}/.vite/manifest.json ${LAMBDA_BUILD_ARTIFACTS_DIR}
+    cp ${dir}/.buildInfo/buildInfo.json ${LAMBDA_BUILD_ARTIFACTS_DIR}
 
     # # Copy the prisma build artifacts
     # mkdir -p ${LAMBDA_DIR}/node_modules
     # cp -r ${PKGDIR}/node_modules/@prisma/client ${LAMBDA_DIR}/node_modules
     # cp -r ${PKGDIR}/node_modules/prisma-app-client ${LAMBDA_DIR}/node_modules
     
-    # # Zip up the lambda, copy to s3, deploy
-    # cd ${LAMBDA_DIR}
-    # zip -r ../webapp-lambda.zip *
-    # LAMBDA_DEST_KEY="${BUILD_INFO_BASE_KEY}/server/webapp-lambda.zip"
-    # LAMBDA_DEST="${PRIVATE_BUCKET_NAME}/${LAMBDA_DEST_KEY}"
-    # echo "  **** Writing webapp-lambda.zip to ${LAMBDA_DEST}"
-    # aws s3 cp ../webapp-lambda.zip "s3://${LAMBDA_DEST}"
+    # Zip up the lambda, copy to s3, deploy
+    cd ${LAMBDA_DIR}
+    zip -r ../webapp-lambda.zip *
+    LAMBDA_DEST_KEY="${BUILD_INFO_BASE_KEY}/server/webapp-lambda.zip"
+    LAMBDA_DEST="${PRIVATE_BUCKET_NAME}/${LAMBDA_DEST_KEY}"
+    echo "  **** Writing webapp-lambda.zip to ${LAMBDA_DEST}"
+    aws s3 cp ../webapp-lambda.zip "s3://${LAMBDA_DEST}"
+
     # # Update the lambda
     # AWS_LAMBDA_NAME="${APP_NAME}-webapp-${WEBAPP_NAME}-${DEPLOYENV}"
     # if aws lambda get-function --function-name "${AWS_LAMBDA_NAME}" > /dev/null 2>&1; then

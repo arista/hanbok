@@ -375,9 +375,10 @@ function getWebappsConfig(
         const lambdaAppServerBuiltPath = path.resolve(
           projectRoot,
           "dist",
-          "webapp-servers",
+          "webapp-lambdas",
           name,
-          "LambdaAppServer.es.js"
+          "webapp-lambda",
+          "webapp-lambda.es.js"
         )
         const lambdaAppServer = FsUtils.isFile(lambdaAppServerSourcePath)
           ? {
