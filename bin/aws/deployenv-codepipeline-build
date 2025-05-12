@@ -99,6 +99,20 @@ for dir in $CODEBUILD_SRC_DIR}/dist/webapps/*/; do
       githubRepo: $ARGS.named.githubOwner_Hanbok,
       commitId: $ARGS.named.gitCommitId_Hanbok,
       branch: $ARGS.named.gitBranch_Hanbok
+      } else null end),
+    suiteSource: (if ($ARGS.named.githubOwner_Suite | length > 0)
+      then {
+      githubOwner: $ARGS.named.githubOwner_Suite,
+      githubRepo: $ARGS.named.githubOwner_Suite,
+      commitId: $ARGS.named.gitCommitId_Suite,
+      branch: $ARGS.named.gitBranch_Suite
+      } else null end),
+    appSource: (if ($ARGS.named.githubOwner_App | length > 0)
+      then {
+      githubOwner: $ARGS.named.githubOwner_App,
+      githubRepo: $ARGS.named.githubOwner_App,
+      commitId: $ARGS.named.gitCommitId_App,
+      branch: $ARGS.named.gitBranch_App
       } else null end)
 }' \
     > ${dir}/.buildInfo/buildInfo.json
