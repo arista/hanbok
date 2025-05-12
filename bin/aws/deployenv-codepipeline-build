@@ -69,16 +69,35 @@ for dir in $CODEBUILD_SRC_DIR}/dist/webapps/*/; do
        --arg buildDate "${BUILD_DATE}" \
        --arg pipelineExecutionId "${PIPELINE_EXECUTION_ID:-}" \
        --arg publishedAssetsBase "${DEPLOYENV_PUBLISHED_ASSETS_BASE}/by-webapp/${WEBAPP_NAME}/site/" \
-'{
-    buildUuid: $ARGS.buildUuid,
-    suite: $ARGS.suite,
-    app: $ARGS.app,
-    webapp: $ARGS.webapp,
-    deployenv: $ARGS.deployenv,
-    codebuildBuildId: $ARGS.codebuildBuildId,
-    buildDate: $ARGS.buildDate,
-    pipelineExecutionId: $ARGS.pipelineExecutionId,
-publishedAssetsBase
+        --arg githubOwner_Hanbok "${GITHUB_OWNER_Hanbok:-}" \
+        --arg githubRepo_Hanbok "${GITHUB_REPO_Hanbok:-}" \
+        --arg gitCommitId_Hanbok "${GITHUB_COMMIT_ID_Hanbok:-}" \
+        --arg gitBranch_Hanbok "${GITHUB_BRANCH_NAME_Hanbok:-}" \
+        --arg githubOwner_Suite "${GITHUB_OWNER_Suite:-}" \
+        --arg githubRepo_Suite "${GITHUB_REPO_Suite:-}" \
+        --arg gitCommitId_Suite "${GITHUB_COMMIT_ID_Suite:-}" \
+        --arg gitBranch_Suite "${GITHUB_BRANCH_NAME_Suite:-}" \
+        --arg githubOwner_App "${GITHUB_OWNER_App:-}" \
+        --arg githubRepo_App "${GITHUB_REPO_App:-}" \
+        --arg gitCommitId_App "${GITHUB_COMMIT_ID_App:-}" \
+        --arg gitBranch_App "${GITHUB_BRANCH_NAME_App:-}" \
+       '{
+    buildUuid: $ARGS.named.buildUuid,
+    suite: $ARGS.named.suite,
+    app: $ARGS.named.app,
+    webapp: $ARGS.named.webapp,
+    deployenv: $ARGS.named.deployenv,
+    codebuildBuildId: $ARGS.named.codebuildBuildId,
+    buildDate: $ARGS.named.buildDate,
+    pipelineExecutionId: $ARGS.named.pipelineExecutionId,
+    publishedAssetsBase: $ARGS.named.publishedAssetsBase,
+    hanbokSource: ($ARGS.named.githubOwner_Hanbok | length > 0)
+      ? {
+      githubOwner: $ARGS.named.githubOwner_Hanbok,
+      githubRepo: $ARGS.named.githubOwner_Hanbok
+      commitId: $ARGS.named.gitCommitId_Hanbok
+      branch: $ARGS.named.gitBranch_Hanbok
+      } : null,
 }' \
     > ${dir}/.buildInfo/buildInfo.json
 
