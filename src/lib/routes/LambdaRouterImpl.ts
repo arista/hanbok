@@ -10,7 +10,7 @@ import {HTTPMethod} from "find-my-way"
 import Router from "find-my-way"
 import {APIGatewayEvent, APIGatewayProxyResult, Context} from "aws-lambda"
 
-export class LambdaRouter implements IRouter {
+export class LambdaRouterImpl implements IRouter {
   r: Router.Instance<Router.HTTPVersion.V1> = router({
     ignoreTrailingSlash: true,
     caseSensitive: true,

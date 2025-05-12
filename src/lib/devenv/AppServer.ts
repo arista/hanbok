@@ -62,6 +62,7 @@ export class AppServer {
             routerBase,
             assetsBase,
             manifest,
+            buildInfo: null,
           })
           const staticHandler = serveStatic(builtWebappRoot, {
             // Don't let it serve index.html (we want that proxied)
