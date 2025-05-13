@@ -25,7 +25,7 @@ export class LambdaRouterImpl implements IRouter {
   }
 
   _register(method: HTTPMethod, path: string, handler: IRouterRequestHandler) {
-    console.log(`_register, method: ${method}, path: ${path}`)
+    console.log(`LambdaRouterImpl: _register, method: ${method}, path: ${path}`)
     this.r.on(method, path, () => {
       return (req: IRouterRequest, res: IRouterResponse) => handler(req, res)
     })
