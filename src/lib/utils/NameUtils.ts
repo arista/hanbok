@@ -129,6 +129,7 @@ export function toWebappApiName(
   )
 }
 
+// FIXME - factor out these two methods
 export function toAssetsBase(
   construct: IConstruct,
   publicBucket: s3.IBucket,
@@ -146,5 +147,26 @@ export function toAssetsBase(
     cdk.Stack.of(construct).region,
     ".amazonaws.com",
     `/webapp-assets/by-app/${appName}/by-deployenv/${deployenv}`,
+  ])
+}
+
+export function toWebappAssetsBase(
+  construct: IConstruct,
+  publicBucket: s3.IBucket,
+  appName: string,
+  webappName: string,
+  deployenv: string
+) {
+  return cdk.Fn.join("", [
+    // Unfortunately we have to constrct the https url
+    // manually, since bucketWebsiteUrl returns an
+    // http url
+    //publicBucket.bucketWebsiteUrl,
+    "https://",
+    publicBucket.bucketName,
+    ".s3.",
+    cdk.Stack.of(construct).region,
+    ".amazonaws.com",
+    `/webapp-assets/by-app/${appName}/by-deployenv/${deployenv}/by-webapp/${webappName}/main/site/assets/`,
   ])
 }
