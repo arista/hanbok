@@ -190,18 +190,7 @@ export class BuildDeployPipeline extends Construct {
                 PUBLIC_BUCKET_NAME: {value: publicBucket.bucketName},
                 PRIVATE_BUCKET_NAME: {value: privateBucket.bucketName},
                 DEPLOYENV_PUBLISHED_ASSETS_BASE: {
-                  value: cdk.Fn.join("", [
-                    // Unfortunately we have to constrct the https url
-                    // manually, since bucketWebsiteUrl returns an
-                    // http url
-                    //publicBucket.bucketWebsiteUrl,
-                    "https://",
-                    publicBucket.bucketName,
-                    ".s3.",
-                    cdk.Stack.of(this).region,
-                    ".amazonaws.com",
-                    `/webapp-assets/by-app/${appName}/by-deployenv/${deployenv}`,
-                  ]),
+                  value: NU.toAssetsBase(this, publicBucket, appName, deployenv)
                 },
                 ...actionsEnvVars,
               },

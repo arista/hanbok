@@ -30,7 +30,7 @@ export function createLambdaAppServer(
     assetsBase,
     buildInfo,
   }
-  console.log(`Creating lambda with buildInfo: ${JSON.stringify(buildInfo, null, 2)}`)
+  console.log(`Creating lambda with config, including: ${JSON.stringify({routesEndpoint, assetsBase, buildInfo}, null, 2)}`)
   f(props)
   console.log(`Lambda created`)
   return async (event, context) => {

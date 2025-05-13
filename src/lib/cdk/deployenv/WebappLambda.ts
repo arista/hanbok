@@ -35,6 +35,7 @@ export class WebappLambda extends Construct {
     const resources = new SuiteResourcesBase(this, "resources", {
       projectModel,
     })
+    const publicBucket = resources.publicBucket
     const permissions = new Permissions()
 
     const privateBucket = resources.privateBucket.bucket
@@ -46,9 +47,18 @@ export class WebappLambda extends Construct {
     )
     this.functionName = functionName
     const lambdaSourceLocation = `webapp-builds/by-app/${projectModel.name}/by-deployenv/${deployenv}/by-webapp/${webapp.name}/server/webapp-lambda.zip`
+    const routesEndpoint = (()=>{
+      if (hostingInfo != null) {
+        const {hostname, hostedZone} = hostingInfo
+        return `https://${hostname}.${hostedZone}/`
+      }
+      else {
+        return ""
+      }
+    })()
     const environment: Record<string, string> = {
-      ROUTES_ENDPOINT: "FIXME",
-      ASSETS_BASE: "FIXME",
+      ROUTES_ENDPOINT: routesEndpoint,
+      ASSETS_BASE: NU.toAssetsBase(this, publicBucket.bucket, appName, deployenv),
     }
     const webappLambda = new lambda.Function(this, "lambda", {
       functionName,

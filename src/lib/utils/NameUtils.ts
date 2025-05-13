@@ -1,3 +1,7 @@
+import {IConstruct} from "constructs"
+import * as cdk from "aws-cdk-lib"
+import * as s3 from "aws-cdk-lib/aws-s3"
+
 export function dashesToCamelCase(str: string): string {
   return str
     .toLowerCase()
@@ -123,4 +127,24 @@ export function toWebappApiName(
     [suiteName, appName, deployenv, "webapp", webappName],
     sanitizeWebappApiName
   )
+}
+
+export function toAssetsBase(
+  construct: IConstruct,
+  publicBucket: s3.IBucket,
+  appName: string,
+  deployenv: string
+) {
+  return cdk.Fn.join("", [
+    // Unfortunately we have to constrct the https url
+    // manually, since bucketWebsiteUrl returns an
+    // http url
+    //publicBucket.bucketWebsiteUrl,
+    "https://",
+    publicBucket.bucketName,
+    ".s3.",
+    cdk.Stack.of(construct).region,
+    ".amazonaws.com",
+    `/webapp-assets/by-app/${appName}/by-deployenv/${deployenv}`,
+  ])
 }
