@@ -166,9 +166,6 @@ export class VpcResource {
   _vpc?: ec2.IVpc
   get vpc(): ec2.IVpc {
     return (this._vpc ??= (() => {
-      console.log(
-        `this.privateSubnets.subnetIdsExportedValue: ${this.privateSubnets.subnetIdsExportedValue}`
-      )
       return ec2.Vpc.fromVpcAttributes(
         this.resources,
         `vpc-${NU.toAlphanumDash(this.exportNameSuffix, 64)}`,

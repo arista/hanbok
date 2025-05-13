@@ -97,6 +97,14 @@ export function sanitizeLambdaName(name: string): string {
   return toAlphanumDash(name, 64).toLowerCase()
 }
 
-export function toLambdaName(parts: Array<string | null | undefined>): string {
-  return toDashedName(parts, sanitizeLambdaName)
+export function toLambdaName(
+  suiteName: string,
+  appName: string,
+  webappName: string,
+  deployenv: string
+): string {
+  return toDashedName(
+    [suiteName, appName, "webapp", webappName, deployenv],
+    sanitizeLambdaName
+  )
 }

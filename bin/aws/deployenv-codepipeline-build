@@ -175,12 +175,12 @@ for dir in ${CODEBUILD_SRC_DIR}/dist/webapps/*/; do
     echo "  **** Writing webapp-lambda.zip to ${LAMBDA_DEST}"
     aws s3 cp ../webapp-lambda.zip "s3://${LAMBDA_DEST}"
 
-    # # Update the lambda
-    # AWS_LAMBDA_NAME="${APP_NAME}-webapp-${WEBAPP_NAME}-${DEPLOYENV}"
-    # if aws lambda get-function --function-name "${AWS_LAMBDA_NAME}" > /dev/null 2>&1; then
-    #     echo "  **** lambda function '${AWS_LAMBDA_NAME}' exists. Updating code from ${LAMBDA_DEST}..."
-    #     aws lambda update-function-code --function-name "${AWS_LAMBDA_NAME}" --s3-bucket ${PRIVATE_BUCKET_NAME} --s3-key "${LAMBDA_DEST_KEY}"
-    # else
-    #     echo "  **** lambda function '${AWS_LAMBDA_NAME}' does not exist. Skipping update."
-    # fi
+    # Update the lambda
+    AWS_LAMBDA_NAME=`npx hb webapp-lambda-name -w ${WEBAPP_NAME} -d {DEPLOYENV}`
+    if aws lambda get-function --function-name "${AWS_LAMBDA_NAME}" > /dev/null 2>&1; then
+        echo "  **** lambda function '${AWS_LAMBDA_NAME}' exists. Updating code from ${LAMBDA_DEST}..."
+        aws lambda update-function-code --function-name "${AWS_LAMBDA_NAME}" --s3-bucket ${PRIVATE_BUCKET_NAME} --s3-key "${LAMBDA_DEST_KEY}"
+    else
+        echo "  **** lambda function '${AWS_LAMBDA_NAME}' does not exist. Skipping update."
+    fi
 done

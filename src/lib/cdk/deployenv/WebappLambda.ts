@@ -33,20 +33,24 @@ export class WebappLambda extends Construct {
     const permissions = new Permissions()
 
     const privateBucket = resources.privateBucket.bucket
-    const lambdaName = NU.toLambdaName([
-      ...stackNameParts,
-      "webapp",
+    const lambdaName = NU.toLambdaName(
+      projectModel.suite!.name,
+      projectModel.name,
       webapp.name,
-      deployenv,
-    ])
+      deployenv
+    )
     const lambdaSourceLocation = `webapp-builds/by-app/${projectModel.name}/by-deployenv/${deployenv}/by-webapp/${webapp.name}/server/webapp-lambda.zip`
+    const environment: Record<string, string> = {
+      ROUTES_ENDPOINT: "FIXME",
+      ASSETS_BASE: "FIXME",
+    }
     const webappLambda = new lambda.Function(this, "lambda", {
       functionName: lambdaName,
       runtime: lambda.Runtime.NODEJS_22_X,
       // "handler" export of webapp-lambda.es.js
       handler: "webapp-lambda.handler",
       code: lambda.Code.fromBucket(privateBucket, lambdaSourceLocation),
-      //      environment: databaseUrls,
+      environment,
       vpc: resources.vpc.vpc,
       vpcSubnets: {
         subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS,
