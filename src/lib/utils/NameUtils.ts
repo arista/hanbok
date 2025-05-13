@@ -92,3 +92,11 @@ export function toCertificateName(
 ): string {
   return toDashedName(parts, sanitizeCertificateName)
 }
+
+export function sanitizeLambdaName(name: string): string {
+  return toAlphanumDash(name, 64).toLowerCase()
+}
+
+export function toLambdaName(parts: Array<string | null | undefined>): string {
+  return toDashedName(parts, sanitizeLambdaName)
+}

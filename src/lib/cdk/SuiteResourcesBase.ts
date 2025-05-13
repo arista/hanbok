@@ -37,61 +37,6 @@ export class SuiteResourcesBase<
   // The certificates
   certificates = new R.CertificateResources(this, "certificates")
 
-  // // Returns the vpcId of the common VPC
-  // get vpcId() {
-  //   return this.getInfrastructureExport("vpc:id")
-  // }
-
-  // _vpc: ec2.IVpc | null = null
-  // get vpc(): ec2.IVpc {
-  //   return (this._vpc ||= (() => {
-  //     return ec2.Vpc.fromVpcAttributes(this.scope, `vpc-byId-${this.vpcId}`, {
-  //       vpcId: this.vpcId,
-  //       availabilityZones: this.vpcAzs,
-  //       privateSubnetIds: this.privateSubnetIds,
-  //     })
-  //   })())
-  // }
-
-  // get vpcAzs() {
-  //   return cdk.Fn.split(",", this.getInfrastructureExport("vpc:azs"))
-  // }
-
-  // getSubnetIds(name: string): Array<string> {
-  //   return cdk.Fn.split(
-  //     ",",
-  //     this.getInfrastructureExport(`vpc:subnets:${name}:subnetIds`)
-  //   )
-  // }
-
-  // // The ids of the vpc subnets open to the internet
-  // get publicSubnetIds() {
-  //   return this.getSubnetIds("public")
-  // }
-
-  // get publicSubnets() {
-  //   return this.publicSubnetIds.map((id) => this.subnetsById.get(id))
-  // }
-
-  // // The ids of the vpc subnets blocked from internet ingress, but
-  // // still with outbound access through the vpc's nat
-  // get privateSubnetIds() {
-  //   return this.getSubnetIds("private")
-  // }
-
-  // get privateSubnets() {
-  //   return this.privateSubnetIds.map((id) => this.subnetsById.get(id))
-  // }
-
-  // // The ids of the vpc subnets blocked from the internet
-  // get isolatedSubnetIds() {
-  //   return this.getSubnetIds("isolated")
-  // }
-
-  // get isolatedSubnets() {
-  //   return this.isolatedSubnetIds.map((id) => this.subnetsById.get(id))
-  // }
-
   // // Returns the token corresponding to the codeconnection arn used to
   // // interact with github
   // get codestarConnectionArn() {

@@ -359,7 +359,8 @@ export class Build {
           builds.push({
             entry: sourcePath,
             out: builtPath,
-            format: "esm",
+            format: "cjs",
+            isLambda: true,
           })
         }
       }

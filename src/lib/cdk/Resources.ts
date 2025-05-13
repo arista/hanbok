@@ -163,12 +163,30 @@ export class VpcResource {
     return cdk.Fn.importValue(this.vpcIdExportName)
   }
 
+  _vpc?: ec2.IVpc
+  get vpc(): ec2.IVpc {
+    return (this._vpc ??= (() => {
+      console.log(
+        `this.privateSubnets.subnetIdsExportedValue: ${this.privateSubnets.subnetIdsExportedValue}`
+      )
+      return ec2.Vpc.fromVpcAttributes(
+        this.resources,
+        `vpc-${NU.toAlphanumDash(this.exportNameSuffix, 64)}`,
+        {
+          vpcId: this.vpcIdExportedValue,
+          availabilityZones: this.azsExportedValue,
+          privateSubnetIds: this.privateSubnets.subnetIdsExportedValue,
+        }
+      )
+    })())
+  }
+
   // The comma-separated list of the vpc's availability zones
   get azsExportName() {
     return `${this.exportNameBase}:azs`
   }
   get azsExportedValue() {
-    return cdk.Fn.split(",", this.azsExportName)
+    return cdk.Fn.split(",", cdk.Fn.importValue(this.azsExportName))
   }
 }
 
@@ -183,7 +201,7 @@ export class VpcSubnetResource {
     return `${this.resources.cdkExportsPrefix}:${this.exportNameSuffix}:ids`
   }
   get subnetIdsExportedValue() {
-    return cdk.Fn.split(",", this.subnetIdsExportName)
+    return cdk.Fn.split(",", cdk.Fn.importValue(this.subnetIdsExportName))
   }
 
   _subnets?: Array<ec2.ISubnet>

@@ -380,7 +380,7 @@ function getWebappsConfig(
           "webapp-lambdas",
           name,
           "webapp-lambda",
-          "webapp-lambda.es.js"
+          "webapp-lambda.js"
         )
         const lambdaAppServer = FsUtils.isFile(lambdaAppServerSourcePath)
           ? {
