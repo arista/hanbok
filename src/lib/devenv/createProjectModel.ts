@@ -36,6 +36,7 @@ export async function parseProjectConfig({
   const webapps = getWebappsConfig(config, projectRoot)
   const cdk = getCdkConfig(config, projectRoot)
   const suite = await getSuiteConfig(config, projectRoot)
+  const certificates = getCertificatesConfig(config, projectRoot)
   return {
     name: config.name,
     type: config.type,
@@ -51,6 +52,7 @@ export async function parseProjectConfig({
       cdk,
     },
     suite,
+    certificates,
   }
 }
 
@@ -462,6 +464,37 @@ async function getSuiteConfig(
     }
     case "Suite": {
       return null
+    }
+  }
+}
+
+function getCertificatesConfig(
+  projectConfig: PC.ProjectConfig,
+  projectRoot: string
+): PM.CertificatesModel | null {
+  switch (projectConfig.type) {
+    case "App": {
+      return null
+    }
+    case "Suite": {
+      const certificatesConfig = projectConfig.certificates
+      if (certificatesConfig == null) {
+        return null
+      }
+      const ret: PM.CertificatesModel = {}
+      for (const [key, value] of Object.entries(certificatesConfig)) {
+        if (!/^[A-Za-z][A-Za-z0-9]*$/.test(key)) {
+          throw new Error(
+            `certificate name "${key}" must be alphanumeric and start with a letter`
+          )
+        }
+        const {hostedZone, domainName} = value
+        ret[key] = {
+          hostedZone,
+          domainName,
+        }
+      }
+      return ret
     }
   }
 }

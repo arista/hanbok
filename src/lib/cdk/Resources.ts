@@ -6,6 +6,7 @@ import * as route53 from "aws-cdk-lib/aws-route53"
 import * as ec2 from "aws-cdk-lib/aws-ec2"
 import * as NU from "../utils/NameUtils"
 import * as PM from "../devenv/ProjectModel"
+import * as acm from "aws-cdk-lib/aws-certificatemanager"
 
 export type ResourcesProps = {
   projectModel: PM.ProjectModel
@@ -74,20 +75,20 @@ export class Resources<C extends ResourcesProps> extends Construct {
   //   })())
   // }
 
-  // _hostedZones: CachedResources<route53.IHostedZone> | null = null
-  // get hostedZones(): CachedResources<route53.IHostedZone> {
-  //   return (this._hostedZones ||= (() => {
-  //     return new CachedResources((name) => {
-  //       return route53.HostedZone.fromLookup(
-  //         this.scope,
-  //         `hosted-zone-${name.replace(/\./g, "")}`,
-  //         {
-  //           domainName: name,
-  //         }
-  //       )
-  //     })
-  //   })())
-  // }
+  _hostedZones: CachedResources<route53.IHostedZone> | null = null
+  get hostedZones(): CachedResources<route53.IHostedZone> {
+    return (this._hostedZones ||= (() => {
+      return new CachedResources((name) => {
+        return route53.HostedZone.fromLookup(
+          this.scope,
+          `hosted-zone-${name.replace(/\./g, "")}`,
+          {
+            domainName: name,
+          }
+        )
+      })
+    })())
+  }
 }
 
 class CachedResources<T> {
@@ -190,6 +191,57 @@ export class VpcSubnetResource {
     return (this._subnets ??= (() => {
       return this.subnetIdsExportedValue.map((id) =>
         this.resources.subnetsById.get(id)
+      )
+    })())
+  }
+}
+
+export class CertificateResources {
+  constructor(
+    public resources: Resources<any>,
+    public exportNameSuffix: string
+  ) {}
+
+  byName: Record<string, CertificateResource> = {}
+
+  get(name: string): CertificateResource {
+    return (this.byName[name] ||= (() => {
+      return new CertificateResource(
+        this.resources,
+        `${this.exportNameSuffix}:${name}`,
+        name
+      )
+    })())
+  }
+}
+
+export class CertificateResource {
+  constructor(
+    public resources: Resources<any>,
+    public exportNameSuffix: string,
+    public name: string
+  ) {}
+
+  get exportNameBase() {
+    return `${this.resources.cdkExportsPrefix}:${this.exportNameSuffix}`
+  }
+
+  // arn of the certificate
+  get arnExportName() {
+    return `${this.exportNameBase}:arn`
+  }
+  get arnExportedValue() {
+    return cdk.Fn.importValue(this.arnExportName)
+  }
+
+  _certificate?: acm.ICertificate
+  get certificate() {
+    return (this._certificate ??= (() => {
+      const arn = this.arnExportedValue
+      return acm.Certificate.fromCertificateArn(
+        this.resources.scope,
+        `cerrtificate-${this.name}`,
+        arn
       )
     })())
   }

@@ -1,3 +1,6 @@
+import {STSClient, GetCallerIdentityCommand} from "@aws-sdk/client-sts"
+import {loadConfig} from "@aws-sdk/node-config-provider"
+import * as cdk from "aws-cdk-lib"
 import {createProjectModel} from "../../devenv/createProjectModel"
 import * as FsUtils from "../FsUtils"
 import {Toolkit, StackSelectionStrategy} from "@aws-cdk/toolkit-lib"
@@ -70,10 +73,13 @@ export async function runCdkStack({
     ].filter((p) => p != null)
     const stackName = toCdkStackName(stackNameParts)
 
+    const env = await getDefaultEnv()
+
     const fullStackProps = {
       ...stackProps,
       projectModel,
       stackNameParts,
+      env,
     }
     const cx = await cdkToolkit.fromAssemblyBuilder(async () => {
       const app = new core.App()
@@ -114,5 +120,30 @@ export async function runCdkStack({
   } catch (err) {
     console.error(`Error running CDK stack`, err)
     throw err
+  }
+}
+
+// Reads in the default environment from the calling user's account
+// info.  This is needed to do things like HostedZone lookups
+export async function getDefaultEnv(): Promise<{
+  account: string
+  region: string
+}> {
+  const region =
+    (await loadConfig({
+      environmentVariableSelector: (env) => env["AWS_REGION"],
+      configFileSelector: (profile) => profile["region"],
+      default: () => undefined,
+    })()) || "us-east-1"
+  const sts = new STSClient({region})
+  const identity = await sts.send(new GetCallerIdentityCommand({}))
+
+  if (!identity.Account) {
+    throw new Error("Unable to retrieve AWS account.")
+  }
+
+  return {
+    account: identity.Account,
+    region,
   }
 }

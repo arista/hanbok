@@ -4,6 +4,8 @@ import {S3Bucket} from "./S3Bucket"
 import {Vpc} from "./Vpc"
 import * as PM from "../devenv/ProjectModel"
 import * as NU from "../utils/NameUtils"
+import * as acm from "aws-cdk-lib/aws-certificatemanager"
+import * as cdk from "aws-cdk-lib"
 
 export type SuiteInfrastructureBaseProps = {
   projectModel: PM.ProjectModel
@@ -66,5 +68,26 @@ export class SuiteInfrastructureBase<
       cors: "allow-all-origins",
       resource: resources.publicBucket,
     })
+
+    //----------------------------------------
+    // Create the certificates
+    const {certificates} = projectModel
+    if (certificates != null) {
+      for (const [certName, certDef] of Object.entries(certificates)) {
+        const {hostedZone, domainName} = certDef
+        const hz = resources.hostedZones.get(hostedZone)
+
+        const certificate = new acm.Certificate(this, "ApiCert", {
+          domainName,
+          validation: acm.CertificateValidation.fromDns(hz),
+        })
+
+        const resource = resources.certificates.get(certName)
+        new cdk.CfnOutput(this, `certificate-${certName}-arn`, {
+          value: certificate.certificateArn,
+          exportName: resource.arnExportName,
+        })
+      }
+    }
   }
 }

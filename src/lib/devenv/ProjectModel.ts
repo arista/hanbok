@@ -9,6 +9,7 @@ export type ProjectModel = {
   devenv: DevEnv
   features: Features
   suite: ProjectModel | null
+  certificates: CertificatesModel | null
 }
 
 export type ProjectType = "Suite" | "App"
@@ -106,4 +107,14 @@ export type WebappHostingModel = {
   hostedZone: string
   // The domain name within the hosted zone (e.g. "myapp")
   hostname: string
+}
+
+export type CertificatesModel = Record<string, CertificateModel>
+
+export type CertificateModel = {
+  // The name of the hosted zone (e.g. "example.com")
+  hostedZone: string
+  // The domain name to appear on the certificate, which can include
+  // wildcards or individual hostnames (e.g., "*.example.com")
+  domainName: string
 }

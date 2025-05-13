@@ -6,6 +6,7 @@ export type SuiteProjectConfig = {
   source?: SourceConfig
   hanbokSource?: SourceConfig
   features?: SuiteFeatures
+  certificates?: CertificatesConfig
 }
 
 export type AppProjectConfig = {
@@ -72,4 +73,14 @@ export type WebappConfig = {
   hostedZone: string
   // The domain name within the hosted zone (e.g. "myapp")
   hostname: string
+}
+
+export type CertificatesConfig = Record<string, CertificateConfig>
+
+export type CertificateConfig = {
+  // The name of the hosted zone (e.g. "example.com")
+  hostedZone: string
+  // The domain name to appear on the certificate, which can include
+  // wildcards or individual hostnames (e.g., "*.example.com")
+  domainName: string
 }

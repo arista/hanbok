@@ -34,6 +34,9 @@ export class SuiteResourcesBase<
   // The VPC
   vpc = new R.VpcResource(this, "vpc")
 
+  // The certificates
+  certificates = new R.CertificateResources(this, "certificates")
+
   // // Returns the vpcId of the common VPC
   // get vpcId() {
   //   return this.getInfrastructureExport("vpc:id")
