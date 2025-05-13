@@ -15,34 +15,30 @@ export type LambdaHandler = (
 ) => Promise<APIGatewayProxyResult>
 
 export function createLambdaAppServer(
-  f: (props: AppServerEnvBase) => void
+  f: (props: AppServerEnvBase) => Promise<void>
 ): LambdaHandler {
-  const {manifest, buildInfo} = readLambdaBuildArtifacts()
-  const {routesEndpoint, assetsBase} = readLambdaEnvVars()
-  const router = new LambdaRouterImpl()
-  const props: AppServerEnvBase = {
-    router,
-    routesPrefix: "/",
-    isProduction: true,
-    routesEndpoint,
-    routerBase: "/",
-    manifest: manifest,
-    assetsBase,
-    buildInfo,
-  }
-  console.log(`Creating lambda with config, including: ${JSON.stringify({routesEndpoint, assetsBase, buildInfo}, null, 2)}`)
-  f(props)
-  console.log(`Lambda created`)
-  return async (event, context) => {
-    return {
-      statusCode: 200,
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ event, context }, null, 2),
+  const routerPromise: Promise<LambdaRouterImpl> = (async () => {
+    const { manifest, buildInfo } = readLambdaBuildArtifacts()
+    const { routesEndpoint, assetsBase } = readLambdaEnvVars()
+    const router = new LambdaRouterImpl()
+    const props: AppServerEnvBase = {
+      router,
+      routesPrefix: "/",
+      isProduction: true,
+      routesEndpoint,
+      routerBase: "/",
+      manifest: manifest,
+      assetsBase,
+      buildInfo,
     }
+    console.log(`Creating lambda with config, including: ${JSON.stringify({ routesEndpoint, assetsBase, buildInfo }, null, 2)}`)
+    f(props)
+    console.log(`Lambda created`)
+    return router
+  })()
 
-    /*
+  return async (event, context) => {
+    const router = await routerPromise
     const result = await router.handleRequest(event)
     if (result == null) {
       const {httpMethod, path, headers, multiValueHeaders, body} = event
@@ -62,8 +58,7 @@ export function createLambdaAppServer(
       }
     } else {
       return result
-      }
-      */
+    }
   }
 }
 
