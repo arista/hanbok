@@ -30,7 +30,9 @@ export function createLambdaAppServer(
     assetsBase,
     buildInfo,
   }
+  console.log(`Creating lambda with props: ${JSON.stringify(props, null, 2)}`)
   f(props)
+  console.log(`Lambda created`)
   return async (event, context) => {
     const result = await router.handleRequest(event)
     if (result == null) {
