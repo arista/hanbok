@@ -178,9 +178,6 @@ for dir in ${CODEBUILD_SRC_DIR}/dist/webapps/*/; do
     # Update the lambda
     AWS_LAMBDA_NAME=`npx hb webapp-lambda-name -w ${WEBAPP_NAME} -d ${DEPLOYENV}`
 
-    echo "AWS_LAMBDA_NAME: ${AWS_LAMBDA_NAME}."
-    aws lambda get-function --function-name "${AWS_LAMBDA_NAME}"
-
     if aws lambda get-function --function-name "${AWS_LAMBDA_NAME}" > /dev/null 2>&1; then
         echo "  **** lambda function '${AWS_LAMBDA_NAME}' exists. Updating code from ${LAMBDA_DEST}..."
         aws lambda update-function-code --function-name "${AWS_LAMBDA_NAME}" --s3-bucket ${PRIVATE_BUCKET_NAME} --s3-key "${LAMBDA_DEST_KEY}"
