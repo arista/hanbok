@@ -29,8 +29,8 @@ export class Command extends OC.Command {
     const name = NU.toLambdaName(
       projectModel.suite!.name,
       projectModel.name,
-      webapp,
-      deployenv
+      deployenv,
+      webapp
     )
     console.log(name)
   }

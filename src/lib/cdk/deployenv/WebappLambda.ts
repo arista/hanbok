@@ -36,8 +36,8 @@ export class WebappLambda extends Construct {
     const lambdaName = NU.toLambdaName(
       projectModel.suite!.name,
       projectModel.name,
-      webapp.name,
-      deployenv
+      deployenv,
+      webapp.name
     )
     const lambdaSourceLocation = `webapp-builds/by-app/${projectModel.name}/by-deployenv/${deployenv}/by-webapp/${webapp.name}/server/webapp-lambda.zip`
     const environment: Record<string, string> = {

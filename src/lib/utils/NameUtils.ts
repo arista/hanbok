@@ -100,11 +100,11 @@ export function sanitizeLambdaName(name: string): string {
 export function toLambdaName(
   suiteName: string,
   appName: string,
+  deployenv: string,
   webappName: string,
-  deployenv: string
 ): string {
   return toDashedName(
-    [suiteName, appName, "webapp", webappName, deployenv],
+    [suiteName, appName, deployenv, "webapp", webappName],
     sanitizeLambdaName
   )
 }
