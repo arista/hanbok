@@ -23,6 +23,8 @@ export type WebappLambdaProps = {
 }
 
 export class WebappLambda extends Construct {
+  functionName: string
+  
   constructor(scope: IConstruct, id: string, props: WebappLambdaProps) {
     super(scope, id)
     const {deployenv, projectModel, stackNameParts, webapp} = props
@@ -33,19 +35,20 @@ export class WebappLambda extends Construct {
     const permissions = new Permissions()
 
     const privateBucket = resources.privateBucket.bucket
-    const lambdaName = NU.toLambdaName(
+    const functionName = NU.toLambdaName(
       projectModel.suite!.name,
       projectModel.name,
       deployenv,
       webapp.name
     )
+    this.functionName = functionName
     const lambdaSourceLocation = `webapp-builds/by-app/${projectModel.name}/by-deployenv/${deployenv}/by-webapp/${webapp.name}/server/webapp-lambda.zip`
     const environment: Record<string, string> = {
       ROUTES_ENDPOINT: "FIXME",
       ASSETS_BASE: "FIXME",
     }
     const webappLambda = new lambda.Function(this, "lambda", {
-      functionName: lambdaName,
+      functionName,
       runtime: lambda.Runtime.NODEJS_22_X,
       // "handler" export of webapp-lambda.es.js
       handler: "webapp-lambda.handler",

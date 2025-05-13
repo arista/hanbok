@@ -13,12 +13,13 @@ export type BuildDeployPipelineProps = {
   deployenv: string
   projectModel: PM.ProjectModel
   stackNameParts: Array<string>
+  lambdaFunctionNames: Array<string>
 }
 
 export class BuildDeployPipeline extends Construct {
   constructor(scope: IConstruct, id: string, props: BuildDeployPipelineProps) {
     super(scope, id)
-    const {projectModel, branch, deployenv, stackNameParts} = props
+    const {projectModel, branch, deployenv, stackNameParts, lambdaFunctionNames} = props
 
     const appName = projectModel.name
     const suiteName = projectModel.suite?.name
@@ -65,12 +66,12 @@ export class BuildDeployPipeline extends Construct {
       //...permissions.toReadSSMParameters("/taterapps/common/*"),
       ...permissions.toWriteS3BucketObjects(privateBucket),
       ...permissions.toWriteS3BucketObjects(publicBucket),
-      //
-      //      // To deploy the lambda code
-      //      ...cdkUtils.permissions.toReadS3Bucket(privateBucket),
-      //      ...lambdaFunctionNames
-      //        .map((n) => cdkUtils.permissions.toUpdateLambdaCode(n))
-      //        .flat(),
+      
+      // To deploy the lambda code
+      ...permissions.toReadS3Bucket(privateBucket),
+      ...lambdaFunctionNames
+        .map((n) => permissions.toUpdateLambdaCode(n))
+        .flat(),
     ])
 
     const sourceActions: Array<cp.IAction> = []
