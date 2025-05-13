@@ -82,3 +82,13 @@ export function toS3BucketName(
 ): string {
   return toDashedName(parts, sanitizeS3BucketName)
 }
+
+export function sanitizeCertificateName(name: string): string {
+  return toAlphanumDash(name, 128).toLowerCase()
+}
+
+export function toCertificateName(
+  parts: Array<string | null | undefined>
+): string {
+  return toDashedName(parts, sanitizeCertificateName)
+}

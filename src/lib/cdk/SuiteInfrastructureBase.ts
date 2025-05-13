@@ -77,10 +77,18 @@ export class SuiteInfrastructureBase<
         const {hostedZone, domainName} = certDef
         const hz = resources.hostedZones.get(hostedZone)
 
-        const certificate = new acm.Certificate(this, "ApiCert", {
-          domainName,
-          validation: acm.CertificateValidation.fromDns(hz),
-        })
+        const certificate = new acm.Certificate(
+          this,
+          `certificate-${certName}`,
+          {
+            certificateName: NU.toCertificateName([
+              ...stackNameParts,
+              certName,
+            ]),
+            domainName,
+            validation: acm.CertificateValidation.fromDns(hz),
+          }
+        )
 
         const resource = resources.certificates.get(certName)
         new cdk.CfnOutput(this, `certificate-${certName}-arn`, {
