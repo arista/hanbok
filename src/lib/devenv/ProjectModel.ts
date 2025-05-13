@@ -107,6 +107,8 @@ export type WebappHostingModel = {
   hostedZone: string
   // The domain name within the hosted zone (e.g. "myapp")
   hostname: string
+  // The name of the certificate within the suite
+  certificateName: string
 }
 
 export type CertificatesModel = Record<string, CertificateModel>

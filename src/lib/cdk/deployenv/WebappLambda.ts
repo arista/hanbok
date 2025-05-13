@@ -28,6 +28,9 @@ export class WebappLambda extends Construct {
   constructor(scope: IConstruct, id: string, props: WebappLambdaProps) {
     super(scope, id)
     const {deployenv, projectModel, stackNameParts, webapp} = props
+    const suiteName = projectModel.suite!.name
+    const appName = projectModel.name
+    const {hostingInfo} = webapp
 
     const resources = new SuiteResourcesBase(this, "resources", {
       projectModel,
@@ -59,5 +62,68 @@ export class WebappLambda extends Construct {
         subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS,
       },
     })
+
+    // // Give the lambda access to the database
+    // webappMainLambda.connections.allowTo(
+    //   resources.dbSecurityGroup,
+    //   ec2.Port.tcp(resources.dbEndpointPort)
+    // )
+
+    if (hostingInfo != null) {
+      const {hostname, hostedZone, certificateName} = hostingInfo
+      
+      // Create the API Gateway service
+      const webappApi = new apigateway.RestApi(this, "WebappApi", {
+        restApiName: NU.toWebappApiName(suiteName, appName, webapp.name, deployenv)
+      })
+
+      // Map everything in the api to the lambda
+      const proxyResource = webappApi.root.addResource("{proxy+}")
+      proxyResource.addMethod(
+        "ANY",
+        new apigateway.LambdaIntegration(webappLambda),
+        {
+          requestParameters: {
+            "method.request.path.proxy": true,
+          },
+        }
+      )
+      // A separate entry has to be added specifically to handle "/"
+      webappApi.root.addMethod(
+        "ANY",
+        new apigateway.LambdaIntegration(webappLambda),
+        {
+          requestParameters: {
+            "method.request.path.proxy": true,
+          },
+        }
+      )
+
+      // Custom domain for API
+      const certificate = resources.certificates.get(certificateName).certificate
+      const apiDomainName = new apigateway.DomainName(this, "ApiDomain", {
+        domainName: `${hostname}.${hostedZone}`,
+        certificate,
+        // required for custom domains
+        endpointType: apigateway.EndpointType.EDGE,
+      })
+
+      // Base path mapping
+      new apigateway.BasePathMapping(this, "BasePathMapping", {
+        domainName: apiDomainName,
+        restApi: webappApi,
+        stage: webappApi.deploymentStage,
+      })
+
+      // Route 53 alias record pointing to API Gateway
+      const hz = resources.hostedZones.get(hostedZone)
+      new route53.ARecord(this, "ApiAliasRecord", {
+        zone: hz,
+        recordName: hostname,
+        target: route53.RecordTarget.fromAlias(
+          new targets.ApiGatewayDomain(apiDomainName)
+        ),
+      })
+    }
   }
 }

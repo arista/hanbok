@@ -108,3 +108,19 @@ export function toLambdaName(
     sanitizeLambdaName
   )
 }
+
+export function sanitizeWebappApiName(name: string): string {
+  return toAlphanumDash(name, 64).toLowerCase()
+}
+
+export function toWebappApiName(
+  suiteName: string,
+  appName: string,
+  deployenv: string,
+  webappName: string,
+): string {
+  return toDashedName(
+    [suiteName, appName, deployenv, "webapp", webappName],
+    sanitizeWebappApiName
+  )
+}

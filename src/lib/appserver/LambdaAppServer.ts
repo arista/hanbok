@@ -34,6 +34,15 @@ export function createLambdaAppServer(
   f(props)
   console.log(`Lambda created`)
   return async (event, context) => {
+    return {
+      statusCode: 200,
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ event, context }, null, 2),
+    }
+
+    /*
     const result = await router.handleRequest(event)
     if (result == null) {
       const {httpMethod, path, headers, multiValueHeaders, body} = event
@@ -53,7 +62,8 @@ export function createLambdaAppServer(
       }
     } else {
       return result
-    }
+      }
+      */
   }
 }
 

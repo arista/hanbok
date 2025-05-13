@@ -393,10 +393,11 @@ function getWebappsConfig(
           if (webappConfig == null) {
             return null
           }
-          const {hostedZone, hostname} = webappConfig
+          const {hostedZone, hostname, certificateName} = webappConfig
           return {
             hostedZone,
             hostname,
+            certificateName,
           }
         })()
 
