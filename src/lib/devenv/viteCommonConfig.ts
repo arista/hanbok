@@ -44,11 +44,12 @@ export function viteCommonConfig({
 
   const proxyPagePlugins = includeProxyPagePlugin ? [proxyPagePlugin()] : []
 
-  // In a production build, this env var will be set the build process
+  // In a production build, this env var will be set in the build
+  // process
   const DEPLOYENV_PUBLISHED_ASSETS_BASE =
     process.env["DEPLOYENV_PUBLISHED_ASSETS_BASE"]
   const base = DEPLOYENV_PUBLISHED_ASSETS_BASE
-    ? `${DEPLOYENV_PUBLISHED_ASSETS_BASE}/by-webapp/${webapp.name}/site`
+    ? `${DEPLOYENV_PUBLISHED_ASSETS_BASE}/by-webapp/${webapp.name}/main/site/`
     : webapp.devServerBase
 
   return {
