@@ -1,0 +1,16 @@
+#!/bin/bash
+
+# Fail on command failure, undefined variables, and piped command
+# failures, get the package directory
+set -euo pipefail
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+PKGDIR=${DIR}/../..
+
+HOSTNAME=${1}
+PORT=${2}
+USERNAME=${3}
+PASSWORD=${4}
+DATABASE=${5:-}
+
+echo "mysql -u${USERNAME} -p${PASSWORD} -h ${HOSTNAME} -P ${PORT} ${DATABASE}"
+mysql -u${USERNAME} -p${PASSWORD} -h ${HOSTNAME} -P ${PORT} ${DATABASE}

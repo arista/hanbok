@@ -11,8 +11,6 @@ export class Command extends OC.Command {
 
   async run() {
     const {args, flags} = await this.parse(Command)
-    const {arg1} = args
-    const {flag1} = flags
     return await createProjectModel({})
   }
 }

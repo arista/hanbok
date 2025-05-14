@@ -1,5 +1,9 @@
 import type {ChildProcess} from "node:child_process"
+import {spawn} from "node:child_process"
 import process from "node:process"
+import {packageDirectorySync} from "pkg-dir"
+import {fileURLToPath} from "url"
+import path from "node:path"
 
 export type WatcherFn = () => Promise<void | (() => Promise<void>)> // optional cleanup
 
@@ -42,4 +46,29 @@ export async function runAllWatchers(watchers: WatcherConfig[]) {
       }
     })
   )
+}
+
+// Runs a script from bin/internal/{script}, transferring control to
+// it so that the process ends when the script ends, and the script
+// inherits stdio
+export async function execInternalScript({
+  script,
+  args,
+  env,
+}: {
+  script: string
+  args?: Array<string>
+  env?: Record<string, string>
+}) {
+  const packageRoot = packageDirectorySync({cwd: fileURLToPath(import.meta.url)})!
+  const scriptPath = path.join(packageRoot, "bin", "internal", script)
+
+  const child = spawn(scriptPath, args ?? [], {
+    stdio: "inherit",
+    env: env ?? process.env
+  })
+
+  child.on("close", (code)=>{
+    process.exit(code)
+  })
 }
