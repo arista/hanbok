@@ -167,6 +167,6 @@ export function toWebappAssetsBase(
     ".s3.",
     cdk.Stack.of(construct).region,
     ".amazonaws.com",
-    `/webapp-assets/by-app/${appName}/by-deployenv/${deployenv}/by-webapp/${webappName}/main/site/`,
+    `/webapp-assets/by-app/${appName}/by-deployenv/${deployenv}/by-webapp/${webappName}/site/`,
   ])
 }

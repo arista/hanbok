@@ -49,7 +49,7 @@ export function viteCommonConfig({
   const DEPLOYENV_PUBLISHED_ASSETS_BASE =
     process.env["DEPLOYENV_PUBLISHED_ASSETS_BASE"]
   const base = DEPLOYENV_PUBLISHED_ASSETS_BASE
-    ? `${DEPLOYENV_PUBLISHED_ASSETS_BASE}/by-webapp/${webapp.name}/main/site/`
+    ? `${DEPLOYENV_PUBLISHED_ASSETS_BASE}/by-webapp/${webapp.name}/site/`
     : webapp.devServerBase
 
   return {
