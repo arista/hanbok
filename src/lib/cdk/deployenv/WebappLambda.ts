@@ -58,7 +58,7 @@ export class WebappLambda extends Construct {
     })()
     const environment: Record<string, string> = {
       ROUTES_ENDPOINT: routesEndpoint,
-      ASSETS_BASE: NU.toWebappAssetsBase(this, publicBucket.bucket, appName, deployenv),
+      ASSETS_BASE: NU.toWebappAssetsBase(this, publicBucket.bucket, appName, webapp.name, deployenv),
     }
     const webappLambda = new lambda.Function(this, "lambda", {
       functionName,
