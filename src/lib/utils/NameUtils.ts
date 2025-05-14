@@ -105,7 +105,7 @@ export function toLambdaName(
   suiteName: string,
   appName: string,
   deployenv: string,
-  webappName: string,
+  webappName: string
 ): string {
   return toDashedName(
     [suiteName, appName, deployenv, "webapp", webappName],
@@ -121,7 +121,7 @@ export function toWebappApiName(
   suiteName: string,
   appName: string,
   deployenv: string,
-  webappName: string,
+  webappName: string
 ): string {
   return toDashedName(
     [suiteName, appName, deployenv, "webapp", webappName],

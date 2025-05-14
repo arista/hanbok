@@ -19,7 +19,13 @@ export type BuildDeployPipelineProps = {
 export class BuildDeployPipeline extends Construct {
   constructor(scope: IConstruct, id: string, props: BuildDeployPipelineProps) {
     super(scope, id)
-    const {projectModel, branch, deployenv, stackNameParts, lambdaFunctionNames} = props
+    const {
+      projectModel,
+      branch,
+      deployenv,
+      stackNameParts,
+      lambdaFunctionNames,
+    } = props
 
     const appName = projectModel.name
     const suiteName = projectModel.suite?.name
@@ -66,7 +72,7 @@ export class BuildDeployPipeline extends Construct {
       //...permissions.toReadSSMParameters("/taterapps/common/*"),
       ...permissions.toWriteS3BucketObjects(privateBucket),
       ...permissions.toWriteS3BucketObjects(publicBucket),
-      
+
       // To deploy the lambda code
       ...permissions.toReadS3Bucket(privateBucket),
       ...lambdaFunctionNames
@@ -190,7 +196,12 @@ export class BuildDeployPipeline extends Construct {
                 PUBLIC_BUCKET_NAME: {value: publicBucket.bucketName},
                 PRIVATE_BUCKET_NAME: {value: privateBucket.bucketName},
                 DEPLOYENV_PUBLISHED_ASSETS_BASE: {
-                  value: NU.toAssetsBase(this, publicBucket, appName, deployenv)
+                  value: NU.toAssetsBase(
+                    this,
+                    publicBucket,
+                    appName,
+                    deployenv
+                  ),
                 },
                 ...actionsEnvVars,
               },

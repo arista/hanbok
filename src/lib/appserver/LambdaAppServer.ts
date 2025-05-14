@@ -18,8 +18,8 @@ export function createLambdaAppServer(
   f: (props: AppServerEnvBase) => Promise<void>
 ): LambdaHandler {
   const routerPromise: Promise<LambdaRouterImpl> = (async () => {
-    const { manifest, buildInfo } = readLambdaBuildArtifacts()
-    const { routesEndpoint, assetsBase } = readLambdaEnvVars()
+    const {manifest, buildInfo} = readLambdaBuildArtifacts()
+    const {routesEndpoint, assetsBase} = readLambdaEnvVars()
     const router = new LambdaRouterImpl()
     const props: AppServerEnvBase = {
       router,
@@ -31,7 +31,9 @@ export function createLambdaAppServer(
       assetsBase,
       buildInfo,
     }
-    console.log(`Creating lambda with config, including: ${JSON.stringify({ routesEndpoint, assetsBase, buildInfo }, null, 2)}`)
+    console.log(
+      `Creating lambda with config, including: ${JSON.stringify({routesEndpoint, assetsBase, buildInfo}, null, 2)}`
+    )
     f(props)
     console.log(`Lambda created`)
     return router

@@ -177,7 +177,9 @@ export class VpcResource {
         }
       )
       // See https://github.com/aws/aws-cdk/issues/19786 - without this we'll get warnings like "No routeTableId was provided to the subnet at '...'. Attempting to read its .routeTable.routeTableId will return null/undefined
-      cdk.Annotations.of(vpc).acknowledgeWarning('@aws-cdk/aws-ec2:noSubnetRouteTableId');
+      cdk.Annotations.of(vpc).acknowledgeWarning(
+        "@aws-cdk/aws-ec2:noSubnetRouteTableId"
+      )
       return vpc
     })())
   }

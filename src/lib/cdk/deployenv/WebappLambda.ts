@@ -24,7 +24,7 @@ export type WebappLambdaProps = {
 
 export class WebappLambda extends Construct {
   functionName: string
-  
+
   constructor(scope: IConstruct, id: string, props: WebappLambdaProps) {
     super(scope, id)
     const {deployenv, projectModel, stackNameParts, webapp} = props
@@ -47,18 +47,23 @@ export class WebappLambda extends Construct {
     )
     this.functionName = functionName
     const lambdaSourceLocation = `webapp-builds/by-app/${projectModel.name}/by-deployenv/${deployenv}/by-webapp/${webapp.name}/server/webapp-lambda.zip`
-    const routesEndpoint = (()=>{
+    const routesEndpoint = (() => {
       if (hostingInfo != null) {
         const {hostname, hostedZone} = hostingInfo
         return `https://${hostname}.${hostedZone}/`
-      }
-      else {
+      } else {
         return ""
       }
     })()
     const environment: Record<string, string> = {
       ROUTES_ENDPOINT: routesEndpoint,
-      ASSETS_BASE: NU.toWebappAssetsBase(this, publicBucket.bucket, appName, webapp.name, deployenv),
+      ASSETS_BASE: NU.toWebappAssetsBase(
+        this,
+        publicBucket.bucket,
+        appName,
+        webapp.name,
+        deployenv
+      ),
     }
     const webappLambda = new lambda.Function(this, "lambda", {
       functionName,
@@ -81,10 +86,15 @@ export class WebappLambda extends Construct {
 
     if (hostingInfo != null) {
       const {hostname, hostedZone, certificateName} = hostingInfo
-      
+
       // Create the API Gateway service
       const webappApi = new apigateway.RestApi(this, "WebappApi", {
-        restApiName: NU.toWebappApiName(suiteName, appName, webapp.name, deployenv)
+        restApiName: NU.toWebappApiName(
+          suiteName,
+          appName,
+          webapp.name,
+          deployenv
+        ),
       })
 
       // Map everything in the api to the lambda
@@ -110,7 +120,8 @@ export class WebappLambda extends Construct {
       )
 
       // Custom domain for API
-      const certificate = resources.certificates.get(certificateName).certificate
+      const certificate =
+        resources.certificates.get(certificateName).certificate
       const apiDomainName = new apigateway.DomainName(this, "ApiDomain", {
         domainName: `${hostname}.${hostedZone}`,
         certificate,
