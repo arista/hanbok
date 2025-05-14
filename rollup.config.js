@@ -54,7 +54,15 @@ export default [
     },
     // Don't pull in all the types from libraries that hanbok
     // consumers will need to include anyway
-    external: ["zod", "constructs", "aws-cdk-lib", "aws-cdk"],
+    external: id => {
+      const prefixes = ["zod", "constructs", "aws-cdk-lib", "aws-cdk", "aws-cdk-lib"]
+      for(const prefix of prefixes) {
+        if (id.startsWith(prefix)) {
+          return true
+        }
+      }
+      return false
+    },
     plugins: [
       dts({
         respectExternal: true,
