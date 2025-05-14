@@ -60,15 +60,17 @@ export async function execInternalScript({
   args?: Array<string>
   env?: Record<string, string>
 }) {
-  const packageRoot = packageDirectorySync({cwd: fileURLToPath(import.meta.url)})!
+  const packageRoot = packageDirectorySync({
+    cwd: fileURLToPath(import.meta.url),
+  })!
   const scriptPath = path.join(packageRoot, "bin", "internal", script)
 
   const child = spawn(scriptPath, args ?? [], {
     stdio: "inherit",
-    env: env ?? process.env
+    env: env ?? process.env,
   })
 
-  child.on("close", (code)=>{
+  child.on("close", (code) => {
     process.exit(code)
   })
 }

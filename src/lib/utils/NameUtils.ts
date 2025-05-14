@@ -175,6 +175,16 @@ export function toDbCredentialsSecretName(suiteName: string) {
   return `${toAlphanumDash(suiteName, 64)}/db/credentials/admin`
 }
 
-export function toDatabaseName(suiteName: string) {
+export function toDatabaseInstanceName(suiteName: string) {
   return `${toAlphanumDash(suiteName, 64)}-db`
+}
+
+export function toDevDatabaseName(
+  suiteName: string,
+  appName: string,
+  serviceName: string
+) {
+  return toDashedName([suiteName, appName, serviceName], (str) =>
+    toAlphanumDash(str, 64)
+  )
 }

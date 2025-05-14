@@ -11,6 +11,7 @@ import * as ProcUtils from "@lib/utils/ProcUtils"
 import {spawn} from "node:child_process"
 import chokidar from "chokidar"
 import {viteCommonConfig} from "./viteCommonConfig"
+import * as PrismaUtils from "../utils/PrismaUtils"
 
 export class Build {
   constructor(public props: {watch: boolean; model?: PM.ProjectModel}) {}

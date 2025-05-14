@@ -31,7 +31,7 @@ export class Database extends Construct {
 
     // RDS instance
     const dbInstance = new rds.DatabaseInstance(this, "db", {
-      instanceIdentifier: NU.toDatabaseName(suiteName),
+      instanceIdentifier: NU.toDatabaseInstanceName(suiteName),
       engine: rds.DatabaseInstanceEngine.mysql({
         version: rds.MysqlEngineVersion.VER_8_0,
       }),
