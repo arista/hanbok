@@ -88,4 +88,18 @@ export type CertificateConfig = {
   domainName: string
 }
 
-export type DatabaseConfig = {}
+export type DatabaseConfig = {
+  localDev?: DatabaseLocalDevConfig
+  deployed?: DatabaseDeployedConfig
+}
+
+export type DatabaseLocalDevConfig = {
+  hostname: string
+  port?: number
+  username: string
+  password?: string
+}
+
+export type DatabaseDeployedConfig = {
+  bastionPort: number
+}

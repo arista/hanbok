@@ -2,7 +2,7 @@ import * as PM from "./ProjectModel"
 import * as FsUtils from "@lib/utils/FsUtils"
 import process from "node:process"
 import {packageDirectorySync} from "pkg-dir"
-import {pathToFileURL} from "url"
+import {pathToFileURL, fileURLToPath} from "url"
 import * as PC from "./ProjectConfig"
 import * as esbuild from "esbuild"
 import path from "node:path"
@@ -29,6 +29,9 @@ export async function parseProjectConfig({
 }): Promise<PM.ProjectModel> {
   const source = getSourceConfig(config, projectRoot)
   const hanbokSource = getHanbokSourceConfig(config, projectRoot)
+  const hanbokRoot = packageDirectorySync({
+    cwd: fileURLToPath(import.meta.url),
+  })!
   const devenv = await getDevEnv(config)
   const lib = getLibConfig(config, projectRoot)
   const test = getTestConfig(config, projectRoot)
@@ -43,6 +46,7 @@ export async function parseProjectConfig({
     type: config.type,
     source,
     hanbokSource,
+    hanbokRoot,
     projectRoot,
     devenv,
     features: {
@@ -438,7 +442,32 @@ function getDatabaseConfig(
       if (dbConfig == null) {
         return null
       }
-      return {}
+      const {localDev, deployed} = dbConfig
+      return {
+        localDev: (() => {
+          if (localDev == null) {
+            return null
+          } else {
+            const {hostname, port, username, password} = localDev
+            return {
+              hostname,
+              port: port ?? 3306,
+              username,
+              password: password ?? "",
+            }
+          }
+        })(),
+        deployed: (() => {
+          if (deployed == null) {
+            return null
+          } else {
+            const {bastionPort} = deployed
+            return {
+              bastionPort,
+            }
+          }
+        })(),
+      }
     }
   }
 }

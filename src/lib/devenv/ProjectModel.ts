@@ -5,6 +5,7 @@ export type ProjectModel = {
   type: ProjectType
   source: SourceModel | null
   hanbokSource: SourceModel | null
+  hanbokRoot: string
   projectRoot: string
   devenv: DevEnv
   features: Features
@@ -122,4 +123,18 @@ export type CertificateModel = {
   domainName: string
 }
 
-export type DatabaseModel = {}
+export type DatabaseModel = {
+  localDev: DatabaseLocalDevModel | null
+  deployed: DatabaseDeployedModel | null
+}
+
+export type DatabaseLocalDevModel = {
+  hostname: string
+  port: number
+  username: string
+  password: string
+}
+
+export type DatabaseDeployedModel = {
+  bastionPort: number
+}
