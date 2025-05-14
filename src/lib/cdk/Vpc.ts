@@ -8,6 +8,8 @@ export type Props = {
   resource: Resources.VpcResource
 }
 
+export const VPC_MAX_AZS = 2
+
 export class Vpc extends Construct {
   vpc: ec2.IVpc
 
@@ -18,7 +20,7 @@ export class Vpc extends Construct {
 
     const vpc = new ec2.Vpc(this, "vpc", {
       vpcName: name,
-      maxAzs: 2,
+      maxAzs: VPC_MAX_AZS,
 
       // Note that this is ~$30/month, but is needed if things in
       // "private-subnet" are to access the internet

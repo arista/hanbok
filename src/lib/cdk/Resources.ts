@@ -7,6 +7,7 @@ import * as ec2 from "aws-cdk-lib/aws-ec2"
 import * as NU from "../utils/NameUtils"
 import * as PM from "../devenv/ProjectModel"
 import * as acm from "aws-cdk-lib/aws-certificatemanager"
+import {VPC_MAX_AZS} from "./Vpc"
 
 export type ResourcesProps = {
   projectModel: PM.ProjectModel
@@ -166,7 +167,7 @@ export class VpcResource {
   _vpc?: ec2.IVpc
   get vpc(): ec2.IVpc {
     return (this._vpc ??= (() => {
-      return ec2.Vpc.fromVpcAttributes(
+      const vpc = ec2.Vpc.fromVpcAttributes(
         this.resources,
         `vpc-${NU.toAlphanumDash(this.exportNameSuffix, 64)}`,
         {
@@ -175,6 +176,9 @@ export class VpcResource {
           privateSubnetIds: this.privateSubnets.subnetIdsExportedValue,
         }
       )
+      // See https://github.com/aws/aws-cdk/issues/19786 - without this we'll get warnings like "No routeTableId was provided to the subnet at '...'. Attempting to read its .routeTable.routeTableId will return null/undefined
+      cdk.Annotations.of(vpc).acknowledgeWarning('@aws-cdk/aws-ec2:noSubnetRouteTableId');
+      return vpc
     })())
   }
 
@@ -183,7 +187,7 @@ export class VpcResource {
     return `${this.exportNameBase}:azs`
   }
   get azsExportedValue() {
-    return cdk.Fn.split(",", cdk.Fn.importValue(this.azsExportName))
+    return cdk.Fn.importListValue(this.azsExportName, VPC_MAX_AZS, ",")
   }
 }
 
@@ -198,7 +202,7 @@ export class VpcSubnetResource {
     return `${this.resources.cdkExportsPrefix}:${this.exportNameSuffix}:ids`
   }
   get subnetIdsExportedValue() {
-    return cdk.Fn.split(",", cdk.Fn.importValue(this.subnetIdsExportName))
+    return cdk.Fn.importListValue(this.subnetIdsExportName, VPC_MAX_AZS, ",")
   }
 
   _subnets?: Array<ec2.ISubnet>
