@@ -30,7 +30,7 @@ export class Command extends OC.Command {
       )
     }
     const database = (() => {
-      if (service === "" || projectModel.suite == null) {
+      if (projectModel.suite == null) {
         return ""
       }
       const services = projectModel.features?.services
@@ -39,16 +39,29 @@ export class Command extends OC.Command {
           `The hanbok.config.ts file does not define features.services`
         )
       }
+      if (Object.values(services).length === 1) {
+        const serviceModel = Object.values(services)[0]!
+        console.log(`Using database for service ${serviceModel.name}`)
+        return NU.toDevDatabaseName(
+          projectModel.suite.name,
+          projectModel.name,
+          serviceModel.name,
+        )
+      }
+      if (service === "") {
+        return ""
+      }
       const serviceModel = services[service]
       if (serviceModel == null) {
         throw new Error(
           `The hanbok.config.ts file does not define features.services.${service}`
         )
       }
+      console.log(`Using database for service ${serviceModel.name}`)
       return NU.toDevDatabaseName(
         projectModel.suite.name,
         projectModel.name,
-        service
+        serviceModel.name,
       )
     })()
     const {hostname, port, username, password} = localDev
