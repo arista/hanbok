@@ -42,6 +42,7 @@ export type Features = {
   services: ServicesModel | null
   webapps: WebappsModel | null
   cdk: CdkModel | null
+  db: DatabaseModel | null
 }
 
 export type LibModel = {
@@ -120,3 +121,5 @@ export type CertificateModel = {
   // wildcards or individual hostnames (e.g., "*.example.com")
   domainName: string
 }
+
+export type DatabaseModel = {}

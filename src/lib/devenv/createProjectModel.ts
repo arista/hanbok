@@ -34,6 +34,7 @@ export async function parseProjectConfig({
   const test = getTestConfig(config, projectRoot)
   const services = getServicesConfig(config, projectRoot)
   const webapps = getWebappsConfig(config, projectRoot)
+  const db = getDatabaseConfig(config, projectRoot)
   const cdk = getCdkConfig(config, projectRoot)
   const suite = await getSuiteConfig(config, projectRoot)
   const certificates = getCertificatesConfig(config, projectRoot)
@@ -50,6 +51,7 @@ export async function parseProjectConfig({
       services,
       webapps,
       cdk,
+      db,
     },
     suite,
     certificates,
@@ -420,6 +422,23 @@ function getWebappsConfig(
     case "Suite": {
       // FIXME - implement this
       return null
+    }
+  }
+}
+
+function getDatabaseConfig(
+  projectConfig: PC.ProjectConfig,
+  projectRoot: string
+): PM.DatabaseModel | null {
+  switch (projectConfig.type) {
+    case "App":
+      return null
+    case "Suite": {
+      const dbConfig = projectConfig.features?.db
+      if (dbConfig == null) {
+        return null
+      }
+      return {}
     }
   }
 }

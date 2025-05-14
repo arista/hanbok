@@ -37,6 +37,9 @@ export class SuiteResourcesBase<
   // The certificates
   certificates = new R.CertificateResources(this, "certificates")
 
+  // The database
+  database = new R.DatabaseResource(this, "db")
+
   // // Returns the token corresponding to the codeconnection arn used to
   // // interact with github
   // get codestarConnectionArn() {

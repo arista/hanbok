@@ -50,6 +50,7 @@ export type SuiteFeatures = {
   lib?: boolean | null | undefined
   test?: boolean | null | undefined
   cdk?: boolean | null | undefined
+  db?: DatabaseConfig | null | undefined
 }
 
 export type SourceConfig = GithubSourceConfig
@@ -86,3 +87,5 @@ export type CertificateConfig = {
   // wildcards or individual hostnames (e.g., "*.example.com")
   domainName: string
 }
+
+export type DatabaseConfig = {}

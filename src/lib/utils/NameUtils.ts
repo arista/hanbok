@@ -170,3 +170,11 @@ export function toWebappAssetsBase(
     `/webapp-assets/by-app/${appName}/by-deployenv/${deployenv}/by-webapp/${webappName}/site/`,
   ])
 }
+
+export function toDbCredentialsSecretName(suiteName: string) {
+  return `${toAlphanumDash(suiteName, 64)}/db/credentials/admin`
+}
+
+export function toDatabaseName(suiteName: string) {
+  return `${toAlphanumDash(suiteName, 64)}-db`
+}

@@ -267,3 +267,42 @@ export class CertificateResource {
     })())
   }
 }
+
+export class DatabaseResource {
+  constructor(
+    public resources: Resources<any>,
+    public exportNameSuffix: string
+  ) {}
+
+  get exportNameBase() {
+    return `${this.resources.cdkExportsPrefix}:${this.exportNameSuffix}`
+  }
+
+  get endpointAddressExportName() {
+    return `${this.exportNameBase}:endpoint:address`
+  }
+  get endpointAddressExportedValue() {
+    return cdk.Fn.importValue(this.endpointAddressExportName)
+  }
+
+  get endpointPortExportName() {
+    return `${this.exportNameBase}:endpoint:port`
+  }
+  get endpointPortExportedValue() {
+    return cdk.Fn.importValue(this.endpointPortExportName)
+  }
+
+  get securityGroupIdExportName() {
+    return `${this.exportNameBase}:security-group-id`
+  }
+  get securityGroupIdExportedValue() {
+    return cdk.Fn.importValue(this.securityGroupIdExportName)
+  }
+
+  get adminCredsSecretNameExportName() {
+    return `${this.exportNameBase}:credentials:admin:secret-name`
+  }
+  get adminCredsSecretNameExportedValue() {
+    return cdk.Fn.importValue(this.adminCredsSecretNameExportName)
+  }
+}
