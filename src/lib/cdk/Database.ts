@@ -13,6 +13,8 @@ export type Props = {
 }
 
 export class Database extends Construct {
+  instance: rds.IDatabaseInstance
+
   constructor(scope: Construct, id: string, props: Props) {
     super(scope, id)
 
@@ -62,5 +64,7 @@ export class Database extends Construct {
       value: dbInstance.connections.securityGroups[0]!.securityGroupId,
       exportName: resource.securityGroupIdExportName,
     })
+
+    this.instance = dbInstance
   }
 }

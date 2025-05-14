@@ -1,0 +1,1 @@
+BastionHost(scope: Construct, id: string, props: Props): BastionHost

@@ -40,6 +40,9 @@ export class SuiteResourcesBase<
   // The database
   database = new R.DatabaseResource(this, "db")
 
+  // The "bastion host" for connecting to the database
+  bastionHost = new R.BastionHostResource(this, "bastionHost")
+
   // // Returns the token corresponding to the codeconnection arn used to
   // // interact with github
   // get codestarConnectionArn() {

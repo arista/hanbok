@@ -306,3 +306,21 @@ export class DatabaseResource {
     return cdk.Fn.importValue(this.adminCredsSecretNameExportName)
   }
 }
+
+export class BastionHostResource {
+  constructor(
+    public resources: Resources<any>,
+    public exportNameSuffix: string
+  ) {}
+
+  get exportNameBase() {
+    return `${this.resources.cdkExportsPrefix}:${this.exportNameSuffix}`
+  }
+
+  get instanceIdExportName() {
+    return `${this.exportNameBase}:instanceId`
+  }
+  get instanceIdExportedValue() {
+    return cdk.Fn.importValue(this.instanceIdExportName)
+  }
+}
