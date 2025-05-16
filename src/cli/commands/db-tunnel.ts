@@ -7,7 +7,8 @@ import * as NU from "@lib/utils/NameUtils"
 import * as AU from "@lib/utils/AwsUtils"
 
 export class Command extends OC.Command {
-  static override description = "Starts the SSM tunnel running to the bastion host that will allow connections to resources from the local machine"
+  static override description =
+    "Starts the SSM tunnel running to the bastion host that will allow connections to resources from the local machine"
 
   static override args = {}
   static override flags = {}
@@ -26,10 +27,18 @@ export class Command extends OC.Command {
     const localPort = deployed.bastionPort
 
     // FIXME - abstract out how names and resources are found
-    const suitePrefix = NU.toDashedName([suiteModel.name], s=>NU.toAlphanumDash(s, 65))
-    const bastionId = await AU.readCloudFormationExport(`${suitePrefix}:bastionHost:instanceId`)
-    const rdsEndpoint = await AU.readCloudFormationExport(`${suitePrefix}:db:endpoint:address`)
-    const rdsPort = await AU.readCloudFormationExport(`${suitePrefix}:db:endpoint:port`)
+    const suitePrefix = NU.toDashedName([suiteModel.name], (s) =>
+      NU.toAlphanumDash(s, 65)
+    )
+    const bastionId = await AU.readCloudFormationExport(
+      `${suitePrefix}:bastionHost:instanceId`
+    )
+    const rdsEndpoint = await AU.readCloudFormationExport(
+      `${suitePrefix}:db:endpoint:address`
+    )
+    const rdsPort = await AU.readCloudFormationExport(
+      `${suitePrefix}:db:endpoint:port`
+    )
 
     await execInternalScript({
       script: "db-tunnel",

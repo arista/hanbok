@@ -54,9 +54,15 @@ export default [
     },
     // Don't pull in all the types from libraries that hanbok
     // consumers will need to include anyway
-    external: id => {
-      const prefixes = ["zod", "constructs", "aws-cdk-lib", "aws-cdk", "aws-cdk-lib"]
-      for(const prefix of prefixes) {
+    external: (id) => {
+      const prefixes = [
+        "zod",
+        "constructs",
+        "aws-cdk-lib",
+        "aws-cdk",
+        "aws-cdk-lib",
+      ]
+      for (const prefix of prefixes) {
         if (id.startsWith(prefix)) {
           return true
         }

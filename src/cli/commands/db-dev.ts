@@ -45,7 +45,7 @@ export class Command extends OC.Command {
         return NU.toDevDatabaseName(
           projectModel.suite.name,
           projectModel.name,
-          serviceModel.name,
+          serviceModel.name
         )
       }
       if (service === "") {
@@ -61,7 +61,7 @@ export class Command extends OC.Command {
       return NU.toDevDatabaseName(
         projectModel.suite.name,
         projectModel.name,
-        serviceModel.name,
+        serviceModel.name
       )
     })()
     const {hostname, port, username, password} = localDev
