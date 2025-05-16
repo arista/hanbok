@@ -1,0 +1,42 @@
+#!/bin/bash
+
+# Fail on command failure, undefined variables, and piped command
+# failures, get the package directory
+set -euo pipefail
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+PKGDIR=${DIR}/../..
+
+BASTION_ID=${1}
+RDS_ENDPOINT=${2}
+RDS_PORT=${3}
+LOCAL_PORT=${4}
+
+echo "Starting tunnel: localhost:$LOCAL_PORT -> $RDS_ENDPOINT:$RDS_PORT via $BASTION_ID"
+echo "Connections are now proxied to the RDS database"
+echo "mysql -u... -p... -h 127.0.0.1 -P ${LOCAL_PORT}"
+
+# SSM sessions timeout after 20m by default, and can't be set to stay
+# open indefinitlye.  So launch a keepalive script in the background
+keepalive() {
+    echo "Starting MySQL keepalive on localhost:${LOCAL_PORT}"
+    sleep 20
+    while true; do
+        mysql -h 127.0.0.1 -P "$LOCAL_PORT" -e "SELECT 1;" >/dev/null 2>&1 || true
+        sleep 300
+    done
+}
+
+keepalive &
+KEEPALIVE_PID=$!
+
+# Ensure keepalive process is cleaned up on exit
+cleanup() {
+  echo "Cleaning up keepalive process..."
+  kill "$KEEPALIVE_PID" 2>/dev/null || true
+}
+trap cleanup EXIT
+
+aws ssm start-session \
+  --target "$BASTION_ID" \
+  --document-name "AWS-StartPortForwardingSessionToRemoteHost" \
+  --parameters "host=$RDS_ENDPOINT,portNumber=$RDS_PORT,localPortNumber=$LOCAL_PORT"
