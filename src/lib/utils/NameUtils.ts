@@ -221,3 +221,15 @@ export function toAppDatabaseUser(suiteName: string, appName: string) {
 export function toAppCredentialsSecretName(suiteName: string, appName: string) {
   return `${toAlphanumDash(suiteName, 64)}/${toAlphanumDash(appName, 64)}/db/credentials`
 }
+
+// Follow MySQL's rules
+export function toBackendServiceDatabaseName(
+  suiteName: string,
+  appName: string,
+  backend: string,
+  serviceName: string
+) {
+  return toUnderscoredName([suiteName, appName, backend, serviceName], (str) =>
+    dashesToCamelCase(str)
+  )
+}
