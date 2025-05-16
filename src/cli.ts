@@ -14,6 +14,7 @@ import {Command as DbDropAppUserCommand} from "@cli/commands/db-drop-app-user"
 import {Command as DbCreateBackendDatabasesCommand} from "@cli/commands/db-create-backend-databases"
 import {Command as DbDropBackendDatabasesCommand} from "@cli/commands/db-drop-backend-databases"
 import {Command as DbPrismaDevCommand} from "@cli/commands/prisma-dev"
+import {Command as DbPrismaBackendCommand} from "@cli/commands/prisma-backend"
 import {Command as CdkAppInfrastructureCommand} from "@cli/commands/cdk/app-infrastructure"
 import {Command as CdkSuiteInfrastructureCommand} from "@cli/commands/cdk/suite-infrastructure"
 import {Command as CdkDeployenvCommand} from "@cli/commands/cdk/deployenv"
@@ -36,6 +37,7 @@ export const COMMANDS = {
   "db-create-backend-databases": DbCreateBackendDatabasesCommand,
   "db-drop-backend-databases": DbDropBackendDatabasesCommand,
   "prisma-dev": DbPrismaDevCommand,
+  "prisma-backend": DbPrismaBackendCommand,
   "cdk:app-infrastructure": CdkAppInfrastructureCommand,
   "cdk:suite-infrastructure": CdkSuiteInfrastructureCommand,
   "cdk:deployenv": CdkDeployenvCommand,

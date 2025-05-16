@@ -3,6 +3,7 @@ import path from "node:path"
 import fs from "node:fs"
 import {spawn} from "node:child_process"
 import * as NU from "../utils/NameUtils"
+import * as AU from "../utils/AwsUtils"
 
 export async function runPrisma({
   projectModel,
@@ -104,5 +105,47 @@ export function devDatabaseUrl({
     throw new Error("project config does not specify features.db.localDev")
   }
   const {hostname, port, username, password} = localDev
+  return `mysql://${username}:${password}@${hostname}:${port}/${databaseName}`
+}
+
+export async function backendDatabaseUrl({
+  projectModel,
+  backend,
+  service,
+}: {
+  projectModel: PM.ProjectModel
+  backend: string
+  service: PM.ServiceModel
+}): Promise<string> {
+  if (projectModel.suite == null) {
+    throw new Error(`project config does not specify a suite`)
+  }
+  const suiteName = projectModel.suite.name
+  const appName = projectModel.name
+  const serviceName = service.name
+  const databaseName = NU.toBackendServiceDatabaseName(
+    suiteName,
+    appName,
+    backend,
+    serviceName
+  )
+
+  const deployed = projectModel.suite?.features?.db?.deployed
+  if (deployed == null) {
+    throw new Error("project config does not specify features.db.deployed")
+  }
+
+  // FIXME - abstract this out
+  const appDatabasesPrefix = NU.toAppDatabasesPrefix(suiteName, appName)
+  const prefix = NU.toDashedName([suiteName, appName], (s) =>
+    NU.toAlphanumDash(s, 65)
+  )
+  const secretExportName = `${prefix}:db:credentials:secret-name`
+  const secretName = await AU.readCloudFormationExport(secretExportName)
+  const secretValue = JSON.parse(await AU.getSecretValue(secretName))
+  const {username, password} = secretValue
+  const hostname = "127.0.0.1"
+
+  const port = deployed.bastionPort
   return `mysql://${username}:${password}@${hostname}:${port}/${databaseName}`
 }

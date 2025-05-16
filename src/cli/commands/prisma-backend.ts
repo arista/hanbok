@@ -2,7 +2,6 @@ import "source-map-support/register.js"
 import * as OC from "@oclif/core"
 import * as PU from "@lib/utils/PrismaUtils"
 import {createProjectModel} from "@lib/devenv/createProjectModel"
-import * as PM from "@lib/devenv/ProjectModel"
 import {execInternalScript} from "@lib/utils/ProcUtils"
 
 export class Command extends OC.Command {
@@ -11,6 +10,11 @@ export class Command extends OC.Command {
   static override args = {}
   static override strict = false
   static override flags = {
+    backend: OC.Flags.string({
+      char: "e",
+      description: `The backend`,
+      required: true,
+    }),
     service: OC.Flags.string({
       char: "s",
       description: `The service whose prisma schema is to be used (if not specified, prisma will be run for all services)`,
@@ -23,7 +27,7 @@ export class Command extends OC.Command {
   async run() {
     const {flags, argv} = await this.parse(Command)
     const argvStrings = argv.map((s) => `${s}`)
-    const {service} = flags
+    const {backend, service} = flags
     const projectModel = await createProjectModel({})
     const services = projectModel.features?.services
     if (services == null) {
@@ -31,8 +35,9 @@ export class Command extends OC.Command {
     }
     if (service === "") {
       for (const serviceModel of Object.values(services)) {
-        const databaseUrl = PU.devDatabaseUrl({
+        const databaseUrl = await PU.backendDatabaseUrl({
           projectModel,
+          backend,
           service: serviceModel,
         })
         console.log(`Running prisma command for service "${serviceModel.name}"`)
@@ -48,8 +53,9 @@ export class Command extends OC.Command {
       if (serviceModel == null) {
         throw new Error(`service "${service}" not found`)
       }
-      const databaseUrl = PU.devDatabaseUrl({
+      const databaseUrl = await PU.backendDatabaseUrl({
         projectModel,
+        backend,
         service: serviceModel,
       })
       await PU.runPrisma({
