@@ -42,7 +42,7 @@ export class Command extends OC.Command {
       if (Object.values(services).length === 1) {
         const serviceModel = Object.values(services)[0]!
         console.log(`Using database for service ${serviceModel.name}`)
-        return NU.toDevDatabaseName(
+        return NU.toDevServiceDatabaseName(
           projectModel.suite.name,
           projectModel.name,
           serviceModel.name
@@ -58,7 +58,7 @@ export class Command extends OC.Command {
         )
       }
       console.log(`Using database for service ${serviceModel.name}`)
-      return NU.toDevDatabaseName(
+      return NU.toDevServiceDatabaseName(
         projectModel.suite.name,
         projectModel.name,
         serviceModel.name

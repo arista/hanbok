@@ -1,0 +1,25 @@
+#!/bin/bash
+
+# Fail on command failure, undefined variables, and piped command
+# failures, get the package directory
+set -euo pipefail
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+PKGDIR=${DIR}/../..
+
+SUITE_NAME=${1}
+APP_NAME=${2}
+APP_DATABASES_PREFIX=${3}
+APP_USERNAME=${4}
+APP_PASSWORD=${5}
+
+# Inform user
+echo "Creating user '${APP_USERNAME}' for app '${APP_NAME}' in suite '${SUITE_NAME}'"
+
+# Run SQL via mysql-as-admin
+npx hb db-admin <<EOF
+CREATE USER IF NOT EXISTS '$APP_USERNAME'@'%' IDENTIFIED BY '${APP_PASSWORD}';
+GRANT ALL PRIVILEGES ON \`${APP_DATABASES_PREFIX}_%\`.* TO '$APP_USERNAME'@'%';
+FLUSH PRIVILEGES;
+EOF
+
+echo "User '${APP_USERNAME}' created and granted privileges to all databases starting with '${APP_DATABASES_PREFIX}_'."

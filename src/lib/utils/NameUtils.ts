@@ -16,15 +16,30 @@ export function toAlphanumDash(str: string, maxLength: number): string {
     .slice(0, maxLength) // enforce length limit
 }
 
-export function toDashedName(
+export function toCombinedName(
   parts: Array<string | null | undefined>,
+  separator: string,
   sanitize: (str: string) => string
 ): string {
   return parts
     .filter((p) => p != null)
     .map((p) => dashesToCamelCase(p))
     .map((p) => sanitize(p))
-    .join("-")
+    .join(separator)
+}
+
+export function toDashedName(
+  parts: Array<string | null | undefined>,
+  sanitize: (str: string) => string
+): string {
+  return toCombinedName(parts, "-", sanitize)
+}
+
+export function toUnderscoredName(
+  parts: Array<string | null | undefined>,
+  sanitize: (str: string) => string
+): string {
+  return toCombinedName(parts, "_", sanitize)
 }
 
 export function sanitizeCdkStackName(name: string): string {
@@ -179,12 +194,36 @@ export function toDatabaseInstanceName(suiteName: string) {
   return `${toAlphanumDash(suiteName, 64)}-db`
 }
 
-export function toDevDatabaseName(
+// Follow MySQL's rules
+export function toDevServiceDatabaseName(
   suiteName: string,
   appName: string,
   serviceName: string
 ) {
-  return toDashedName([suiteName, appName, serviceName], (str) =>
-    toAlphanumDash(str, 64)
+  return toUnderscoredName([suiteName, appName, serviceName], (str) =>
+    dashesToCamelCase(str)
   )
+}
+
+export function toAppDatabasesPrefix(
+  suiteName: string,
+  appName: string,
+) {
+  return toUnderscoredName([suiteName, appName], (str) =>
+    dashesToCamelCase(str)
+  )
+}
+
+// Follow MySQL's rules
+export function toAppDatabaseUser(
+  suiteName: string,
+  appName: string,
+) {
+  return toUnderscoredName([suiteName, appName], (str) =>
+    dashesToCamelCase(str)
+  )
+}
+
+export function toAppCredentialsSecretName(suiteName: string, appName: string) {
+  return `${toAlphanumDash(suiteName, 64)}/${toAlphanumDash(appName, 64)}/db/credentials`
 }

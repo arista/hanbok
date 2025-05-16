@@ -7,7 +7,7 @@ import * as AU from "@lib/utils/AwsUtils"
 
 export class Command extends OC.Command {
   static override description =
-    "Starts a mysql session running against the deployed RDS instance as the admin user, running through the db-tunnel"
+    "Creates the user that will be used by the current app"
 
   static override args = {}
   static override flags = {}
@@ -16,28 +16,25 @@ export class Command extends OC.Command {
   async run() {
     const {args, flags} = await this.parse(Command)
     const projectModel = await createProjectModel({})
-    const suiteModel = projectModel.suite ?? projectModel
-    const deployed = suiteModel.features.db?.deployed
-    if (deployed == null) {
-      throw new Error(
-        `The hanbok.config.ts file does not define features.db.deployed`
-      )
+    if (projectModel.suite == null) {
+      throw new Error(`This command must be run in an app directory, not a suite`)
     }
-    const localPort = deployed.bastionPort
+    const suiteName = projectModel.suite!.name
+    const appName = projectModel.name
 
-    // FIXME - abstract out how names and resources are found
-    const suitePrefix = NU.toDashedName([suiteModel.name], (s) =>
+    // FIXME - abstract this out
+    const appDatabasesPrefix = NU.toAppDatabasesPrefix(suiteName, appName)
+    const prefix = NU.toDashedName([suiteName, appName], (s) =>
       NU.toAlphanumDash(s, 65)
     )
-    const secretName = await AU.readCloudFormationExport(
-      `${suitePrefix}:db:credentials:admin:secret-name`
-    )
+    const secretExportName = `${prefix}:db:credentials:secret-name`
+    const secretName = await AU.readCloudFormationExport(secretExportName)
     const secretValue = JSON.parse(await AU.getSecretValue(secretName))
     const {username, password} = secretValue
 
     await execInternalScript({
-      script: "db-admin",
-      args: [`${localPort}`, username, password],
+      script: "db-create-app-user",
+      args: [suiteName, appName, appDatabasesPrefix, username, password],
     })
   }
 }

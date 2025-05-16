@@ -93,7 +93,7 @@ export function devDatabaseUrl({
   const suiteName = projectModel.suite.name
   const appName = projectModel.name
   const serviceName = service.name
-  const databaseName = NU.toDevDatabaseName(suiteName, appName, serviceName)
+  const databaseName = NU.toDevServiceDatabaseName(suiteName, appName, serviceName)
 
   const localDev = projectModel.suite?.features?.db?.localDev
   if (localDev == null) {
