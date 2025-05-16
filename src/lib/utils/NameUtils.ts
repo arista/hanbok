@@ -205,20 +205,14 @@ export function toDevServiceDatabaseName(
   )
 }
 
-export function toAppDatabasesPrefix(
-  suiteName: string,
-  appName: string,
-) {
+export function toAppDatabasesPrefix(suiteName: string, appName: string) {
   return toUnderscoredName([suiteName, appName], (str) =>
     dashesToCamelCase(str)
   )
 }
 
 // Follow MySQL's rules
-export function toAppDatabaseUser(
-  suiteName: string,
-  appName: string,
-) {
+export function toAppDatabaseUser(suiteName: string, appName: string) {
   return toUnderscoredName([suiteName, appName], (str) =>
     dashesToCamelCase(str)
   )

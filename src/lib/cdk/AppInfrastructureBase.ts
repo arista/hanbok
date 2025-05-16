@@ -13,7 +13,6 @@ export type AppInfrastructureBaseProps = {
 export class AppInfrastructureBase<
   C extends AppInfrastructureBaseProps,
 > extends Construct {
-
   constructor(
     scope: IConstruct,
     id: string,

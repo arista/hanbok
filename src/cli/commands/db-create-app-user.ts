@@ -17,7 +17,9 @@ export class Command extends OC.Command {
     const {args, flags} = await this.parse(Command)
     const projectModel = await createProjectModel({})
     if (projectModel.suite == null) {
-      throw new Error(`This command must be run in an app directory, not a suite`)
+      throw new Error(
+        `This command must be run in an app directory, not a suite`
+      )
     }
     const suiteName = projectModel.suite!.name
     const appName = projectModel.name
