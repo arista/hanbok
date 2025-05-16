@@ -1,0 +1,19 @@
+#!/bin/bash
+
+# Fail on command failure, undefined variables, and piped command
+# failures, get the package directory
+set -euo pipefail
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+PKGDIR=${DIR}/../..
+
+DATABASE_NAME=${1}
+
+# Inform user
+echo "Dropping database '${DATABASE_NAME}'"
+
+# Run SQL via mysql-as-admin
+npx hb db-admin <<EOF
+DROP DATABASE IF EXISTS \`${DATABASE_NAME}\`;
+EOF
+
+echo "Dropped database '${DATABASE_NAME}'"
