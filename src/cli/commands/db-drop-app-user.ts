@@ -6,8 +6,7 @@ import * as NU from "@lib/utils/NameUtils"
 import * as AU from "@lib/utils/AwsUtils"
 
 export class Command extends OC.Command {
-  static override description =
-    "Drops the user that is used by the current app"
+  static override description = "Drops the user that is used by the current app"
 
   static override args = {}
   static override flags = {}
@@ -17,7 +16,9 @@ export class Command extends OC.Command {
     const {args, flags} = await this.parse(Command)
     const projectModel = await createProjectModel({})
     if (projectModel.suite == null) {
-      throw new Error(`This command must be run in an app directory, not a suite`)
+      throw new Error(
+        `This command must be run in an app directory, not a suite`
+      )
     }
     const suiteName = projectModel.suite!.name
     const appName = projectModel.name
