@@ -1,0 +1,18 @@
+#!/bin/bash
+
+# Fail on command failure, undefined variables, and piped command
+# failures, get the package directory
+set -euo pipefail
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+PKGDIR=${DIR}/../..
+
+LOCAL_PORT=${1}
+USERNAME=${2}
+PASSWORD=${3}
+shift 3
+
+echo "Connecting to the **deployed RDS database** as the admin user through the db-tunnel running at port ${LOCAL_PORT}"
+echo "If mysql fails to connect, make sure the suite's db-tunnel is running"
+
+# Connect using mysql client
+mysql -h 127.0.0.1 -P "$LOCAL_PORT" -u "$USERNAME" -p"$PASSWORD" "$@"
