@@ -18,7 +18,7 @@ echo "Creating user '${APP_USERNAME}' for app '${APP_NAME}' in suite '${SUITE_NA
 # Run SQL via mysql-as-admin
 npx hb db-admin <<EOF
 CREATE USER IF NOT EXISTS '$APP_USERNAME'@'%' IDENTIFIED BY '${APP_PASSWORD}';
-GRANT ALL PRIVILEGES ON \`${APP_DATABASES_PREFIX}_%\`.* TO '$APP_USERNAME'@'%';
+GRANT ALL PRIVILEGES ON \`prismashadow_${APP_DATABASES_PREFIX}_%\`.* TO '$APP_USERNAME'@'%';
 FLUSH PRIVILEGES;
 EOF
 

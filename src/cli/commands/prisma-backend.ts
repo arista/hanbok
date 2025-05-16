@@ -40,12 +40,19 @@ export class Command extends OC.Command {
           backend,
           service: serviceModel,
         })
+        const shadowDatabaseUrl = await PU.backendDatabaseUrl({
+          projectModel,
+          backend,
+          service: serviceModel,
+          shadow: true,
+        })
         console.log(`Running prisma command for service "${serviceModel.name}"`)
         await PU.runPrisma({
           projectModel,
           service: serviceModel,
           args: argvStrings,
           databaseUrl,
+          shadowDatabaseUrl,
         })
       }
     } else {
@@ -58,11 +65,18 @@ export class Command extends OC.Command {
         backend,
         service: serviceModel,
       })
+      const shadowDatabaseUrl = await PU.backendDatabaseUrl({
+        projectModel,
+        backend,
+        service: serviceModel,
+        shadow: true,
+      })
       await PU.runPrisma({
         projectModel,
         service: serviceModel,
         args: argvStrings,
         databaseUrl,
+        shadowDatabaseUrl,
       })
     }
   }

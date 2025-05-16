@@ -10,11 +10,13 @@ export async function runPrisma({
   service,
   args,
   databaseUrl,
+  shadowDatabaseUrl,
 }: {
   projectModel: PM.ProjectModel
   service: PM.ServiceModel
   args?: Array<string>
   databaseUrl?: string
+  shadowDatabaseUrl?: string
 }) {
   const serviceName = service.name
   const projectRoot = projectModel.projectRoot
@@ -43,6 +45,7 @@ export async function runPrisma({
         `datasource db {`,
         `  provider = "mysql"`,
         `  url      = env("DATABASE_URL_${serviceName}")`,
+        `  shadowDatabaseUrl      = env("SHADOW_DATABASE_URL_${serviceName}")`,
         `}`,
         ``,
       ]
@@ -61,6 +64,11 @@ export async function runPrisma({
     }
     if (databaseUrl != null) {
       env[`DATABASE_URL_${serviceName}`] = databaseUrl
+    }
+    // FIXME - explain this better - prisma seems to require a second
+    // database, a "shadow database" when doing migrations
+    if (shadowDatabaseUrl != null) {
+      env[`SHADOW_DATABASE_URL_${serviceName}`] = shadowDatabaseUrl
     }
     const cmdArgs = ["prisma", ...(args ?? []), `--schema=${builtSchemaFile}`]
 
@@ -112,10 +120,12 @@ export async function backendDatabaseUrl({
   projectModel,
   backend,
   service,
+  shadow,
 }: {
   projectModel: PM.ProjectModel
   backend: string
   service: PM.ServiceModel
+  shadow?: boolean
 }): Promise<string> {
   if (projectModel.suite == null) {
     throw new Error(`project config does not specify a suite`)
@@ -123,12 +133,13 @@ export async function backendDatabaseUrl({
   const suiteName = projectModel.suite.name
   const appName = projectModel.name
   const serviceName = service.name
-  const databaseName = NU.toBackendServiceDatabaseName(
+  const baseDatabaseName = NU.toBackendServiceDatabaseName(
     suiteName,
     appName,
     backend,
     serviceName
   )
+  const databaseName = shadow ? `prismashadow_${baseDatabaseName}` : baseDatabaseName
 
   const deployed = projectModel.suite?.features?.db?.deployed
   if (deployed == null) {
