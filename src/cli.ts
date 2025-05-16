@@ -14,6 +14,7 @@ import {Command as DbPrismaDevCommand} from "@cli/commands/prisma-dev"
 import {Command as CdkAppInfrastructureCommand} from "@cli/commands/cdk/app-infrastructure"
 import {Command as CdkSuiteInfrastructureCommand} from "@cli/commands/cdk/suite-infrastructure"
 import {Command as CdkDeployenvCommand} from "@cli/commands/cdk/deployenv"
+import {Command as CdkBackendCommand} from "@cli/commands/cdk/backend"
 
 export const COMMANDS = {
   build: BuildCommand,
@@ -32,4 +33,5 @@ export const COMMANDS = {
   "cdk:app-infrastructure": CdkAppInfrastructureCommand,
   "cdk:suite-infrastructure": CdkSuiteInfrastructureCommand,
   "cdk:deployenv": CdkDeployenvCommand,
+  "cdk:backend": CdkBackendCommand,
 }
