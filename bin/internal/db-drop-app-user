@@ -1,0 +1,21 @@
+#!/bin/bash
+
+# Fail on command failure, undefined variables, and piped command
+# failures, get the package directory
+set -euo pipefail
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+PKGDIR=${DIR}/../..
+
+SUITE_NAME=${1}
+APP_NAME=${2}
+APP_USERNAME=${3}
+
+# Inform user
+echo "Dropping user '${APP_USERNAME}' for app '${APP_NAME}' in suite '${SUITE_NAME}'"
+
+# Run SQL via mysql-as-admin
+npx hb db-admin <<EOF
+DROP USER IF EXISTS '$APP_USERNAME'@'%';
+EOF
+
+echo "User '${APP_USERNAME}' dropped."
