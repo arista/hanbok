@@ -1,6 +1,7 @@
 import "source-map-support/register.js"
 import * as OC from "@oclif/core"
 import {createProjectModel} from "@lib/devenv/createProjectModel"
+import * as PM from "@lib/devenv/ProjectModel"
 import {execInternalScript} from "@lib/utils/ProcUtils"
 import * as NU from "@lib/utils/NameUtils"
 
@@ -29,41 +30,15 @@ export class Command extends OC.Command {
         `The hanbok.config.ts file does not define features.db.localDev`
       )
     }
-    const database = (() => {
-      if (projectModel.suite == null) {
-        return ""
-      }
-      const services = projectModel.features?.services
-      if (services == null) {
-        throw new Error(
-          `The hanbok.config.ts file does not define features.services`
-        )
-      }
-      if (Object.values(services).length === 1) {
-        const serviceModel = Object.values(services)[0]!
-        console.log(`Using database for service ${serviceModel.name}`)
-        return NU.toDevServiceDatabaseName(
-          projectModel.suite.name,
-          projectModel.name,
-          serviceModel.name
-        )
-      }
-      if (service === "") {
-        return ""
-      }
-      const serviceModel = services[service]
-      if (serviceModel == null) {
-        throw new Error(
-          `The hanbok.config.ts file does not define features.services.${service}`
-        )
-      }
-      console.log(`Using database for service ${serviceModel.name}`)
-      return NU.toDevServiceDatabaseName(
-        projectModel.suite.name,
-        projectModel.name,
-        serviceModel.name
-      )
-    })()
+    const serviceModel = PM.getService(projectModel, service)
+    const database =
+      serviceModel == null
+        ? ""
+        : NU.toDevServiceDatabaseName(
+            projectModel.suite!.name,
+            projectModel.name,
+            serviceModel.name
+          )
     const {hostname, port, username, password} = localDev
     await execInternalScript({
       script: "db-dev",

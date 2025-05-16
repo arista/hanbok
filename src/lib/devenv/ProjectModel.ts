@@ -138,3 +138,32 @@ export type DatabaseLocalDevModel = {
 export type DatabaseDeployedModel = {
   bastionPort: number
 }
+
+// Returns the specified service, defaulting to the single service if
+// the project only specifies one service.
+export function getService(
+  projectModel: ProjectModel,
+  serviceName: string | null
+): ServiceModel | null {
+  if (projectModel.suite == null) {
+    return null
+  }
+  const services = projectModel.features?.services
+  if (services == null) {
+    return null
+  }
+  const serviceModels = Object.values(services)
+  if (serviceName == null || serviceName === "") {
+    if (serviceModels.length === 1) {
+      return serviceModels[0]!
+    } else {
+      return null
+    }
+  }
+
+  const serviceModel = services[serviceName]
+  if (serviceModel == null) {
+    return null
+  }
+  return serviceModel
+}

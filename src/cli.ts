@@ -6,6 +6,7 @@ import {Command as AppServerCommand} from "@cli/commands/app-server"
 import {Command as ShowConfigCommand} from "@cli/commands/show-config"
 import {Command as WebappLambdaNameCommand} from "@cli/commands/webapp-lambda-name"
 import {Command as DbDevCommand} from "@cli/commands/db-dev"
+import {Command as DbBackendCommand} from "@cli/commands/db-backend"
 import {Command as DbTunnelCommand} from "@cli/commands/db-tunnel"
 import {Command as DbAdminCommand} from "@cli/commands/db-admin"
 import {Command as DbCreateAppUserCommand} from "@cli/commands/db-create-app-user"
@@ -27,6 +28,7 @@ export const COMMANDS = {
   "show-config": ShowConfigCommand,
   "webapp-lambda-name": WebappLambdaNameCommand,
   "db-dev": DbDevCommand,
+  "db-backend": DbBackendCommand,
   "db-tunnel": DbTunnelCommand,
   "db-admin": DbAdminCommand,
   "db-create-app-user": DbCreateAppUserCommand,
