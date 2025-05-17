@@ -7,6 +7,7 @@ import finalhandler from "finalhandler"
 import {createProjectModel} from "@lib/devenv/createProjectModel"
 import type {DevAppServerCreateFunc} from "@lib/appserver/AppServerTypes"
 import type {IRouter} from "@lib/routes/IRouter"
+import * as PU from "../utils/PrismaUtils"
 import chokidar from "chokidar"
 import fs from "node:fs"
 
@@ -34,6 +35,17 @@ export class AppServer {
       await server.close()
     }
     app.use(bodyParser.json())
+
+    // Assign the DATABASE_URL's for each of the services
+    if (model.features.services != null) {
+      for (const [serviceName, service] of Object.entries(
+        model.features.services
+      )) {
+        const databaseUrl = PU.devDatabaseUrl({projectModel: model, service})
+        const envVarName = `DATABASE_URL_${serviceName}`
+        process.env[envVarName] = databaseUrl
+      }
+    }
 
     // Go through each of the webapps, mount them into the router
     const webapps = model.features.webapps
