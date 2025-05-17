@@ -25,6 +25,11 @@ export class Command extends OC.Command {
       description: `The deployment environment to which the build should deploy`,
       required: true,
     }),
+    backend: OC.Flags.string({
+      char: "e",
+      description: `The backend services to which the deployenv should connect`,
+      required: true,
+    }),
     "no-lambda": OC.Flags.boolean({
       description: `Omit the creation of the lambdas.  This is typically used when bootstrapping, since the lambdas will fail to create if their code is not available, but their code won't be available since the codepipeline hasn't yet run.`,
       required: false,
@@ -36,11 +41,12 @@ export class Command extends OC.Command {
   async run() {
     const {args, flags} = await this.parse(Command)
     const {command} = args
-    const {branch, deployenv} = flags
+    const {branch, deployenv, backend} = flags
     const noLambda = flags["no-lambda"]
     const stackProps: any = {
       branch,
       deployenv,
+      backend,
       noLambda,
     }
     return await (async () => {

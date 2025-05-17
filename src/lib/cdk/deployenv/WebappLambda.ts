@@ -3,6 +3,7 @@ import {SuiteResourcesBase} from "../SuiteResourcesBase"
 import {Permissions} from "../Permissions"
 import * as PM from "../../devenv/ProjectModel"
 import * as NU from "../../utils/NameUtils"
+import * as AU from "@lib/utils/AwsUtils"
 import * as cdk from "aws-cdk-lib"
 import * as cp from "aws-cdk-lib/aws-codepipeline"
 import * as cp_actions from "aws-cdk-lib/aws-codepipeline-actions"
@@ -17,6 +18,7 @@ import * as ec2 from "aws-cdk-lib/aws-ec2"
 
 export type WebappLambdaProps = {
   deployenv: string
+  backend: string
   projectModel: PM.ProjectModel
   stackNameParts: Array<string>
   webapp: PM.WebappModel
@@ -27,7 +29,7 @@ export class WebappLambda extends Construct {
 
   constructor(scope: IConstruct, id: string, props: WebappLambdaProps) {
     super(scope, id)
-    const {deployenv, projectModel, stackNameParts, webapp} = props
+    const {deployenv, backend, projectModel, stackNameParts, webapp} = props
     const suiteName = projectModel.suite!.name
     const appName = projectModel.name
     const {hostingInfo} = webapp
@@ -65,6 +67,58 @@ export class WebappLambda extends Construct {
         deployenv
       ),
     }
+
+    // Add the DATABASE_URL_{service} entries
+    // FIXME - putting the database secrets in environment variables
+    // is less secure than having the lambda access them at runtime
+    // and construct the database url itself.  It also makes it harder
+    // to change the secrets.  If we do change to constructing the
+    // database url at runtime, be sure to give the lambda access to
+    // the secret (dbSecret.grantRead(myLambda))
+
+    // FIXME - abstract this out
+    const services = projectModel.features?.services
+    if (services != null) {
+      const appDatabasesPrefix = NU.toAppDatabasesPrefix(suiteName, appName)
+      const prefix = NU.toDashedName([suiteName, appName], (s) =>
+        NU.toAlphanumDash(s, 65)
+      )
+      const secretExportName = `${prefix}:db:credentials:secret-name`
+      const secretName = cdk.Fn.importValue(secretExportName)
+      const dbSecret = sm.Secret.fromSecretNameV2(
+        this,
+        "AppDbSecret",
+        secretName
+      )
+      for (const serviceModel of Object.values(services)) {
+        const serviceName = serviceModel.name
+        const databaseName = NU.toBackendServiceDatabaseName(
+          suiteName,
+          appName,
+          backend,
+          serviceName
+        )
+        const envVar = `DATABASE_URL_${serviceName}`
+
+        // FIXME - abstract out how names and resources are found
+        const rdsEndpoint = resources.database.endpointAddressExportedValue
+        const rdsPort = resources.database.endpointPortExportedValue
+
+        environment[envVar] = cdk.Fn.join("", [
+          "mysql://",
+          dbSecret.secretValueFromJson("username").toString(),
+          ":",
+          dbSecret.secretValueFromJson("password").toString(),
+          "@",
+          rdsEndpoint,
+          ":",
+          rdsPort,
+          "/",
+          databaseName,
+        ])
+      }
+    }
+
     const webappLambda = new lambda.Function(this, "lambda", {
       functionName,
       runtime: lambda.Runtime.NODEJS_22_X,
@@ -78,11 +132,11 @@ export class WebappLambda extends Construct {
       },
     })
 
-    // // Give the lambda access to the database
-    // webappMainLambda.connections.allowTo(
-    //   resources.dbSecurityGroup,
-    //   ec2.Port.tcp(resources.dbEndpointPort)
-    // )
+    // Give the lambda access to the database
+    webappLambda.connections.allowTo(
+      resources.database.securityGroup,
+      ec2.Port.tcp(resources.database.endpointPortExportedNumberValue)
+    )
 
     if (hostingInfo != null) {
       const {hostname, hostedZone, certificateName} = hostingInfo

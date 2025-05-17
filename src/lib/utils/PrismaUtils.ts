@@ -139,7 +139,9 @@ export async function backendDatabaseUrl({
     backend,
     serviceName
   )
-  const databaseName = shadow ? `prismashadow_${baseDatabaseName}` : baseDatabaseName
+  const databaseName = shadow
+    ? `prismashadow_${baseDatabaseName}`
+    : baseDatabaseName
 
   const deployed = projectModel.suite?.features?.db?.deployed
   if (deployed == null) {

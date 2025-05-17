@@ -291,12 +291,26 @@ export class DatabaseResource {
   get endpointPortExportedValue() {
     return cdk.Fn.importValue(this.endpointPortExportName)
   }
+  get endpointPortExportedNumberValue() {
+    return cdk.Token.asNumber(this.endpointPortExportedValue)
+  }
 
   get securityGroupIdExportName() {
     return `${this.exportNameBase}:security-group-id`
   }
   get securityGroupIdExportedValue() {
     return cdk.Fn.importValue(this.securityGroupIdExportName)
+  }
+  _securityGroup?: ec2.ISecurityGroup
+  get securityGroup() {
+    return (this._securityGroup ??= (() => {
+      return ec2.SecurityGroup.fromSecurityGroupId(
+        this.resources.scope,
+        // FIXME - better naming?
+        `securityGroup-${this.exportNameSuffix}-securityGroup`,
+        this.securityGroupIdExportedValue
+      )
+    })())
   }
 
   get adminCredsSecretNameExportName() {
