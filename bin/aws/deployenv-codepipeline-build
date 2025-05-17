@@ -162,10 +162,10 @@ for dir in ${CODEBUILD_SRC_DIR}/dist/webapps/*/; do
     cp ${dir}/.vite/manifest.json ${LAMBDA_BUILD_ARTIFACTS_DIR}
     cp ${dir}/.buildInfo/buildInfo.json ${LAMBDA_BUILD_ARTIFACTS_DIR}
 
-    # # Copy the prisma build artifacts
-    # mkdir -p ${LAMBDA_DIR}/node_modules
-    # cp -r ${PKGDIR}/node_modules/@prisma/client ${LAMBDA_DIR}/node_modules
-    # cp -r ${PKGDIR}/node_modules/prisma-app-client ${LAMBDA_DIR}/node_modules
+    # Copy the prisma build artifacts
+    mkdir -p ${LAMBDA_DIR}/node_modules
+    cp -r ${dir}/node_modules/@prisma/client ${LAMBDA_DIR}/node_modules
+    cp -r ${dir}/node_modules/prisma-app-client ${LAMBDA_DIR}/node_modules
     
     # Zip up the lambda, copy to s3, deploy
     cd ${LAMBDA_DIR}
