@@ -164,8 +164,8 @@ for dir in ${CODEBUILD_SRC_DIR}/dist/webapps/*/; do
 
     # Copy the prisma build artifacts
     mkdir -p ${LAMBDA_DIR}/node_modules
-#    cp -r ${dir}/node_modules/@prisma/client ${LAMBDA_DIR}/node_modules
-    cp -r ${dir}/node_modules/prisma-app-client ${LAMBDA_DIR}/node_modules
+    cp -r ${CODEBUILD_SRC_DIR}/node_modules/@prisma/client ${LAMBDA_DIR}/node_modules
+    cp -r ${CODEBUILD_SRC_DIR}/node_modules/prisma-app-client ${LAMBDA_DIR}/node_modules
     
     # Zip up the lambda, copy to s3, deploy
     cd ${LAMBDA_DIR}
