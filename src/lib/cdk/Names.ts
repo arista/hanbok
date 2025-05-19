@@ -109,3 +109,7 @@ export class BackendServiceNames extends NamesBase {
     super()
   }
 }
+
+//--------------------------------------------------
+
+export const names = new Names()
