@@ -13,8 +13,8 @@ export class Names extends NamesBase {
     super()
   }
 
-  suite(suiteName: string): SuiteNames {
-    return new SuiteNames(suiteName)
+  suite(name: string): SuiteNames {
+    return new SuiteNames(this, name)
   }
 }
 
@@ -22,12 +22,15 @@ export class Names extends NamesBase {
 // SuiteNames
 
 export class SuiteNames extends NamesBase {
-  constructor(public suiteName: string) {
+  constructor(
+    public names: Names,
+    public name: string
+  ) {
     super()
   }
 
-  app(appName: string): AppNames {
-    return new AppNames(this.suiteName, appName)
+  app(name: string): AppNames {
+    return new AppNames(this, name)
   }
 }
 
@@ -36,8 +39,72 @@ export class SuiteNames extends NamesBase {
 
 export class AppNames extends NamesBase {
   constructor(
-    public suiteName: string,
-    public appName: string
+    public suite: SuiteNames,
+    public name: string
+  ) {
+    super()
+  }
+
+  deployenv(name: string): DeployenvNames {
+    return new DeployenvNames(this, name)
+  }
+
+  backend(name: string): BackendNames {
+    return new BackendNames(this, name)
+  }
+}
+
+//--------------------------------------------------
+// DeployenvNames
+
+export class DeployenvNames extends NamesBase {
+  constructor(
+    public app: AppNames,
+    public name: string
+  ) {
+    super()
+  }
+
+  webapp(name: string): DeployenvWebappNames {
+    return new DeployenvWebappNames(this, name)
+  }
+}
+
+//--------------------------------------------------
+// DeployenvNames
+
+export class DeployenvWebappNames extends NamesBase {
+  constructor(
+    public deployenv: DeployenvNames,
+    public name: string
+  ) {
+    super()
+  }
+}
+
+//--------------------------------------------------
+// BackendNames
+
+export class BackendNames extends NamesBase {
+  constructor(
+    public app: AppNames,
+    public name: string
+  ) {
+    super()
+  }
+
+  service(name: string): BackendServiceNames {
+    return new BackendServiceNames(this, name)
+  }
+}
+
+//--------------------------------------------------
+// BackendServiceNames
+
+export class BackendServiceNames extends NamesBase {
+  constructor(
+    public backend: BackendNames,
+    public name: string
   ) {
     super()
   }
