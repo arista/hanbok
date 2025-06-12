@@ -39,6 +39,7 @@ export type AppServer = {
 
 export type Features = {
   lib: LibModels | null
+  parser: ParserModels | null
   test: TestModel | null
   services: ServicesModel | null
   webapps: WebappsModel | null
@@ -51,6 +52,13 @@ export type LibModels = Array<LibModel>
 export type LibModel = {
   sourcePath: string
   typesSourcePath: string | null
+  builtPath: string
+}
+
+export type ParserModels = Array<ParserModel>
+
+export type ParserModel = {
+  sourcePath: string
   builtPath: string
 }
 

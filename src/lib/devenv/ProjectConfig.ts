@@ -34,6 +34,7 @@ export type AppServer = {
 
 export type AppFeatures = {
   lib?: boolean | LibConfigs | null | undefined
+  parser?: ParserConfigs | null | undefined
   test?: boolean | null | undefined
   services?: boolean | null | undefined
   webapps?: WebappsConfig | null | undefined
@@ -46,6 +47,13 @@ export type LibConfig = {
   name: string
 }
 
+export type ParserConfigs = Array<ParserConfig>
+
+export type ParserConfig = {
+  dir: string
+  name: string
+}
+
 export type WebappsConfig = Record<string, WebappConfig>
 
 export type AppSuiteConfig = {
@@ -53,7 +61,8 @@ export type AppSuiteConfig = {
 }
 
 export type SuiteFeatures = {
-  lib?: boolean | null | undefined
+  lib?: boolean | LibConfigs | null | undefined
+  parser?: ParserConfigs | null | undefined
   test?: boolean | null | undefined
   cdk?: boolean | null | undefined
   db?: DatabaseConfig | null | undefined

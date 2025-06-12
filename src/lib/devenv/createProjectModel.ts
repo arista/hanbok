@@ -34,6 +34,7 @@ export async function parseProjectConfig({
   })!
   const devenv = await getDevEnv(config)
   const lib = getLibConfig(config, projectRoot)
+  const parser = getParserConfig(config, projectRoot)
   const test = getTestConfig(config, projectRoot)
   const services = getServicesConfig(config, projectRoot)
   const webapps = getWebappsConfig(config, projectRoot)
@@ -51,6 +52,7 @@ export async function parseProjectConfig({
     devenv,
     features: {
       lib,
+      parser,
       test,
       services,
       webapps,
@@ -239,6 +241,42 @@ function getLibConfig(
       } else {
         return [toLibModel({name: "lib"})].filter((m) => m != null)
       }
+  }
+  // case "Suite": {
+  //   // FIXME - implement this
+  //   return null
+  // }
+  //  }
+}
+
+function getParserConfig(
+  projectConfig: PC.ProjectConfig,
+  projectRoot: string
+): PM.ParserModels | null {
+  switch (projectConfig.type) {
+    case "App":
+    case "Suite":
+      function toParserModel(src: PC.ParserConfig): PM.ParserModel | null {
+        const {dir, name} = src
+        const sourcePath = path.join(projectRoot, "src", dir, `${name}.peg`)
+        const builtPath = path.join(projectRoot, `build`, dir, `${name}.es.js`)
+        if (!FsUtils.isFile(sourcePath)) {
+          console.log(
+            `Warning: projectConfig.features.parser refers to name "${name}", but there is no "${sourcePath}" file`
+          )
+        }
+        return {
+          sourcePath,
+          builtPath,
+        }
+      }
+
+      const configParser = projectConfig.features?.parser
+      if (configParser == null) {
+        return null
+      }
+
+      return configParser.map((c) => toParserModel(c)).filter((m) => m != null)
   }
   // case "Suite": {
   //   // FIXME - implement this

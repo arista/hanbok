@@ -12,6 +12,7 @@ import {spawn} from "node:child_process"
 import chokidar from "chokidar"
 import {viteCommonConfig} from "./viteCommonConfig"
 import * as PrismaUtils from "../utils/PrismaUtils"
+import peggy from "peggy"
 
 export class Build {
   constructor(public props: {watch: boolean; model?: PM.ProjectModel}) {}
@@ -31,6 +32,7 @@ export class Build {
 
   async runOnce(model: PM.ProjectModel) {
     await this.runPrisma(model)
+    await this.runParserGenerators(model)
     await this.runTsc(model)
     await this.runEsbuild(model)
     await this.runRollup(model)
@@ -40,6 +42,10 @@ export class Build {
   async runWatch(model: PM.ProjectModel) {
     await ProcUtils.runAllWatchers([
       {name: "prisma", fn: async () => await this.runPrismaWatch(model)},
+      {
+        name: "parsers",
+        fn: async () => await this.runParserGeneratorsWatch(model),
+      },
       {name: "tsc", fn: async () => await this.runTscWatch(model)},
       {name: "esbuild", fn: async () => await this.runEsbuild(model)},
       {name: "rollup-types", fn: async () => await this.runRollupWatch(model)},
@@ -145,6 +151,56 @@ export class Build {
     return async () => {
       console.log("[prisma] Cleaning up...")
       await watcher.close()
+    }
+  }
+
+  // Runs the parser generators
+  async runParserGenerators(model: PM.ProjectModel) {
+    const parsers = model.features.parser
+    if (parsers != null && parsers.length > 0) {
+      for (const parser of parsers) {
+        const {sourcePath, builtPath} = parser
+        const source = sourcePath
+        const text = fs.readFileSync(sourcePath, "utf-8")
+        const generatedParser = peggy.generate(text, {
+          grammarSource: source,
+          output: "source-with-inline-map",
+        })
+        const builtPathDir = path.dirname(builtPath)
+        fs.mkdirSync(builtPathDir, {recursive: true})
+        fs.writeFileSync(builtPath, generatedParser)
+      }
+    }
+  }
+
+  // Run the parser generators in watch mode
+  async runParserGeneratorsWatch(model: PM.ProjectModel) {
+    const parsers = model.features.parser
+    if (parsers != null && parsers.length > 0) {
+      const watchPaths = parsers.map((p) => p.sourcePath)
+      const watcher = chokidar.watch(watchPaths, {
+        persistent: true,
+        ignoreInitial: true,
+      })
+
+      const rebuild = async () => {
+        console.log("[parsers] Regenerating parser generators")
+        try {
+          await this.runParserGenerators(model)
+        } catch (err) {
+          console.error("[parsers] Failed:", err)
+        }
+      }
+
+      watcher.on("change", rebuild)
+      watcher.on("ready", rebuild)
+
+      return async () => {
+        console.log("[parsers] Cleaning up...")
+        await watcher.close()
+      }
+    } else {
+      return async () => {}
     }
   }
 
