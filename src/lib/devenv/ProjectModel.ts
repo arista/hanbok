@@ -60,6 +60,7 @@ export type ParserModels = Array<ParserModel>
 export type ParserModel = {
   sourcePath: string
   builtPath: string
+  declsPath: string
 }
 
 export type TestModel = {

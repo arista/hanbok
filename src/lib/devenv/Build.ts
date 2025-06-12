@@ -159,16 +159,23 @@ export class Build {
     const parsers = model.features.parser
     if (parsers != null && parsers.length > 0) {
       for (const parser of parsers) {
-        const {sourcePath, builtPath} = parser
+        const {sourcePath, builtPath, declsPath} = parser
         const source = sourcePath
         const text = fs.readFileSync(sourcePath, "utf-8")
         const generatedParser = peggy.generate(text, {
           grammarSource: source,
           output: "source-with-inline-map",
+          format: "es",
         })
         const builtPathDir = path.dirname(builtPath)
         fs.mkdirSync(builtPathDir, {recursive: true})
         fs.writeFileSync(builtPath, generatedParser)
+
+        // Write a made-up .d.ts file as well, so that TS isn't
+        // tempted to typecheck the generated parser file
+        const dtsFile =
+          "export function parse(input: string, options?: {}): any\n"
+        fs.writeFileSync(declsPath, dtsFile)
       }
     }
   }

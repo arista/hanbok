@@ -260,6 +260,12 @@ function getParserConfig(
         const {dir, name} = src
         const sourcePath = path.join(projectRoot, "src", dir, `${name}.peg`)
         const builtPath = path.join(projectRoot, `build`, dir, `${name}.es.js`)
+        const declsPath = path.join(
+          projectRoot,
+          `build`,
+          dir,
+          `${name}.es.d.ts`
+        )
         if (!FsUtils.isFile(sourcePath)) {
           console.log(
             `Warning: projectConfig.features.parser refers to name "${name}", but there is no "${sourcePath}" file`
@@ -268,6 +274,7 @@ function getParserConfig(
         return {
           sourcePath,
           builtPath,
+          declsPath,
         }
       }
 
