@@ -33,11 +33,17 @@ export type AppServer = {
 }
 
 export type AppFeatures = {
-  lib?: boolean | null | undefined
+  lib?: boolean | LibConfigs | null | undefined
   test?: boolean | null | undefined
   services?: boolean | null | undefined
   webapps?: WebappsConfig | null | undefined
   cdk?: boolean | null | undefined
+}
+
+export type LibConfigs = Array<LibConfig>
+
+export type LibConfig = {
+  name: string
 }
 
 export type WebappsConfig = Record<string, WebappConfig>

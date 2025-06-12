@@ -198,29 +198,46 @@ async function readHanbokConfig(
 function getLibConfig(
   projectConfig: PC.ProjectConfig,
   projectRoot: string
-): PM.LibModel | null {
+): PM.LibModels | null {
   switch (projectConfig.type) {
     case "App":
     case "Suite":
       const configLib = projectConfig.features?.lib
-      if (configLib !== true) {
-        return null
-      }
-      const sourcePath = path.join(projectRoot, "src", "lib.ts")
-      const typesSourcePath = path.join(projectRoot, "src", "lib-types.ts")
-      const builtPath = path.join(projectRoot, "dist", "lib", "lib.es.js")
-      if (!FsUtils.isFile(sourcePath)) {
-        console.log(
-          `Warning: projectConfig.features.lib is set, but there is no "src/lib.ts" file`
+
+      function toLibModel(src: PC.LibConfig): PM.LibModel | null {
+        const {name} = src
+        const sourcePath = path.join(projectRoot, `src`, `${name}.ts`)
+        const typesSourcePath = path.join(
+          projectRoot,
+          `src`,
+          `${name}-types.ts`
         )
-        return null
+        const builtPath = path.join(
+          projectRoot,
+          `dist`,
+          `${name}`,
+          `${name}.es.js`
+        )
+        if (!FsUtils.isFile(sourcePath)) {
+          console.log(
+            `Warning: projectConfig.features.lib is set, but there is no "src/${name}.ts" file`
+          )
+        }
+        return {
+          sourcePath,
+          typesSourcePath: FsUtils.isFile(typesSourcePath)
+            ? typesSourcePath
+            : null,
+          builtPath,
+        }
       }
-      return {
-        sourcePath,
-        typesSourcePath: FsUtils.isFile(typesSourcePath)
-          ? typesSourcePath
-          : null,
-        builtPath,
+
+      if (Array.isArray(configLib)) {
+        return configLib.map((c) => toLibModel(c)).filter((m) => m != null)
+      } else if (configLib !== true) {
+        return null
+      } else {
+        return [toLibModel({name: "lib"})].filter((m) => m != null)
       }
   }
   // case "Suite": {

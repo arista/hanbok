@@ -225,8 +225,10 @@ export class Build {
 
   generateTsconfig(model: PM.ProjectModel): TsconfigJson {
     const {projectRoot} = model
-    const typesSourcePath = model.features.lib?.typesSourcePath
-    const generateTypes = typesSourcePath != null
+    const typesSourcePaths: Array<string> = (model.features.lib ?? [])
+      .map((l) => l.typesSourcePath)
+      .filter((p) => p != null)
+    const generateTypes = typesSourcePaths.length > 0
     const generateTest = model.features.test != null
 
     // Additional options and files to add depending on whether we're
@@ -281,7 +283,7 @@ export class Build {
       // Sometimes the "lib-types.ts" file needs to be included
       // explicitly, otherwise tsc might not generate its .d.ts file
       // if it only contains types
-      include.push(typesSourcePath)
+      include.push(...typesSourcePaths)
     }
     include.push("src/**/*")
     if (generateTest) {
@@ -318,7 +320,7 @@ export class Build {
   // web-environment bundles will be generated separately by vite
   async runEsbuild(model: PM.ProjectModel) {
     const {projectRoot} = model
-    const lib = model.features.lib
+    const libs = model.features.lib
     const test = model.features.test
     const webapps = model.features.webapps
     const cdk = model.features.cdk
@@ -329,12 +331,14 @@ export class Build {
 
     const builds: Array<EsbuildTarget> = []
     // Add the "lib" build
-    if (lib != null) {
-      builds.push({
-        entry: lib.sourcePath,
-        out: lib.builtPath,
-        format: "esm",
-      })
+    if (libs != null) {
+      for (const lib of libs) {
+        builds.push({
+          entry: lib.sourcePath,
+          out: lib.builtPath,
+          format: "esm",
+        })
+      }
     }
     // Add the "test" build
     if (test != null) {
@@ -446,8 +450,10 @@ export class Build {
   // lib.es.js
   async runRollup(model: PM.ProjectModel) {
     const {projectRoot} = model
-    const typesSourcePath = model.features.lib?.typesSourcePath
-    const generateTypes = typesSourcePath != null
+    const typesSourcePaths: Array<string> = (model.features.lib ?? [])
+      .map((l) => l.typesSourcePath)
+      .filter((p) => p != null)
+    const generateTypes = typesSourcePaths.length > 0
     const generateTest = model.features.test != null
 
     if (generateTypes) {

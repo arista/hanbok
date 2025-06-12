@@ -38,13 +38,15 @@ export type AppServer = {
 }
 
 export type Features = {
-  lib: LibModel | null
+  lib: LibModels | null
   test: TestModel | null
   services: ServicesModel | null
   webapps: WebappsModel | null
   cdk: CdkModel | null
   db: DatabaseModel | null
 }
+
+export type LibModels = Array<LibModel>
 
 export type LibModel = {
   sourcePath: string
