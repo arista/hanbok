@@ -108,8 +108,8 @@ function getDevEnv(config: PC.ProjectConfig): PM.DevEnv {
   switch (config.type) {
     case "App":
       return {
-        devServer: getDevServer(config.devenv.devServer),
-        appServer: getAppServer(config.devenv.appServer),
+        devServer: config.devenv ? getDevServer(config.devenv.devServer) : null,
+        appServer: config.devenv ? getAppServer(config.devenv.appServer) : null,
       }
     case "Suite": {
       return {
@@ -220,7 +220,7 @@ function getLibConfig(
         )
         if (!FsUtils.isFile(sourcePath)) {
           console.log(
-            `Warning: projectConfig.features.lib is set, but there is no "src/${name}.ts" file`
+            `Warning: projectConfig.features.lib is true or refers to name "${name}", but there is no "src/${name}.ts" file`
           )
         }
         return {

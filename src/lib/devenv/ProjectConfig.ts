@@ -14,7 +14,7 @@ export type AppProjectConfig = {
   name: string
   source?: SourceConfig
   hanbokSource?: SourceConfig
-  devenv: DevEnv
+  devenv?: DevEnv
   features?: AppFeatures
   suite?: AppSuiteConfig
 }
