@@ -116,9 +116,7 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 DEBUG=* exec ${DIR}/{cli executable} "$@"
 ```
 
-* Write the code for the cli:
-
-  * Put each command in its own file under `commands/`, `commands/sample.ts` for example:
+* Write the code for each command in its own file under `commands/`.  For example: `commands/sample.ts`:
 
 ```
 import "source-map-support/register.js"
@@ -138,9 +136,8 @@ export class Command extends OC.Command {
   }
 }
 ```
-
-  * For hierarchical commands, have the directory structure mirror the command hierarchy.  For example: `commands/db/initialize.ts`
-  * Import all of the commands into the `cli.ts` file and export a `COMMANDS` structure mapping command names to the imported commands.  Hierarchical command structures should be specified using `:` to separate hierarchy levels (even though the command hierarhcy will still use spaces as separators on the actual cli)
+* For hierarchical commands, have the directory structure mirror the command hierarchy.  For example: `commands/db/initialize.ts`
+* Import all of the commands into the `cli.ts` file and export a `COMMANDS` structure mapping command names to the imported commands.  Hierarchical command structures should be specified using `:` to separate hierarchy levels (even though the command hierarhcy will still use spaces as separators on the actual cli)
 
 ```
 import {Command as SampleCommand} from "./cli/commands/sample"
@@ -152,61 +149,35 @@ export const COMMANDS = {
 }
 ```
 
-## Tests
-
 ## Services
+
+A Service is effectively a prisma database schema and, optionally, code intended for accessing the data through that schema.  During deployment, hanbok will automatically create and maintain a separate database for each defined service.
+
+To add a service:
+
+* Choose a name for the service
+
+* Add a schema file at `src/services/{service name}/prisma/schema.prisma`:
+
+```
+__HANBOK_PRISMA_HEADER__
+
+model SampleModel {
+  ...
+}
+```
+
+* Optionally, add code for accessing the database through the service at `src/services/{service name}/{capitalized service name}Service.ts`, potentially organized by "model objects" or some other organizing principle.  Note that nothing stops the rest of the app from accessing the prisma client directly, but it's encouraged to put some kind of API layer around each service.
+
+* Within code that uses the prisma schema, import the prisma code like this:
+
+`import {PrismaClient} from "prisma-app-client/{service name}/index.js"`
+
+At development and deployment time, hanbok will replace the `__HANBOK_PRISMA_HEADER__` with the declarations needed to run prisma in the required environment.
 
 ## Webapps
 
+A webapp consists of a server, a set of server routes, and a React app.
 
-```
-./.gitignore
-./README.md
-./hanbok.config.ts
-./package-lock.json
-./package.json
-./src/cdk.ts
-./src/cdk/AppInfrastructure.ts
-./src/cdk/Backend.ts
-./src/cdk/Deployenv.ts
-./src/lib-types.ts
-./src/lib.ts
-./src/lib/Sample.ts
-./src/services/main/prisma/schema.prisma
-./src/webapps/main/routes/RouteTypes.ts
-./src/webapps/main/routes/Routes.ts
-./src/webapps/main/server/AppRouteHandlerBase.ts
-./src/webapps/main/server/AppRouteHandlerFactory.ts
-./src/webapps/main/server/AppServer.ts
-./src/webapps/main/server/DevAppServer.ts
-./src/webapps/main/server/LambdaAppServer.ts
-./src/webapps/main/server/MockBackend.ts
-./src/webapps/main/server/handlers/PageHandler.ts
-./src/webapps/main/server/handlers/SampleResourceHandler.ts
-./src/webapps/main/ui/app/App.tsx
-./src/webapps/main/ui/app/AppClient.ts
-./src/webapps/main/ui/app/AppRoutes.tsx
-./src/webapps/main/ui/app/Controller.ts
-./src/webapps/main/ui/app/Model.ts
-./src/webapps/main/ui/app/PageContext.ts
-./src/webapps/main/ui/app/ViewEnv.ts
-./src/webapps/main/ui/app/Webapp.ts
-./src/webapps/main/ui/app/useViewEnv.ts
-./src/webapps/main/ui/assets/SampleApp-balancingAct.png
-./src/webapps/main/ui/assets/SampleApp.png
-./src/webapps/main/ui/boilerplate/assetTypes.d.ts
-./src/webapps/main/ui/boilerplate/index.css
-./src/webapps/main/ui/boilerplate/main.tsx
-./src/webapps/main/ui/components/Navbar.tsx
-./src/webapps/main/ui/index.html
-./src/webapps/main/ui/layouts/DashboardLayout.tsx
-./src/webapps/main/ui/layouts/Layout.tsx
-./src/webapps/main/ui/pages/About.tsx
-./src/webapps/main/ui/pages/DashboardStats.tsx
-./src/webapps/main/ui/pages/ErrorPage.tsx
-./src/webapps/main/ui/pages/Home.tsx
-./src/webapps/main/ui/pages/NotFound.tsx
-./src/webapps/main/ui/pages/SampleResources.tsx
-./src/webapps/main/ui/public/sampleIcon.svg
-./test/test.ts
-```
+## Tests
+
