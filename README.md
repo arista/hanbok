@@ -118,7 +118,7 @@ DEBUG=* exec ${DIR}/{cli executable} "$@"
 
 * Write the code for the cli:
 
-    * Put each command in its own file under `commands/`, `commands/sample.ts` for example:
+  * Put each command in its own file under `commands/`, `commands/sample.ts` for example:
 
 ```
 import "source-map-support/register.js"
@@ -139,9 +139,8 @@ export class Command extends OC.Command {
 }
 ```
 
-    * For hierarchical commands, have the directory structure mirror the command hierarchy.  For example: `commands/db/initialize.ts`
-
-    * Import all of the commands into the `cli.ts` file and export a `COMMANDS` structure mapping command names to the imported commands.  Hierarchical command structures should be specified using `:` to separate hierarchy levels (even though the command hierarhcy will still use spaces as separators on the actual cli)
+  * For hierarchical commands, have the directory structure mirror the command hierarchy.  For example: `commands/db/initialize.ts`
+  * Import all of the commands into the `cli.ts` file and export a `COMMANDS` structure mapping command names to the imported commands.  Hierarchical command structures should be specified using `:` to separate hierarchy levels (even though the command hierarhcy will still use spaces as separators on the actual cli)
 
 ```
 import {Command as SampleCommand} from "./cli/commands/sample"
