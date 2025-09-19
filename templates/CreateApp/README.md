@@ -1,0 +1,2 @@
+Hanbok application {APPNAME}
+

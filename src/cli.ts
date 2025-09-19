@@ -22,6 +22,8 @@ import {Command as CdkAppInfrastructureCommand} from "@cli/commands/cdk/app-infr
 import {Command as CdkSuiteInfrastructureCommand} from "@cli/commands/cdk/suite-infrastructure"
 import {Command as CdkDeployenvCommand} from "@cli/commands/cdk/deployenv"
 import {Command as CdkBackendCommand} from "@cli/commands/cdk/backend"
+import {Command as GenTopic} from "@cli/commands/gen"
+import {Command as GenCreateAppCommand} from "@cli/commands/gen/create-app"
 
 export const COMMANDS = {
   build: BuildCommand,
@@ -48,4 +50,6 @@ export const COMMANDS = {
   "cdk:suite-infrastructure": CdkSuiteInfrastructureCommand,
   "cdk:deployenv": CdkDeployenvCommand,
   "cdk:backend": CdkBackendCommand,
+  gen: GenTopic,
+  "gen:create-app": GenCreateAppCommand,
 }

@@ -1,0 +1,19 @@
+{
+  "name": "{APPNAME}",
+  "version": "0.0.0",
+  "description": "FIXME: fill this in",
+  "license": "FIXME: fill this in",
+  "author": "FIXME: fill this in",
+  "private": false,
+  "type": "module",
+  "sideEffects": false,
+  "scripts": {},
+  "dependencies": {
+    "hanbok": "file:../hanbok"
+  },
+  "peerDependenciesMeta": {},
+  "devDependencies": {
+    "@types/node": "^22.14.1",
+    "vite": "^6.3.3"
+  }
+}
