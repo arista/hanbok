@@ -24,14 +24,14 @@ import {Command as CdkDeployenvCommand} from "@cli/commands/cdk/deployenv"
 import {Command as CdkBackendCommand} from "@cli/commands/cdk/backend"
 
 export const COMMANDS = {
-  "build": BuildCommand,
-  "dev": DevCommand,
-  "prettier": PrettierCommand,
+  build: BuildCommand,
+  dev: DevCommand,
+  prettier: PrettierCommand,
   "app-server": AppServerCommand,
-  "sample": SampleCommand,
+  sample: SampleCommand,
   "show-config": ShowConfigCommand,
   "webapp-lambda-name": WebappLambdaNameCommand,
-  "db": DbTopic,
+  db: DbTopic,
   "db:dev": DbDevCommand,
   "db:backend": DbBackendCommand,
   "db:tunnel": DbTunnelCommand,
@@ -43,7 +43,7 @@ export const COMMANDS = {
   "db:prisma": DbPrismaTopic,
   "db:prisma:dev": DbPrismaDevCommand,
   "db:prisma:backend": DbPrismaBackendCommand,
-  "cdk": CdkTopic,
+  cdk: CdkTopic,
   "cdk:app-infrastructure": CdkAppInfrastructureCommand,
   "cdk:suite-infrastructure": CdkSuiteInfrastructureCommand,
   "cdk:deployenv": CdkDeployenvCommand,
