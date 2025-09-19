@@ -30,19 +30,130 @@ export default defineConfig({
 })
 ```
 
+* Add the library to `package.json`:
+
+```
+"exports": {
+    "./lib": {
+      "types": "./dist/lib/lib.d.ts",
+      "import": "./dist/lib/lib.es.js",
+      "default": "./dist/lib/lib.es.js"
+    }
+}
+```
+
 * Write an entry point in `src/lib.ts`
 
 This should export the code that needs to be in the library.  It can reference any code from the repo, not just code in the library-specific directory.
 
 * Write the types in `src/lib-types.ts`
 
-This should export any type definitions that should be exported in
+This should export any type definitions that should be exported in the `.d.ts` file.
 
 * Place library-specific code in `src/lib/`
 
 Include code specific to the library.  The code used by the library doesn't need to be confined to this directory - it can, for example, bring in anything else in the repo such as generated prisma files, other library code, etc.  But code specific to the library should be placed here.
 
 ## CLI
+
+A command-line interface can be added to an App using [oclif](https://oclif.io/).  This involves the following steps:
+
+Adding a CLI is a specialized form of adding a library.  Typically this is done by creating a library that is named "cli":
+
+* Decide on a name for the cli executable.  For example, `mycli`.
+
+* Add the "cli" library using the library steps above with entry point at `src/cli.ts`
+
+* Add oclif packages:
+
+```
+npm install --save oclif
+npm install --save-dev @oclif/core @oclif/plugin-autocomplete @oclif/plugin-help @oclif/plugin-not-found
+```
+
+* Add the oclif declaration to `package.json`:
+
+```
+  "bin": {
+    "{cli executable}": "bin/{cli executable}",
+    "{cli executable}-debug": "bin/{cli executable}-debug"
+  },
+  "oclif": {
+    "bin": "{cli executable}",
+    "commands": {
+      "strategy": "explicit",
+      "target": "./dist/cli/cli.es.js",
+      "identifier": "COMMANDS"
+    },
+    "plugins": [
+      "@oclif/plugin-help",
+      "@oclif/plugin-not-found",
+      "@oclif/plugin-autocomplete"
+    ],
+    "topicSeparator": " "
+  }
+```
+
+* Create the executable files and make them executable:
+
+** `bin/{cli executable}`
+
+```
+#!/usr/bin/env node
+
+import {execute} from '@oclif/core'
+await execute({dir: import.meta.url})
+```
+
+** `bin/{cli executable}-debug`
+
+```
+#!/bin/bash
+
+# Fail on command failure, undefined variables, and piped command
+# failures, get the package directory
+set -euo pipefail
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+
+DEBUG=* exec ${DIR}/{cli executable} "$@"
+```
+
+* Write the code for the cli:
+
+** Put each command in its own file under `commands/`, `commands/sample.ts` for example:
+
+```
+import "source-map-support/register.js"
+import * as OC from "@oclif/core"
+
+export class Command extends OC.Command {
+  static override description = "Sample command"
+  static override args = {...}
+  static override flags = {...}
+  static override enableJsonFlag = true
+
+  async run() {
+    const {args, flags} = await this.parse(Command)
+    return await (async () => {
+      ...
+    })()
+  }
+}
+```
+
+** For hierarchical commands, have the directory structure mirror the command hierarchy.  For example: `commands/db/initialize.ts`
+
+** Import all of the commands into the `cli.ts` file and export a `COMMANDS` structure mapping command names to the imported commands.  Hierarchical command structures should be specified using `:` to separate hierarchy levels (even though the command hierarhcy will still use spaces as separators on the actual cli)
+
+```
+import {Command as SampleCommand} from "./cli/commands/sample"
+import {Command as DbInitializeCommand} from "./cli/commands/db/initialize"
+
+export const COMMANDS = {
+  "sample": SampleCommand,
+  "db:initialize": DbInitializeCommand,
+}
+```
 
 ## Tests
 
