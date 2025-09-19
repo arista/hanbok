@@ -58,8 +58,6 @@ Include code specific to the library.  The code used by the library doesn't need
 
 A command-line interface can be added to an App using [oclif](https://oclif.io/).  This involves the following steps:
 
-Adding a CLI is a specialized form of adding a library.  Typically this is done by creating a library that is named "cli":
-
 * Decide on a name for the cli executable.  For example, `mycli`.
 
 * Add the "cli" library using the library steps above with entry point at `src/cli.ts`
@@ -96,7 +94,7 @@ npm install --save-dev @oclif/core @oclif/plugin-autocomplete @oclif/plugin-help
 
 * Create the executable files and make them executable:
 
-** `bin/{cli executable}`
+  * `bin/{cli executable}`
 
 ```
 #!/usr/bin/env node
@@ -105,7 +103,7 @@ import {execute} from '@oclif/core'
 await execute({dir: import.meta.url})
 ```
 
-** `bin/{cli executable}-debug`
+  * `bin/{cli executable}-debug`
 
 ```
 #!/bin/bash
@@ -120,7 +118,7 @@ DEBUG=* exec ${DIR}/{cli executable} "$@"
 
 * Write the code for the cli:
 
-** Put each command in its own file under `commands/`, `commands/sample.ts` for example:
+  * Put each command in its own file under `commands/`, `commands/sample.ts` for example:
 
 ```
 import "source-map-support/register.js"
@@ -141,9 +139,9 @@ export class Command extends OC.Command {
 }
 ```
 
-** For hierarchical commands, have the directory structure mirror the command hierarchy.  For example: `commands/db/initialize.ts`
+  * For hierarchical commands, have the directory structure mirror the command hierarchy.  For example: `commands/db/initialize.ts`
 
-** Import all of the commands into the `cli.ts` file and export a `COMMANDS` structure mapping command names to the imported commands.  Hierarchical command structures should be specified using `:` to separate hierarchy levels (even though the command hierarhcy will still use spaces as separators on the actual cli)
+  * Import all of the commands into the `cli.ts` file and export a `COMMANDS` structure mapping command names to the imported commands.  Hierarchical command structures should be specified using `:` to separate hierarchy levels (even though the command hierarhcy will still use spaces as separators on the actual cli)
 
 ```
 import {Command as SampleCommand} from "./cli/commands/sample"
