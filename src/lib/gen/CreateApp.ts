@@ -1,6 +1,5 @@
-import fs from "node:fs"
 import path from "node:path"
-import {scaffoldFromTemplate} from "@lib/utils/ScaffoldFromTemplate"
+import * as GU from "./GenUtils"
 
 export type CreateAppProps = {
   path?: string | null
@@ -13,14 +12,12 @@ export async function createApp(props: CreateAppProps) {
 
   console.log(`Generating app "${name}" to directory "${appPath}"`)
 
-  scaffoldFromTemplate({
+  GU.scaffoldFromTemplate({
     templateDir: "CreateApp",
     destDir: appPath,
     toDestFileName: (f) => {
       const {path, dirname, basename} = f
-      const destname = basename.startsWith("template-")
-        ? basename.substring("template-".length)
-        : basename
+      const destname = GU.removeTemplatePrefix(basename)
       return {dirname, basename: destname}
     },
     toDestFileText: (f) => {
@@ -29,4 +26,7 @@ export async function createApp(props: CreateAppProps) {
       return {destText: newDestText}
     },
   })
+
+  console.log()
+  console.log(`Remember to run 'npm install'`)
 }

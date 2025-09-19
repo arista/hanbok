@@ -52,6 +52,8 @@ export type LibModels = Array<LibModel>
 export type LibModel = {
   sourcePath: string
   typesSourcePath: string | null
+  typesBuildPath: string | null
+  typesDistPath: string | null
   builtPath: string
 }
 

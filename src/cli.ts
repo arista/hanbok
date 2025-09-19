@@ -24,6 +24,7 @@ import {Command as CdkDeployenvCommand} from "@cli/commands/cdk/deployenv"
 import {Command as CdkBackendCommand} from "@cli/commands/cdk/backend"
 import {Command as GenTopic} from "@cli/commands/gen"
 import {Command as GenCreateAppCommand} from "@cli/commands/gen/create-app"
+import {Command as GenAddLib} from "@cli/commands/gen/add-lib"
 
 export const COMMANDS = {
   build: BuildCommand,
@@ -52,4 +53,5 @@ export const COMMANDS = {
   "cdk:backend": CdkBackendCommand,
   gen: GenTopic,
   "gen:create-app": GenCreateAppCommand,
+  "gen:add-lib": GenAddLib,
 }

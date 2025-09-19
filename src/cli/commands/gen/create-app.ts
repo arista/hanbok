@@ -1,10 +1,9 @@
 import "source-map-support/register.js"
 import * as OC from "@oclif/core"
-import {createApp, CreateAppProps} from "@lib/gen/CreateApp"
+import {createApp} from "@lib/gen/CreateApp"
 
 export class Command extends OC.Command {
-  static override description =
-    "Runs the CDK command to generate an app's backend (prisma access to database, etc.)"
+  static override description = "Creates a new empty hanbok app"
 
   static override args = {
     name: OC.Args.string({

@@ -33,9 +33,9 @@ export async function parseProjectConfig({
     cwd: fileURLToPath(import.meta.url),
   })!
   const devenv = await getDevEnv(config)
-  const lib = getLibConfig(config, projectRoot)
-  const parser = getParserConfig(config, projectRoot)
   const test = getTestConfig(config, projectRoot)
+  const lib = getLibConfig(config, projectRoot, test)
+  const parser = getParserConfig(config, projectRoot)
   const services = getServicesConfig(config, projectRoot)
   const webapps = getWebappsConfig(config, projectRoot)
   const db = getDatabaseConfig(config, projectRoot)
@@ -199,20 +199,45 @@ async function readHanbokConfig(
 
 function getLibConfig(
   projectConfig: PC.ProjectConfig,
-  projectRoot: string
+  projectRoot: string,
+  testModel: PM.TestModel | null
 ): PM.LibModels | null {
   switch (projectConfig.type) {
     case "App":
     case "Suite":
       const configLib = projectConfig.features?.lib
 
-      function toLibModel(src: PC.LibConfig): PM.LibModel | null {
+      function toLibModel(
+        src: PC.LibConfig,
+        test: PM.TestModel | null
+      ): PM.LibModel | null {
         const {name} = src
         const sourcePath = path.join(projectRoot, `src`, `${name}.ts`)
         const typesSourcePath = path.join(
           projectRoot,
           `src`,
           `${name}-types.ts`
+        )
+        // If we're using the test/ directory, then tsc will put the
+        // results in "build/tsc/{src,test}".  Otherwise it just puts
+        // them under "build/tsc/".  It's a quirk of tsc, which
+        // basically looks for a common root of its input files and uses
+        // that to decide where to put the output files
+        const typesBuildPath =
+          test == null
+            ? path.join(projectRoot, `build`, `tsc`, `${name}-types.d.ts`)
+            : path.join(
+                projectRoot,
+                `build`,
+                `tsc`,
+                `src`,
+                `${name}-types.d.ts`
+              )
+        const typesDistPath = path.join(
+          projectRoot,
+          `dist`,
+          name,
+          `${name}.d.ts`
         )
         const builtPath = path.join(
           projectRoot,
@@ -225,21 +250,24 @@ function getLibConfig(
             `Warning: projectConfig.features.lib is true or refers to name "${name}", but there is no "src/${name}.ts" file`
           )
         }
+        const hasTypes = FsUtils.isFile(typesSourcePath)
         return {
           sourcePath,
-          typesSourcePath: FsUtils.isFile(typesSourcePath)
-            ? typesSourcePath
-            : null,
+          typesSourcePath: hasTypes ? typesSourcePath : null,
+          typesBuildPath: hasTypes ? typesBuildPath : null,
+          typesDistPath: hasTypes ? typesDistPath : null,
           builtPath,
         }
       }
 
       if (Array.isArray(configLib)) {
-        return configLib.map((c) => toLibModel(c)).filter((m) => m != null)
+        return configLib
+          .map((c) => toLibModel(c, testModel))
+          .filter((m) => m != null)
       } else if (configLib !== true) {
         return null
       } else {
-        return [toLibModel({name: "lib"})].filter((m) => m != null)
+        return [toLibModel({name: "lib"}, testModel)].filter((m) => m != null)
       }
   }
   // case "Suite": {

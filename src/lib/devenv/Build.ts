@@ -520,37 +520,31 @@ export class Build {
     const generateTest = model.features.test != null
 
     if (generateTypes) {
-      // If we're using the test/ directory, then tsc will put the
-      // results in "build/tsc/{src,test}".  Otherwise it just puts
-      // them under "build/tsc/".  It's a quirk of tsc, which
-      // basically looks for a common root of its input files and uses
-      // that to decide where to put the output files
-      const input = path.join(
-        projectRoot,
-        generateTest
-          ? "build/tsc/src/lib-types.d.ts"
-          : "build/tsc/lib-types.d.ts"
-      )
+      const libs = model.features.lib ?? []
+      for (const lib of libs) {
+        const {typesBuildPath, typesDistPath} = lib
+        if (typesBuildPath != null && typesDistPath != null) {
+          const bundle = await rollup({
+            input: typesBuildPath,
+            plugins: [
+              dts({
+                respectExternal: true,
+                compilerOptions: {
+                  baseUrl: path.join(projectRoot, "build/tsc"),
+                  paths: this.generateTsconfigPaths(),
+                },
+              }),
+            ],
+          })
 
-      const bundle = await rollup({
-        input,
-        plugins: [
-          dts({
-            respectExternal: true,
-            compilerOptions: {
-              baseUrl: path.join(projectRoot, "build/tsc"),
-              paths: this.generateTsconfigPaths(),
-            },
-          }),
-        ],
-      })
+          await bundle.write({
+            file: typesDistPath,
+            format: "es",
+          })
 
-      await bundle.write({
-        file: path.join(projectRoot, "dist/lib/lib.d.ts"),
-        format: "es",
-      })
-
-      await bundle.close()
+          await bundle.close()
+        }
+      }
     }
   }
 
