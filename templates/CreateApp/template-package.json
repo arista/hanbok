@@ -7,6 +7,7 @@
   "private": false,
   "type": "module",
   "sideEffects": false,
+  "files": ["dist", "hanbok.config.ts"],
   "scripts": {},
   "dependencies": {
     "hanbok": "file:../hanbok"

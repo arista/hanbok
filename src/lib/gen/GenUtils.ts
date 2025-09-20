@@ -37,6 +37,7 @@ export type TemplateFile = {
 export type DestFileName = {
   dirname: string
   basename: string
+  executable?: boolean
 }
 
 export type DestFileText = {
@@ -69,7 +70,7 @@ export function scaffoldFromTemplate(props: {
     }
     const destFileName = toDestFileName(templateFileName)
     if (destFileName != null) {
-      const {dirname, basename} = destFileName
+      const {dirname, basename, executable} = destFileName
       const destPath = path.join(dirname, basename)
       const fullDestPath = path.join(destDir, destPath)
       const destText = FU.isFile(fullDestPath)
@@ -89,6 +90,9 @@ export function scaffoldFromTemplate(props: {
         fs.writeFileSync(fullDestPath, destFileText.destText, {
           encoding: "utf-8",
         })
+        if (executable) {
+          fs.chmodSync(fullDestPath, 0o755)
+        }
       }
     }
   }

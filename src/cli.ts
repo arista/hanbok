@@ -25,6 +25,7 @@ import {Command as CdkBackendCommand} from "@cli/commands/cdk/backend"
 import {Command as GenTopic} from "@cli/commands/gen"
 import {Command as GenCreateAppCommand} from "@cli/commands/gen/create-app"
 import {Command as GenAddLib} from "@cli/commands/gen/add-lib"
+import {Command as GenAddCli} from "@cli/commands/gen/add-cli"
 import {Command as GenAddService} from "@cli/commands/gen/add-service"
 
 export const COMMANDS = {
@@ -55,5 +56,6 @@ export const COMMANDS = {
   gen: GenTopic,
   "gen:create-app": GenCreateAppCommand,
   "gen:add-lib": GenAddLib,
+  "gen:add-cli": GenAddCli,
   "gen:add-service": GenAddService,
 }
