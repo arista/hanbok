@@ -1,0 +1,13 @@
+// Schema definition for the "ORIGSERVICENAME" service
+
+__HANBOK_PRISMA_HEADER__
+
+model SampleResource {
+  id Int @id @default(autoincrement()) @map("id")
+  publicId String @unique @db.VarChar(25) @map("public_id")
+  name String @map("name")
+  age Int? @map("age")
+
+  @@map("sample_resources")
+  @@index([publicId])
+}
