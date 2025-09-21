@@ -26,7 +26,9 @@ import {Command as GenTopic} from "@cli/commands/gen"
 import {Command as GenCreateAppCommand} from "@cli/commands/gen/create-app"
 import {Command as GenAddLib} from "@cli/commands/gen/add-lib"
 import {Command as GenAddCli} from "@cli/commands/gen/add-cli"
+import {Command as GenAddTest} from "@cli/commands/gen/add-test"
 import {Command as GenAddService} from "@cli/commands/gen/add-service"
+import {Command as GenAddWebapp} from "@cli/commands/gen/add-webapp"
 
 export const COMMANDS = {
   build: BuildCommand,
@@ -57,5 +59,7 @@ export const COMMANDS = {
   "gen:create-app": GenCreateAppCommand,
   "gen:add-lib": GenAddLib,
   "gen:add-cli": GenAddCli,
+  "gen:add-test": GenAddTest,
   "gen:add-service": GenAddService,
+  "gen:add-webapp": GenAddWebapp,
 }
