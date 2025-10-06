@@ -80,6 +80,7 @@
   "peerDependencies": {
     "aws-cdk-lib": "^2.194.0",
     "constructs": "^10.4.2",
+    "immodel-ts": "github:arista/immodel-ts",
     "zod": "^3.24.3"
   },
   "peerDependenciesMeta": {},
@@ -95,6 +96,7 @@
     "@types/http-proxy": "^1.17.16",
     "@types/node": "^22.14.1",
     "@types/serve-static": "^1.15.7",
+    "ts-make": "file:../ts-make",
     "zod": "^3.24.3"
   }
 }
